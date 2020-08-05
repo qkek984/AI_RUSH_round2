@@ -1,0 +1,804 @@
+Downloading: "https://github.com/lukemelas/EfficientNet-PyTorch/releases/download/1.0/efficientnet-b3-5fb5a3c3.pth" to /home/nsml/.cache/torch/checkpoints/efficientnet-b3-5fb5a3c3.pth
+
+  0%|          | 0.00/47.1M [00:00<?, ?B/s]
+  0%|          | 8.00k/47.1M [00:00<22:09, 37.1kB/s]
+  0%|          | 40.0k/47.1M [00:00<17:10, 47.9kB/s]
+  0%|          | 104k/47.1M [00:00<12:50, 63.9kB/s] 
+  0%|          | 240k/47.1M [00:00<09:21, 87.5kB/s]
+  1%|          | 512k/47.1M [00:01<06:42, 121kB/s] 
+  2%|▏         | 1.02M/47.1M [00:01<04:44, 170kB/s]
+  4%|▍         | 2.07M/47.1M [00:01<03:17, 239kB/s]
+  9%|▊         | 4.07M/47.1M [00:01<02:13, 338kB/s]
+ 13%|█▎        | 6.05M/47.1M [00:02<01:30, 475kB/s]
+ 17%|█▋        | 8.05M/47.1M [00:02<01:01, 664kB/s]
+ 21%|██▏       | 10.0M/47.1M [00:02<00:42, 921kB/s]
+ 25%|██▌       | 12.0M/47.1M [00:02<00:28, 1.28MB/s]
+ 28%|██▊       | 13.0M/47.1M [00:02<00:20, 1.74MB/s]
+ 30%|██▉       | 14.0M/47.1M [00:02<00:15, 2.29MB/s]
+ 32%|███▏      | 14.9M/47.1M [00:02<00:11, 2.96MB/s]
+ 34%|███▍      | 16.0M/47.1M [00:03<00:08, 3.72MB/s]
+ 36%|███▌      | 16.9M/47.1M [00:03<00:07, 4.52MB/s]
+ 38%|███▊      | 17.9M/47.1M [00:03<00:05, 5.37MB/s]
+ 40%|████      | 18.9M/47.1M [00:03<00:04, 6.12MB/s]
+ 42%|████▏     | 19.9M/47.1M [00:03<00:04, 6.86MB/s]
+ 44%|████▍     | 20.8M/47.1M [00:03<00:03, 7.39MB/s]
+ 47%|████▋     | 21.9M/47.1M [00:03<00:03, 7.95MB/s]
+ 48%|████▊     | 22.8M/47.1M [00:03<00:03, 8.20MB/s]
+ 51%|█████     | 23.9M/47.1M [00:03<00:03, 7.88MB/s]
+ 55%|█████▍    | 25.8M/47.1M [00:04<00:02, 9.13MB/s]
+ 57%|█████▋    | 26.8M/47.1M [00:04<00:02, 8.34MB/s]
+ 59%|█████▉    | 27.9M/47.1M [00:04<00:02, 8.75MB/s]
+ 61%|██████    | 28.8M/47.1M [00:04<00:02, 8.82MB/s]
+ 63%|██████▎   | 29.9M/47.1M [00:04<00:02, 9.02MB/s]
+ 65%|██████▌   | 30.8M/47.1M [00:04<00:01, 8.97MB/s]
+ 68%|██████▊   | 31.8M/47.1M [00:04<00:01, 9.16MB/s]
+ 69%|██████▉   | 32.7M/47.1M [00:04<00:01, 9.08MB/s]
+ 72%|███████▏  | 33.8M/47.1M [00:05<00:01, 9.26MB/s]
+ 74%|███████▎  | 34.7M/47.1M [00:05<00:01, 9.15MB/s]
+ 76%|███████▌  | 35.8M/47.1M [00:05<00:01, 9.32MB/s]
+ 78%|███████▊  | 36.7M/47.1M [00:05<00:01, 9.18MB/s]
+ 80%|████████  | 37.8M/47.1M [00:05<00:01, 9.31MB/s]
+ 82%|████████▏ | 38.7M/47.1M [00:05<00:00, 9.17MB/s]
+ 84%|████████▍ | 39.7M/47.1M [00:05<00:00, 9.34MB/s]
+ 86%|████████▋ | 40.6M/47.1M [00:05<00:00, 9.19MB/s]
+ 89%|████████▊ | 41.7M/47.1M [00:05<00:00, 9.36MB/s]
+ 90%|█████████ | 42.6M/47.1M [00:06<00:00, 9.20MB/s]
+ 93%|█████████▎| 43.7M/47.1M [00:06<00:00, 9.37MB/s]
+ 95%|█████████▍| 44.6M/47.1M [00:06<00:00, 9.20MB/s]
+ 97%|█████████▋| 45.7M/47.1M [00:06<00:00, 9.37MB/s]
+ 99%|█████████▉| 46.6M/47.1M [00:06<00:00, 9.20MB/s]
+100%|██████████| 47.1M/47.1M [00:06<00:00, 7.62MB/s]
+Loaded pretrained weights for efficientnet-b3
+EfficientNet B3 Loaded!
+before fit
+Trying out 384 number of hyperparameter combinations!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.11764 Loss Sum: 191.24092, accuracy : 0.89359, val loss: 5.59089, val accuracy: 0.89428
+[[722   2   0  19]
+ [  7 152   0   3]
+ [  3   0 236  17]
+ [142   5  22 751]]
+[[0.9717362  0.00269179 0.         0.02557201]
+ [0.04320988 0.9382716  0.         0.01851852]
+ [0.01171875 0.         0.921875   0.06640625]
+ [0.15434783 0.00543478 0.02391304 0.81630435]]
+	 Final score: 0.9009363636705648 [('val/EfficientNet_b3/normal/f1-score', 0.8930117501546072), ('val/EfficientNet_b3/monotone/f1-score', 0.9470404984423676), ('val/EfficientNet_b3/screenshot/f1-score', 0.9182879377431907), ('val/EfficientNet_b3/unknown/f1-score', 0.8783625730994151)]
+	 Time elapsed : 578.43655 _________________________________
+
+Trying to save to /tmp/tmp0x02a0fw/model_EfficientNet_b3
+Epoch: 1, batch loss: 0.13153 Loss Sum: 54.98141, accuracy : 0.96932, val loss: 6.11735, val accuracy: 0.90389
+[[729   2   0  12]
+ [  4 152   0   6]
+ [  3   0 237  16]
+ [135   6  16 763]]
+[[0.98115747 0.00269179 0.         0.01615074]
+ [0.02469136 0.9382716  0.         0.03703704]
+ [0.01171875 0.         0.92578125 0.0625    ]
+ [0.14673913 0.00652174 0.0173913  0.82934783]]
+	 Final score: 0.9093705062040114 [('val/EfficientNet_b3/normal/f1-score', 0.9033457249070632), ('val/EfficientNet_b3/monotone/f1-score', 0.9440993788819876), ('val/EfficientNet_b3/screenshot/f1-score', 0.9312377210216111), ('val/EfficientNet_b3/unknown/f1-score', 0.8887594641817123)]
+	 Time elapsed : 1152.08427 _________________________________
+
+Trying to save to /tmp/tmpjiknkw1x/model_EfficientNet_b3
+Epoch: 2, batch loss: 0.06070 Loss Sum: 28.78547, accuracy : 0.98450, val loss: 7.86538, val accuracy: 0.89236
+[[729   0   0  14]
+ [ 11 148   0   3]
+ [  4   0 241  11]
+ [157   3  21 739]]
+[[0.98115747 0.         0.         0.01884253]
+ [0.06790123 0.91358025 0.         0.01851852]
+ [0.015625   0.         0.94140625 0.04296875]
+ [0.17065217 0.00326087 0.02282609 0.80326087]]
+	 Final score: 0.9015030384039574 [('val/EfficientNet_b3/normal/f1-score', 0.8868613138686131), ('val/EfficientNet_b3/monotone/f1-score', 0.9456869009584664), ('val/EfficientNet_b3/screenshot/f1-score', 0.9305019305019306), ('val/EfficientNet_b3/unknown/f1-score', 0.8761114404267931)]
+	 Time elapsed : 1722.88342 _________________________________
+
+Epoch: 3, batch loss: 0.03717 Loss Sum: 19.78801, accuracy : 0.98932, val loss: 8.50057, val accuracy: 0.88852
+[[729   0   0  14]
+ [ 12 144   0   6]
+ [  3   0 243  10]
+ [163   6  18 733]]
+[[0.98115747 0.         0.         0.01884253]
+ [0.07407407 0.88888889 0.         0.03703704]
+ [0.01171875 0.         0.94921875 0.0390625 ]
+ [0.17717391 0.00652174 0.01956522 0.79673913]]
+	 Final score: 0.8957624084801398 [('val/EfficientNet_b3/normal/f1-score', 0.8836363636363636), ('val/EfficientNet_b3/monotone/f1-score', 0.923076923076923), ('val/EfficientNet_b3/screenshot/f1-score', 0.9400386847195359), ('val/EfficientNet_b3/unknown/f1-score', 0.87106357694593)]
+	 Time elapsed : 2293.39658 _________________________________
+
+Epoch: 4, batch loss: 0.01593 Loss Sum: 14.54428, accuracy : 0.99235, val loss: 9.45156, val accuracy: 0.88611
+[[731   0   0  12]
+ [  8 150   0   4]
+ [  2   0 241  13]
+ [169   4  25 722]]
+[[0.98384926 0.         0.         0.01615074]
+ [0.04938272 0.92592593 0.         0.02469136]
+ [0.0078125  0.         0.94140625 0.05078125]
+ [0.18369565 0.00434783 0.02717391 0.78478261]]
+	 Final score: 0.8965327804743924 [('val/EfficientNet_b3/normal/f1-score', 0.8844525105868118), ('val/EfficientNet_b3/monotone/f1-score', 0.949367088607595), ('val/EfficientNet_b3/screenshot/f1-score', 0.9233716475095786), ('val/EfficientNet_b3/unknown/f1-score', 0.8641532016756434)]
+	 Time elapsed : 2864.70057 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---
+Loaded pretrained weights for efficientnet-b3
+EfficientNet B3 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [0, 15],
+ 'gamma': 0.1,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.01290 Loss Sum: 97.00177, accuracy : 0.94906, val loss: 5.41799, val accuracy: 0.91350
+[[731   1   0  11]
+ [  5 154   0   3]
+ [  2   0 244  10]
+ [125   2  21 772]]
+[[0.98384926 0.0013459  0.         0.01480485]
+ [0.0308642  0.95061728 0.         0.01851852]
+ [0.0078125  0.         0.953125   0.0390625 ]
+ [0.13586957 0.00217391 0.02282609 0.83913043]]
+	 Final score: 0.9214176753998513 [('val/EfficientNet_b3/normal/f1-score', 0.9103362391033624), ('val/EfficientNet_b3/monotone/f1-score', 0.9655172413793103), ('val/EfficientNet_b3/screenshot/f1-score', 0.9366602687140115), ('val/EfficientNet_b3/unknown/f1-score', 0.8997668997668998)]
+	 Time elapsed : 773.07484 _________________________________
+
+Trying to save to /tmp/tmp2d6q6jp2/model_EfficientNet_b3
+Epoch: 1, batch loss: 0.01283 Loss Sum: 18.40958, accuracy : 0.99048, val loss: 6.25441, val accuracy: 0.91735
+[[728   0   0  15]
+ [  5 156   0   1]
+ [  2   0 246   8]
+ [122   1  18 779]]
+[[0.97981157 0.         0.         0.02018843]
+ [0.0308642  0.96296296 0.         0.00617284]
+ [0.0078125  0.         0.9609375  0.03125   ]
+ [0.1326087  0.00108696 0.01956522 0.84673913]]
+	 Final score: 0.9283730389397237 [('val/EfficientNet_b3/normal/f1-score', 0.9100000000000001), ('val/EfficientNet_b3/monotone/f1-score', 0.9780564263322883), ('val/EfficientNet_b3/screenshot/f1-score', 0.9461538461538462), ('val/EfficientNet_b3/unknown/f1-score', 0.9042367962855484)]
+	 Time elapsed : 1523.24682 _________________________________
+
+Trying to save to /tmp/tmpcrja2ils/model_EfficientNet_b3
+Epoch: 2, batch loss: 0.02994 Loss Sum: 7.99190, accuracy : 0.99640, val loss: 7.50904, val accuracy: 0.90966
+[[735   0   0   8]
+ [  6 151   0   5]
+ [  2   0 247   7]
+ [140   1  19 760]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.03703704 0.93209877 0.         0.0308642 ]
+ [0.0078125  0.         0.96484375 0.02734375]
+ [0.15217391 0.00108696 0.02065217 0.82608696]]
+	 Final score: 0.9197130048595669 [('val/EfficientNet_b3/normal/f1-score', 0.904059040590406), ('val/EfficientNet_b3/monotone/f1-score', 0.961783439490446), ('val/EfficientNet_b3/screenshot/f1-score', 0.946360153256705), ('val/EfficientNet_b3/unknown/f1-score', 0.8941176470588235)]
+	 Time elapsed : 2288.14683 _________________________________
+
+Epoch: 3, batch loss: 0.00313 Loss Sum: 5.27834, accuracy : 0.99780, val loss: 7.71534, val accuracy: 0.90822
+[[735   1   0   7]
+ [  6 152   0   4]
+ [  1   0 247   8]
+ [143   1  20 756]]
+[[0.98923284 0.0013459  0.         0.00942127]
+ [0.03703704 0.9382716  0.         0.02469136]
+ [0.00390625 0.         0.96484375 0.03125   ]
+ [0.15543478 0.00108696 0.02173913 0.82173913]]
+	 Final score: 0.9184037922331979 [('val/EfficientNet_b3/normal/f1-score', 0.902948402948403), ('val/EfficientNet_b3/monotone/f1-score', 0.9620253164556961), ('val/EfficientNet_b3/screenshot/f1-score', 0.9445506692160611), ('val/EfficientNet_b3/unknown/f1-score', 0.8920353982300886)]
+	 Time elapsed : 3069.27937 _________________________________
+
+Epoch: 4, batch loss: 0.00730 Loss Sum: 4.32259, accuracy : 0.99831, val loss: 7.77627, val accuracy: 0.90966
+[[735   0   0   8]
+ [  9 150   0   3]
+ [  2   0 247   7]
+ [145   1  13 761]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.05555556 0.92592593 0.         0.01851852]
+ [0.0078125  0.         0.96484375 0.02734375]
+ [0.1576087  0.00108696 0.01413043 0.82717391]]
+	 Final score: 0.9209934894547505 [('val/EfficientNet_b3/normal/f1-score', 0.8996328029375765), ('val/EfficientNet_b3/monotone/f1-score', 0.9584664536741214), ('val/EfficientNet_b3/screenshot/f1-score', 0.9573643410852712), ('val/EfficientNet_b3/unknown/f1-score', 0.8958210712183637)]
+	 Time elapsed : 3833.34976 _________________________________
+
+Early stopping!! 
+---train finished---
+Loaded pretrained weights for efficientnet-b3
+EfficientNet B3 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [0, 15],
+ 'gamma': 0.1,
+ 'learning_rate': 1e-05,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.37953 Loss Sum: 429.22474, accuracy : 0.79716, val loss: 7.10574, val accuracy: 0.86016
+[[728   1   0  14]
+ [ 11 147   0   4]
+ [  3   0 219  34]
+ [202   6  16 696]]
+[[0.97981157 0.0013459  0.         0.01884253]
+ [0.06790123 0.90740741 0.         0.02469136]
+ [0.01171875 0.         0.85546875 0.1328125 ]
+ [0.21956522 0.00652174 0.0173913  0.75652174]]
+	 Final score: 0.8690744932758094 [('val/EfficientNet_b3/normal/f1-score', 0.8630705394190871), ('val/EfficientNet_b3/monotone/f1-score', 0.9303797468354431), ('val/EfficientNet_b3/screenshot/f1-score', 0.8920570264765785), ('val/EfficientNet_b3/unknown/f1-score', 0.8345323741007195)]
+	 Time elapsed : 851.65856 _________________________________
+
+Epoch: 1, batch loss: 0.10568 Loss Sum: 124.55600, accuracy : 0.94097, val loss: 6.59713, val accuracy: 0.88131
+[[729   1   0  13]
+ [ 12 146   0   4]
+ [  1   0 222  33]
+ [179   2   2 737]]
+[[0.98115747 0.0013459  0.         0.01749664]
+ [0.07407407 0.90123457 0.         0.02469136]
+ [0.00390625 0.         0.8671875  0.12890625]
+ [0.19456522 0.00217391 0.00217391 0.80108696]]
+	 Final score: 0.8917915866331995 [('val/EfficientNet_b3/normal/f1-score', 0.8762019230769231), ('val/EfficientNet_b3/monotone/f1-score', 0.9389067524115756), ('val/EfficientNet_b3/screenshot/f1-score', 0.9249999999999999), ('val/EfficientNet_b3/unknown/f1-score', 0.8635032220269477)]
+	 Time elapsed : 1727.97857 _________________________________
+
+Epoch: 2, batch loss: 0.06753 Loss Sum: 90.03936, accuracy : 0.95549, val loss: 6.98976, val accuracy: 0.88035
+[[735   0   0   8]
+ [ 10 148   0   4]
+ [  0   0 216  40]
+ [177   5   5 733]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.0617284  0.91358025 0.         0.02469136]
+ [0.         0.         0.84375    0.15625   ]
+ [0.1923913  0.00543478 0.00543478 0.79673913]]
+	 Final score: 0.8876719804992419 [('val/EfficientNet_b3/normal/f1-score', 0.8828828828828829), ('val/EfficientNet_b3/monotone/f1-score', 0.9396825396825397), ('val/EfficientNet_b3/screenshot/f1-score', 0.9056603773584905), ('val/EfficientNet_b3/unknown/f1-score', 0.8598240469208212)]
+	 Time elapsed : 2612.78549 _________________________________
+
+Epoch: 3, batch loss: 0.11170 Loss Sum: 86.89484, accuracy : 0.95586, val loss: 6.50714, val accuracy: 0.88563
+[[731   1   0  11]
+ [  9 150   0   3]
+ [  0   0 222  34]
+ [172   3   5 740]]
+[[0.98384926 0.0013459  0.         0.01480485]
+ [0.05555556 0.92592593 0.         0.01851852]
+ [0.         0.         0.8671875  0.1328125 ]
+ [0.18695652 0.00326087 0.00543478 0.80434783]]
+	 Final score: 0.8958108882358246 [('val/EfficientNet_b3/normal/f1-score', 0.8833836858006042), ('val/EfficientNet_b3/monotone/f1-score', 0.949367088607595), ('val/EfficientNet_b3/screenshot/f1-score', 0.9192546583850932), ('val/EfficientNet_b3/unknown/f1-score', 0.8665105386416861)]
+	 Time elapsed : 3497.63979 _________________________________
+
+Epoch: 4, batch loss: 0.13620 Loss Sum: 83.83594, accuracy : 0.95772, val loss: 7.27242, val accuracy: 0.87938
+[[730   1   0  12]
+ [  9 151   0   2]
+ [  1   0 220  35]
+ [182   3   6 729]]
+[[0.98250336 0.0013459  0.         0.01615074]
+ [0.05555556 0.93209877 0.         0.01234568]
+ [0.00390625 0.         0.859375   0.13671875]
+ [0.19782609 0.00326087 0.00652174 0.7923913 ]]
+	 Final score: 0.8909404272739136 [('val/EfficientNet_b3/normal/f1-score', 0.876876876876877), ('val/EfficientNet_b3/monotone/f1-score', 0.9526813880126184), ('val/EfficientNet_b3/screenshot/f1-score', 0.9128630705394191), ('val/EfficientNet_b3/unknown/f1-score', 0.8586572438162545)]
+	 Time elapsed : 4411.59422 _________________________________
+
+Epoch: 5, batch loss: 0.08527 Loss Sum: 83.61951, accuracy : 0.95738, val loss: 6.54026, val accuracy: 0.88323
+[[737   1   0   5]
+ [  9 148   0   5]
+ [  0   0 220  36]
+ [178   4   5 733]]
+[[0.99192463 0.0013459  0.         0.00672948]
+ [0.05555556 0.91358025 0.         0.0308642 ]
+ [0.         0.         0.859375   0.140625  ]
+ [0.19347826 0.00434783 0.00543478 0.79673913]]
+	 Final score: 0.8913206585910362 [('val/EfficientNet_b3/normal/f1-score', 0.8842231553689263), ('val/EfficientNet_b3/monotone/f1-score', 0.9396825396825397), ('val/EfficientNet_b3/screenshot/f1-score', 0.9147609147609147), ('val/EfficientNet_b3/unknown/f1-score', 0.862860506180106)]
+	 Time elapsed : 5280.65757 _________________________________
+
+Epoch: 6, batch loss: 0.06155 Loss Sum: 83.62099, accuracy : 0.95763, val loss: 6.42565, val accuracy: 0.88515
+[[734   0   0   9]
+ [ 12 147   0   3]
+ [  0   0 226  30]
+ [178   2   5 735]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.07407407 0.90740741 0.         0.01851852]
+ [0.         0.         0.8828125  0.1171875 ]
+ [0.19347826 0.00217391 0.00543478 0.79891304]]
+	 Final score: 0.8962774351510289 [('val/EfficientNet_b3/normal/f1-score', 0.880623875224955), ('val/EfficientNet_b3/monotone/f1-score', 0.9453376205787781), ('val/EfficientNet_b3/screenshot/f1-score', 0.9281314168377823), ('val/EfficientNet_b3/unknown/f1-score', 0.8662345315262228)]
+	 Time elapsed : 6134.02833 _________________________________
+
+Epoch: 7, batch loss: 0.16293 Loss Sum: 83.70520, accuracy : 0.95737, val loss: 6.55760, val accuracy: 0.87987
+[[733   0   0  10]
+ [ 10 148   0   4]
+ [  1   0 222  33]
+ [183   4   5 728]]
+[[0.98654105 0.         0.         0.01345895]
+ [0.0617284  0.91358025 0.         0.02469136]
+ [0.00390625 0.         0.8671875  0.12890625]
+ [0.19891304 0.00434783 0.00543478 0.79130435]]
+	 Final score: 0.890434399143547 [('val/EfficientNet_b3/normal/f1-score', 0.8778443113772454), ('val/EfficientNet_b3/monotone/f1-score', 0.9426751592356688), ('val/EfficientNet_b3/screenshot/f1-score', 0.9192546583850932), ('val/EfficientNet_b3/unknown/f1-score', 0.8589970501474926)]
+	 Time elapsed : 6987.30448 _________________________________
+
+Epoch: 8, batch loss: 0.10104 Loss Sum: 82.32381, accuracy : 0.95804, val loss: 6.42619, val accuracy: 0.88371
+[[733   0   0  10]
+ [ 11 147   0   4]
+ [  2   0 215  39]
+ [169   3   4 744]]
+[[0.98654105 0.         0.         0.01345895]
+ [0.06790123 0.90740741 0.         0.02469136]
+ [0.0078125  0.         0.83984375 0.15234375]
+ [0.18369565 0.00326087 0.00434783 0.80869565]]
+	 Final score: 0.8905141343762072 [('val/EfficientNet_b3/normal/f1-score', 0.8841978287092883), ('val/EfficientNet_b3/monotone/f1-score', 0.9423076923076924), ('val/EfficientNet_b3/screenshot/f1-score', 0.9052631578947368), ('val/EfficientNet_b3/unknown/f1-score', 0.8666278392545137)]
+	 Time elapsed : 7839.21555 _________________________________
+
+Epoch: 9, batch loss: 0.06753 Loss Sum: 82.98614, accuracy : 0.95775, val loss: 7.01036, val accuracy: 0.87506
+[[732   1   0  10]
+ [ 11 146   0   5]
+ [  2   0 215  39]
+ [182   5   5 728]]
+[[0.98519515 0.0013459  0.         0.01345895]
+ [0.06790123 0.90123457 0.         0.0308642 ]
+ [0.0078125  0.         0.83984375 0.15234375]
+ [0.19782609 0.00543478 0.00543478 0.79130435]]
+	 Final score: 0.8816066428865018 [('val/EfficientNet_b3/normal/f1-score', 0.8766467065868263), ('val/EfficientNet_b3/monotone/f1-score', 0.9299363057324841), ('val/EfficientNet_b3/screenshot/f1-score', 0.9033613445378151), ('val/EfficientNet_b3/unknown/f1-score', 0.855464159811986)]
+	 Time elapsed : 8691.79782 _________________________________
+
+Early stopping!! 
+---train finished---
+Loaded pretrained weights for efficientnet-b3
+EfficientNet B3 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [5, 10],
+ 'gamma': 0.3,
+ 'learning_rate': 0.001,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.03753 Loss Sum: 81.32441, accuracy : 0.95202, val loss: 6.93077, val accuracy: 0.90053
+[[724   2   0  17]
+ [  6 152   0   4]
+ [  2   0 242  12]
+ [133   4  27 756]]
+[[0.97442799 0.00269179 0.         0.02288022]
+ [0.03703704 0.9382716  0.         0.02469136]
+ [0.0078125  0.         0.9453125  0.046875  ]
+ [0.14456522 0.00434783 0.02934783 0.82173913]]
+	 Final score: 0.9065113540959975 [('val/EfficientNet_b3/normal/f1-score', 0.9004975124378108), ('val/EfficientNet_b3/monotone/f1-score', 0.95), ('val/EfficientNet_b3/screenshot/f1-score', 0.9219047619047619), ('val/EfficientNet_b3/unknown/f1-score', 0.8847279110590989)]
+	 Time elapsed : 730.45132 _________________________________
+
+Epoch: 1, batch loss: 0.00858 Loss Sum: 21.86854, accuracy : 0.98737, val loss: 8.78437, val accuracy: 0.89332
+[[728   1   0  14]
+ [  4 156   0   2]
+ [  2   0 237  17]
+ [159   6  17 738]]
+[[0.97981157 0.0013459  0.         0.01884253]
+ [0.02469136 0.96296296 0.         0.01234568]
+ [0.0078125  0.         0.92578125 0.06640625]
+ [0.17282609 0.00652174 0.01847826 0.80217391]]
+	 Final score: 0.9048610188016184 [('val/EfficientNet_b3/normal/f1-score', 0.8899755501222494), ('val/EfficientNet_b3/monotone/f1-score', 0.9599999999999999), ('val/EfficientNet_b3/screenshot/f1-score', 0.9294117647058823), ('val/EfficientNet_b3/unknown/f1-score', 0.872856298048492)]
+	 Time elapsed : 1464.74539 _________________________________
+
+Epoch: 2, batch loss: 0.00064 Loss Sum: 7.48911, accuracy : 0.99616, val loss: 8.43333, val accuracy: 0.91014
+[[734   0   0   9]
+ [ 10 151   0   1]
+ [  2   0 242  12]
+ [137   2  14 767]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.0617284  0.93209877 0.         0.00617284]
+ [0.0078125  0.         0.9453125  0.046875  ]
+ [0.14891304 0.00217391 0.01521739 0.83369565]]
+	 Final score: 0.9192715091240656 [('val/EfficientNet_b3/normal/f1-score', 0.902829028290283), ('val/EfficientNet_b3/monotone/f1-score', 0.9587301587301588), ('val/EfficientNet_b3/screenshot/f1-score', 0.9453125), ('val/EfficientNet_b3/unknown/f1-score', 0.8976009362200117)]
+	 Time elapsed : 2200.87043 _________________________________
+
+Epoch: 3, batch loss: 0.00601 Loss Sum: 4.23864, accuracy : 0.99762, val loss: 10.60380, val accuracy: 0.89909
+[[734   0   0   9]
+ [  6 153   0   3]
+ [  1   0 242  13]
+ [161   3  14 742]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.03703704 0.94444444 0.         0.01851852]
+ [0.00390625 0.         0.9453125  0.05078125]
+ [0.175      0.00326087 0.01521739 0.80652174]]
+	 Final score: 0.9122487480901961 [('val/EfficientNet_b3/normal/f1-score', 0.892401215805471), ('val/EfficientNet_b3/monotone/f1-score', 0.9622641509433962), ('val/EfficientNet_b3/screenshot/f1-score', 0.9453125), ('val/EfficientNet_b3/unknown/f1-score', 0.8796680497925311)]
+	 Time elapsed : 2936.41003 _________________________________
+
+Epoch: 4, batch loss: 0.00448 Loss Sum: 3.21023, accuracy : 0.99827, val loss: 10.81677, val accuracy: 0.89524
+[[734   0   0   9]
+ [  9 150   0   3]
+ [  1   0 241  14]
+ [163   4  15 738]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.05555556 0.92592593 0.         0.01851852]
+ [0.00390625 0.         0.94140625 0.0546875 ]
+ [0.17717391 0.00434783 0.01630435 0.80217391]]
+	 Final score: 0.9062243295224564 [('val/EfficientNet_b3/normal/f1-score', 0.8896969696969695), ('val/EfficientNet_b3/monotone/f1-score', 0.949367088607595), ('val/EfficientNet_b3/screenshot/f1-score', 0.94140625), ('val/EfficientNet_b3/unknown/f1-score', 0.8764845605700713)]
+	 Time elapsed : 3669.66915 _________________________________
+
+Epoch: 5, batch loss: 0.00607 Loss Sum: 4.08795, accuracy : 0.99774, val loss: 10.26829, val accuracy: 0.90005
+[[731   1   0  11]
+ [ 11 148   0   3]
+ [  1   0 243  12]
+ [148   1  20 751]]
+[[0.98384926 0.0013459  0.         0.01480485]
+ [0.06790123 0.91358025 0.         0.01851852]
+ [0.00390625 0.         0.94921875 0.046875  ]
+ [0.16086957 0.00108696 0.02173913 0.81630435]]
+	 Final score: 0.9085559257017101 [('val/EfficientNet_b3/normal/f1-score', 0.894736842105263), ('val/EfficientNet_b3/monotone/f1-score', 0.9487179487179487), ('val/EfficientNet_b3/screenshot/f1-score', 0.9364161849710982), ('val/EfficientNet_b3/unknown/f1-score', 0.8850913376546847)]
+	 Time elapsed : 732.28436 _________________________________
+
+Epoch: 6, batch loss: 0.02142 Loss Sum: 2.09848, accuracy : 0.99895, val loss: 10.83226, val accuracy: 0.90581
+[[735   0   0   8]
+ [  8 151   0   3]
+ [  2   0 239  15]
+ [141   2  17 760]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.04938272 0.93209877 0.         0.01851852]
+ [0.0078125  0.         0.93359375 0.05859375]
+ [0.15326087 0.00217391 0.01847826 0.82608696]]
+	 Final score: 0.914179337053888 [('val/EfficientNet_b3/normal/f1-score', 0.9023941068139962), ('val/EfficientNet_b3/monotone/f1-score', 0.9587301587301588), ('val/EfficientNet_b3/screenshot/f1-score', 0.93359375), ('val/EfficientNet_b3/unknown/f1-score', 0.8909730363423212)]
+	 Time elapsed : 1467.39476 _________________________________
+
+Epoch: 7, batch loss: 0.00030 Loss Sum: 1.45814, accuracy : 0.99929, val loss: 12.09901, val accuracy: 0.90005
+[[735   0   0   8]
+ [  8 151   0   3]
+ [  2   0 241  13]
+ [155   3  16 746]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.04938272 0.93209877 0.         0.01851852]
+ [0.0078125  0.         0.94140625 0.05078125]
+ [0.16847826 0.00326087 0.0173913  0.81086957]]
+	 Final score: 0.9105676278055044 [('val/EfficientNet_b3/normal/f1-score', 0.8947048082775411), ('val/EfficientNet_b3/monotone/f1-score', 0.9556962025316457), ('val/EfficientNet_b3/screenshot/f1-score', 0.9395711500974658), ('val/EfficientNet_b3/unknown/f1-score', 0.8828402366863906)]
+	 Time elapsed : 2215.01482 _________________________________
+
+Epoch: 8, batch loss: 0.00020 Loss Sum: 1.19992, accuracy : 0.99938, val loss: 11.70537, val accuracy: 0.90053
+[[733   0   0  10]
+ [  8 150   0   4]
+ [  3   0 242  11]
+ [154   2  15 749]]
+[[0.98654105 0.         0.         0.01345895]
+ [0.04938272 0.92592593 0.         0.02469136]
+ [0.01171875 0.         0.9453125  0.04296875]
+ [0.1673913  0.00217391 0.01630435 0.81413043]]
+	 Final score: 0.9115585388276438 [('val/EfficientNet_b3/normal/f1-score', 0.8933577087141986), ('val/EfficientNet_b3/monotone/f1-score', 0.9554140127388535), ('val/EfficientNet_b3/screenshot/f1-score', 0.9434697855750488), ('val/EfficientNet_b3/unknown/f1-score', 0.884297520661157)]
+	 Time elapsed : 2952.61431 _________________________________
+
+Epoch: 9, batch loss: 0.00841 Loss Sum: 0.82396, accuracy : 0.99967, val loss: 11.82817, val accuracy: 0.90437
+[[736   0   0   7]
+ [  9 151   0   2]
+ [  3   0 244   9]
+ [152   2  15 751]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.05555556 0.93209877 0.         0.01234568]
+ [0.01171875 0.         0.953125   0.03515625]
+ [0.16521739 0.00217391 0.01630435 0.81630435]]
+	 Final score: 0.9156181907771705 [('val/EfficientNet_b3/normal/f1-score', 0.8959220937309799), ('val/EfficientNet_b3/monotone/f1-score', 0.9587301587301588), ('val/EfficientNet_b3/screenshot/f1-score', 0.9475728155339807), ('val/EfficientNet_b3/unknown/f1-score', 0.8892835997631734)]
+	 Time elapsed : 3692.45033 _________________________________
+
+Epoch: 10, batch loss: 0.01111 Loss Sum: 0.80431, accuracy : 0.99967, val loss: 11.52306, val accuracy: 0.90437
+[[733   0   0  10]
+ [  7 152   0   3]
+ [  3   0 245   8]
+ [149   2  17 752]]
+[[0.98654105 0.         0.         0.01345895]
+ [0.04320988 0.9382716  0.         0.01851852]
+ [0.01171875 0.         0.95703125 0.03125   ]
+ [0.16195652 0.00217391 0.01847826 0.8173913 ]]
+	 Final score: 0.9159864875888691 [('val/EfficientNet_b3/normal/f1-score', 0.8966360856269113), ('val/EfficientNet_b3/monotone/f1-score', 0.9620253164556961), ('val/EfficientNet_b3/screenshot/f1-score', 0.9459459459459459), ('val/EfficientNet_b3/unknown/f1-score', 0.8883638511518016)]
+	 Time elapsed : 4434.27572 _________________________________
+
+Epoch: 11, batch loss: 0.00033 Loss Sum: 0.74665, accuracy : 0.99966, val loss: 11.31410, val accuracy: 0.90293
+[[735   1   0   7]
+ [  9 150   0   3]
+ [  3   0 243  10]
+ [151   0  18 751]]
+[[0.98923284 0.0013459  0.         0.00942127]
+ [0.05555556 0.92592593 0.         0.01851852]
+ [0.01171875 0.         0.94921875 0.0390625 ]
+ [0.16413043 0.         0.01956522 0.81630435]]
+	 Final score: 0.9132283365740824 [('val/EfficientNet_b3/normal/f1-score', 0.8957952468007314), ('val/EfficientNet_b3/monotone/f1-score', 0.9584664536741214), ('val/EfficientNet_b3/screenshot/f1-score', 0.9400386847195359), ('val/EfficientNet_b3/unknown/f1-score', 0.8882318154937907)]
+	 Time elapsed : 5191.88340 _________________________________
+
+Epoch: 12, batch loss: 0.00051 Loss Sum: 0.78322, accuracy : 0.99959, val loss: 12.78566, val accuracy: 0.89861
+[[734   0   0   9]
+ [ 11 146   0   5]
+ [  2   0 243  11]
+ [156   3  14 747]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.06790123 0.90123457 0.         0.0308642 ]
+ [0.0078125  0.         0.94921875 0.04296875]
+ [0.16956522 0.00326087 0.01521739 0.81195652]]
+	 Final score: 0.907471604614388 [('val/EfficientNet_b3/normal/f1-score', 0.8918590522478737), ('val/EfficientNet_b3/monotone/f1-score', 0.9389067524115756), ('val/EfficientNet_b3/screenshot/f1-score', 0.9473684210526315), ('val/EfficientNet_b3/unknown/f1-score', 0.8829787234042554)]
+	 Time elapsed : 5945.68462 _________________________________
+
+Epoch: 13, batch loss: 0.00045 Loss Sum: 0.75837, accuracy : 0.99968, val loss: 11.93820, val accuracy: 0.90101
+[[731   1   0  11]
+ [  8 150   0   4]
+ [  2   0 242  12]
+ [147   4  17 752]]
+[[0.98384926 0.0013459  0.         0.01480485]
+ [0.04938272 0.92592593 0.         0.02469136]
+ [0.0078125  0.         0.9453125  0.046875  ]
+ [0.15978261 0.00434783 0.01847826 0.8173913 ]]
+	 Final score: 0.9093313838595833 [('val/EfficientNet_b3/normal/f1-score', 0.8963825873697119), ('val/EfficientNet_b3/monotone/f1-score', 0.9463722397476341), ('val/EfficientNet_b3/screenshot/f1-score', 0.9398058252427185), ('val/EfficientNet_b3/unknown/f1-score', 0.885226603884638)]
+	 Time elapsed : 6696.25833 _________________________________
+
+Early stopping!! 
+---train finished---
+Loaded pretrained weights for efficientnet-b3
+EfficientNet B3 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [0, 15],
+ 'gamma': 0.1,
+ 'learning_rate': 0.001,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.13074 Loss Sum: 114.83802, accuracy : 0.93851, val loss: 5.34143, val accuracy: 0.90005
+[[725   0   0  18]
+ [  4 152   0   6]
+ [  0   0 229  27]
+ [145   4   4 767]]
+[[0.97577389 0.         0.         0.02422611]
+ [0.02469136 0.9382716  0.         0.03703704]
+ [0.         0.         0.89453125 0.10546875]
+ [0.1576087  0.00434783 0.00434783 0.83369565]]
+	 Final score: 0.9103533529053354 [('val/EfficientNet_b3/normal/f1-score', 0.896722325293754), ('val/EfficientNet_b3/monotone/f1-score', 0.9559748427672956), ('val/EfficientNet_b3/screenshot/f1-score', 0.9366053169734151), ('val/EfficientNet_b3/unknown/f1-score', 0.8826237054085155)]
+	 Time elapsed : 638.85126 _________________________________
+
+Epoch: 1, batch loss: 0.25245 Loss Sum: 91.67741, accuracy : 0.94918, val loss: 6.95539, val accuracy: 0.87025
+[[736   0   0   7]
+ [  6 149   0   7]
+ [  1   0 222  33]
+ [205   5   6 704]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.03703704 0.91975309 0.         0.04320988]
+ [0.00390625 0.         0.8671875  0.12890625]
+ [0.22282609 0.00543478 0.00652174 0.76521739]]
+	 Final score: 0.8833334776226754 [('val/EfficientNet_b3/normal/f1-score', 0.8704908338261383), ('val/EfficientNet_b3/monotone/f1-score', 0.9430379746835443), ('val/EfficientNet_b3/screenshot/f1-score', 0.9173553719008264), ('val/EfficientNet_b3/unknown/f1-score', 0.8426092160383004)]
+	 Time elapsed : 1306.59423 _________________________________
+
+Epoch: 2, batch loss: 0.08500 Loss Sum: 80.37287, accuracy : 0.95435, val loss: 7.63008, val accuracy: 0.87314
+[[721   0   0  22]
+ [ 13 147   0   2]
+ [  1   0 225  30]
+ [181   7   8 724]]
+[[0.97039031 0.         0.         0.02960969]
+ [0.08024691 0.90740741 0.         0.01234568]
+ [0.00390625 0.         0.87890625 0.1171875 ]
+ [0.19673913 0.0076087  0.00869565 0.78695652]]
+	 Final score: 0.8833647948285088 [('val/EfficientNet_b3/normal/f1-score', 0.869198312236287), ('val/EfficientNet_b3/monotone/f1-score', 0.9303797468354431), ('val/EfficientNet_b3/screenshot/f1-score', 0.9202453987730062), ('val/EfficientNet_b3/unknown/f1-score', 0.8527679623085983)]
+	 Time elapsed : 1959.62621 _________________________________
+
+Epoch: 3, batch loss: 0.08296 Loss Sum: 70.50514, accuracy : 0.96066, val loss: 8.86770, val accuracy: 0.86593
+[[727   0   0  16]
+ [ 12 138   0  12]
+ [  2   0 214  40]
+ [192   1   4 723]]
+[[0.97846568 0.         0.         0.02153432]
+ [0.07407407 0.85185185 0.         0.07407407]
+ [0.0078125  0.         0.8359375  0.15625   ]
+ [0.20869565 0.00108696 0.00434783 0.78586957]]
+	 Final score: 0.8727247227622751 [('val/EfficientNet_b3/normal/f1-score', 0.8675417661097852), ('val/EfficientNet_b3/monotone/f1-score', 0.9169435215946844), ('val/EfficientNet_b3/screenshot/f1-score', 0.9029535864978903), ('val/EfficientNet_b3/unknown/f1-score', 0.8451198129748685)]
+	 Time elapsed : 2613.84080 _________________________________
+
+Early stopping!! 
+---train finished---
+Loaded pretrained weights for efficientnet-b3
+EfficientNet B3 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 0.001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.09164 Loss Sum: 95.88870, accuracy : 0.94537, val loss: 6.93405, val accuracy: 0.89380
+[[728   2   0  13]
+ [  7 144   0  11]
+ [  0   0 235  21]
+ [155   4   8 753]]
+[[0.97981157 0.00269179 0.         0.01749664]
+ [0.04320988 0.88888889 0.         0.06790123]
+ [0.         0.         0.91796875 0.08203125]
+ [0.16847826 0.00434783 0.00869565 0.81847826]]
+	 Final score: 0.8999941639999022 [('val/EfficientNet_b3/normal/f1-score', 0.891610532761788), ('val/EfficientNet_b3/monotone/f1-score', 0.923076923076923), ('val/EfficientNet_b3/screenshot/f1-score', 0.9418837675350702), ('val/EfficientNet_b3/unknown/f1-score', 0.8766006984866124)]
+	 Time elapsed : 835.05453 _________________________________
+
+Epoch: 1, batch loss: 0.02295 Loss Sum: 49.72566, accuracy : 0.97273, val loss: 7.95745, val accuracy: 0.88515
+[[731   0   0  12]
+ [ 10 146   0   6]
+ [  1   0 230  25]
+ [172   6   7 735]]
+[[0.98384926 0.         0.         0.01615074]
+ [0.0617284  0.90123457 0.         0.03703704]
+ [0.00390625 0.         0.8984375  0.09765625]
+ [0.18695652 0.00652174 0.0076087  0.79891304]]
+	 Final score: 0.893886448459022 [('val/EfficientNet_b3/normal/f1-score', 0.8823174411587205), ('val/EfficientNet_b3/monotone/f1-score', 0.9299363057324841), ('val/EfficientNet_b3/screenshot/f1-score', 0.9330628803245435), ('val/EfficientNet_b3/unknown/f1-score', 0.8657243816254416)]
+	 Time elapsed : 1673.47422 _________________________________
+
+Epoch: 2, batch loss: 0.04857 Loss Sum: 40.23792, accuracy : 0.97822, val loss: 9.29061, val accuracy: 0.86881
+[[731   0   0  12]
+ [  9 144   0   9]
+ [  2   0 223  31]
+ [203   3   4 710]]
+[[0.98384926 0.         0.         0.01615074]
+ [0.05555556 0.88888889 0.         0.05555556]
+ [0.0078125  0.         0.87109375 0.12109375]
+ [0.22065217 0.00326087 0.00434783 0.77173913]]
+	 Final score: 0.8813397722124283 [('val/EfficientNet_b3/normal/f1-score', 0.8661137440758294), ('val/EfficientNet_b3/monotone/f1-score', 0.9320388349514563), ('val/EfficientNet_b3/screenshot/f1-score', 0.9233954451345756), ('val/EfficientNet_b3/unknown/f1-score', 0.8442330558858502)]
+	 Time elapsed : 2514.96114 _________________________________
+
+Epoch: 3, batch loss: 0.01706 Loss Sum: 35.26742, accuracy : 0.98057, val loss: 9.19847, val accuracy: 0.88419
+[[732   0   0  11]
+ [  7 147   0   8]
+ [  0   0 232  24]
+ [181   4   6 729]]
+[[0.98519515 0.         0.         0.01480485]
+ [0.04320988 0.90740741 0.         0.04938272]
+ [0.         0.         0.90625    0.09375   ]
+ [0.19673913 0.00434783 0.00652174 0.7923913 ]]
+	 Final score: 0.8962648580297135 [('val/EfficientNet_b3/normal/f1-score', 0.8803367408298256), ('val/EfficientNet_b3/monotone/f1-score', 0.9392971246006391), ('val/EfficientNet_b3/screenshot/f1-score', 0.9392712550607286), ('val/EfficientNet_b3/unknown/f1-score', 0.8617021276595745)]
+	 Time elapsed : 3358.93962 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---
+Loaded pretrained weights for efficientnet-b3
+EfficientNet B3 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [0, 15],
+ 'gamma': 0.3,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.14303 Loss Sum: 98.83376, accuracy : 0.94701, val loss: 5.60970, val accuracy: 0.91927
+[[729   2   0  12]
+ [  5 155   0   2]
+ [  3   0 243  10]
+ [108   4  22 786]]
+[[0.98115747 0.00269179 0.         0.01615074]
+ [0.0308642  0.95679012 0.         0.01234568]
+ [0.01171875 0.         0.94921875 0.0390625 ]
+ [0.1173913  0.00434783 0.02391304 0.85434783]]
+	 Final score: 0.9235014785044339 [('val/EfficientNet_b3/normal/f1-score', 0.9181360201511335), ('val/EfficientNet_b3/monotone/f1-score', 0.9597523219814242), ('val/EfficientNet_b3/screenshot/f1-score', 0.9328214971209213), ('val/EfficientNet_b3/unknown/f1-score', 0.9086705202312139)]
+	 Time elapsed : 739.89476 _________________________________
+
+Epoch: 1, batch loss: 0.02722 Loss Sum: 18.91034, accuracy : 0.99029, val loss: 7.26926, val accuracy: 0.90918
+[[735   0   0   8]
+ [  8 147   0   7]
+ [  2   0 245   9]
+ [137   2  16 765]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.04938272 0.90740741 0.         0.04320988]
+ [0.0078125  0.         0.95703125 0.03515625]
+ [0.14891304 0.00217391 0.0173913  0.83152174]]
+	 Final score: 0.9162430155112288 [('val/EfficientNet_b3/normal/f1-score', 0.9046153846153847), ('val/EfficientNet_b3/monotone/f1-score', 0.9453376205787781), ('val/EfficientNet_b3/screenshot/f1-score', 0.9477756286266925), ('val/EfficientNet_b3/unknown/f1-score', 0.8952603861907549)]
+	 Time elapsed : 1503.14915 _________________________________
+
+Epoch: 2, batch loss: 0.06710 Loss Sum: 14.08645, accuracy : 0.99217, val loss: 7.68817, val accuracy: 0.91543
+[[733   1   0   9]
+ [  4 155   0   3]
+ [  3   0 240  13]
+ [130   4   9 777]]
+[[0.98654105 0.0013459  0.         0.01211306]
+ [0.02469136 0.95679012 0.         0.01851852]
+ [0.01171875 0.         0.9375     0.05078125]
+ [0.14130435 0.00434783 0.00978261 0.84456522]]
+	 Final score: 0.9247212963259768 [('val/EfficientNet_b3/normal/f1-score', 0.9088654680719157), ('val/EfficientNet_b3/monotone/f1-score', 0.9627329192546583), ('val/EfficientNet_b3/screenshot/f1-score', 0.9504950495049506), ('val/EfficientNet_b3/unknown/f1-score', 0.9024390243902438)]
+	 Time elapsed : 2260.88705 _________________________________
+
+Epoch: 3, batch loss: 0.02124 Loss Sum: 12.78628, accuracy : 0.99325, val loss: 7.88651, val accuracy: 0.90005
+[[729   0   0  14]
+ [ 10 149   0   3]
+ [  2   0 246   8]
+ [142   4  25 749]]
+[[0.98115747 0.         0.         0.01884253]
+ [0.0617284  0.91975309 0.         0.01851852]
+ [0.0078125  0.         0.9609375  0.03125   ]
+ [0.15434783 0.00434783 0.02717391 0.81413043]]
+	 Final score: 0.9074190399384591 [('val/EfficientNet_b3/normal/f1-score', 0.8966789667896679), ('val/EfficientNet_b3/monotone/f1-score', 0.946031746031746), ('val/EfficientNet_b3/screenshot/f1-score', 0.9335863377609108), ('val/EfficientNet_b3/unknown/f1-score', 0.884297520661157)]
+	 Time elapsed : 3027.38814 _________________________________
+
+Epoch: 4, batch loss: 0.00168 Loss Sum: 13.19602, accuracy : 0.99266, val loss: 8.58044, val accuracy: 0.91543
+[[734   0   0   9]
+ [  7 152   0   3]
+ [  1   0 245  10]
+ [128   2  16 774]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.04320988 0.9382716  0.         0.01851852]
+ [0.00390625 0.         0.95703125 0.0390625 ]
+ [0.13913043 0.00217391 0.0173913  0.84130435]]
+	 Final score: 0.9240619948730036 [('val/EfficientNet_b3/normal/f1-score', 0.9101053936763794), ('val/EfficientNet_b3/monotone/f1-score', 0.9620253164556961), ('val/EfficientNet_b3/screenshot/f1-score', 0.9477756286266925), ('val/EfficientNet_b3/unknown/f1-score', 0.9020979020979021)]
+	 Time elapsed : 3779.70935 _________________________________
+
+Epoch: 5, batch loss: 0.00155 Loss Sum: 4.56275, accuracy : 0.99762, val loss: 9.31476, val accuracy: 0.91110
+[[737   0   0   6]
+ [  6 153   0   3]
+ [  2   0 244  10]
+ [143   1  14 762]]
+[[0.99192463 0.         0.         0.00807537]
+ [0.03703704 0.94444444 0.         0.01851852]
+ [0.0078125  0.         0.953125   0.0390625 ]
+ [0.15543478 0.00108696 0.01521739 0.82826087]]
+	 Final score: 0.9226574977765508 [('val/EfficientNet_b3/normal/f1-score', 0.903740036787247), ('val/EfficientNet_b3/monotone/f1-score', 0.9683544303797468), ('val/EfficientNet_b3/screenshot/f1-score', 0.9494163424124514), ('val/EfficientNet_b3/unknown/f1-score', 0.8959435626102293)]
+	 Time elapsed : 4525.15983 _________________________________
+
+Early stopping!! 
+---train finished---

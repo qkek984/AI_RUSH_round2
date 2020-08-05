@@ -1,0 +1,918 @@
+with extra feature std
+ResNet50 Loaded!
+before fit
+Trying out 384 number of hyperparameter combinations!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.01438 Loss Sum: 59.96932, accuracy : 0.96779, val loss: 7.51306, val accuracy: 0.89380
+[[737   0   0   6]
+ [  9 151   0   2]
+ [  1   0 237  18]
+ [175   3   7 735]]
+[[0.99192463 0.         0.         0.00807537]
+ [0.05555556 0.93209877 0.         0.01234568]
+ [0.00390625 0.         0.92578125 0.0703125 ]
+ [0.19021739 0.00326087 0.0076087  0.79891304]]
+	 Final score: 0.9077983337624186 [('val/ResNet50/normal/f1-score', 0.8852852852852853), ('val/ResNet50/monotone/f1-score', 0.9556962025316457), ('val/ResNet50/screenshot/f1-score', 0.9480000000000001), ('val/ResNet50/unknown/f1-score', 0.8744794765020821)]
+	 Time elapsed : 878.73838 _________________________________
+
+Trying to save to /tmp/tmpsnr1i_48/model_ResNet50
+Epoch: 1, batch loss: 0.01032 Loss Sum: 11.19666, accuracy : 0.99443, val loss: 8.84440, val accuracy: 0.89092
+[[734   0   0   9]
+ [  6 149   0   7]
+ [  0   0 235  21]
+ [169   5  10 736]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.03703704 0.91975309 0.         0.04320988]
+ [0.         0.         0.91796875 0.08203125]
+ [0.18369565 0.00543478 0.01086957 0.8       ]]
+	 Final score: 0.9014331043050875 [('val/ResNet50/normal/f1-score', 0.8886198547215497), ('val/ResNet50/monotone/f1-score', 0.9430379746835443), ('val/ResNet50/screenshot/f1-score', 0.93812375249501), ('val/ResNet50/unknown/f1-score', 0.8694624926166568)]
+	 Time elapsed : 1761.58194 _________________________________
+
+Epoch: 2, batch loss: 0.00684 Loss Sum: 3.23066, accuracy : 0.99885, val loss: 10.67159, val accuracy: 0.88611
+[[737   0   0   6]
+ [ 12 147   0   3]
+ [  0   0 242  14]
+ [192   2   8 718]]
+[[0.99192463 0.         0.         0.00807537]
+ [0.07407407 0.90740741 0.         0.01851852]
+ [0.         0.         0.9453125  0.0546875 ]
+ [0.20869565 0.00217391 0.00869565 0.78043478]]
+	 Final score: 0.9016968296964541 [('val/ResNet50/normal/f1-score', 0.8752969121140142), ('val/ResNet50/monotone/f1-score', 0.9453376205787781), ('val/ResNet50/screenshot/f1-score', 0.9565217391304348), ('val/ResNet50/unknown/f1-score', 0.864539434075858)]
+	 Time elapsed : 2634.29055 _________________________________
+
+Epoch: 3, batch loss: 0.00074 Loss Sum: 1.18634, accuracy : 0.99980, val loss: 10.28084, val accuracy: 0.88803
+[[738   0   0   5]
+ [  9 150   0   3]
+ [  3   0 236  17]
+ [184   4   8 724]]
+[[0.99327052 0.         0.         0.00672948]
+ [0.05555556 0.92592593 0.         0.01851852]
+ [0.01171875 0.         0.921875   0.06640625]
+ [0.2        0.00434783 0.00869565 0.78695652]]
+	 Final score: 0.9017249705336493 [('val/ResNet50/normal/f1-score', 0.8801431127012522), ('val/ResNet50/monotone/f1-score', 0.949367088607595), ('val/ResNet50/screenshot/f1-score', 0.944), ('val/ResNet50/unknown/f1-score', 0.8675853804673457)]
+	 Time elapsed : 3512.28022 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [5, 10],
+ 'gamma': 0.3,
+ 'learning_rate': 0.001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.19900 Loss Sum: 91.97410, accuracy : 0.94397, val loss: 4.10716, val accuracy: 0.92552
+[[718   0   0  25]
+ [  4 157   0   1]
+ [  1   0 247   8]
+ [ 90   3  23 804]]
+[[0.96635262 0.         0.         0.03364738]
+ [0.02469136 0.9691358  0.         0.00617284]
+ [0.00390625 0.         0.96484375 0.03125   ]
+ [0.09782609 0.00326087 0.025      0.87391304]]
+	 Final score: 0.9322157906705133 [('val/ResNet50/normal/f1-score', 0.922879177377892), ('val/ResNet50/monotone/f1-score', 0.9751552795031055), ('val/ResNet50/screenshot/f1-score', 0.9391634980988594), ('val/ResNet50/unknown/f1-score', 0.9146757679180888)]
+	 Time elapsed : 768.39283 _________________________________
+
+Trying to save to /tmp/tmpfkzozhjy/model_ResNet50
+Epoch: 1, batch loss: 0.07681 Loss Sum: 51.45726, accuracy : 0.97008, val loss: 5.61697, val accuracy: 0.90581
+[[731   0   0  12]
+ [  5 156   0   1]
+ [  2   0 239  15]
+ [139   5  17 759]]
+[[0.98384926 0.         0.         0.01615074]
+ [0.0308642  0.96296296 0.         0.00617284]
+ [0.0078125  0.         0.93359375 0.05859375]
+ [0.15108696 0.00543478 0.01847826 0.825     ]]
+	 Final score: 0.9155958263543363 [('val/ResNet50/normal/f1-score', 0.9024691358024691), ('val/ResNet50/monotone/f1-score', 0.9659442724458205), ('val/ResNet50/screenshot/f1-score', 0.93359375), ('val/ResNet50/unknown/f1-score', 0.8892794376098417)]
+	 Time elapsed : 1532.04457 _________________________________
+
+Epoch: 2, batch loss: 0.07323 Loss Sum: 32.83900, accuracy : 0.98111, val loss: 5.50491, val accuracy: 0.91735
+[[721   0   1  21]
+ [  2 157   0   3]
+ [  1   0 239  16]
+ [111   4  13 792]]
+[[0.97039031 0.         0.0013459  0.0282638 ]
+ [0.01234568 0.9691358  0.         0.01851852]
+ [0.00390625 0.         0.93359375 0.0625    ]
+ [0.12065217 0.00434783 0.01413043 0.86086957]]
+	 Final score: 0.9259668308974776 [('val/ResNet50/normal/f1-score', 0.9138149556400506), ('val/ResNet50/monotone/f1-score', 0.9721362229102167), ('val/ResNet50/screenshot/f1-score', 0.9390962671905698), ('val/ResNet50/unknown/f1-score', 0.9041095890410958)]
+	 Time elapsed : 2294.47472 _________________________________
+
+Epoch: 3, batch loss: 0.04491 Loss Sum: 24.56762, accuracy : 0.98679, val loss: 7.49779, val accuracy: 0.90053
+[[731   0   0  12]
+ [  2 158   0   2]
+ [  2   0 237  17]
+ [152   7  13 748]]
+[[0.98384926 0.         0.         0.01615074]
+ [0.01234568 0.97530864 0.         0.01234568]
+ [0.0078125  0.         0.92578125 0.06640625]
+ [0.16521739 0.0076087  0.01413043 0.81304348]]
+	 Final score: 0.9125446608492649 [('val/ResNet50/normal/f1-score', 0.8969325153374232), ('val/ResNet50/monotone/f1-score', 0.9663608562691132), ('val/ResNet50/screenshot/f1-score', 0.9367588932806323), ('val/ResNet50/unknown/f1-score', 0.8805179517363155)]
+	 Time elapsed : 3057.42988 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [0, 15],
+ 'gamma': 0.3,
+ 'learning_rate': 0.001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.27470 Loss Sum: 170.22347, accuracy : 0.89601, val loss: 5.31104, val accuracy: 0.89861
+[[716   1   0  26]
+ [  3 157   0   2]
+ [  1   0 245  10]
+ [146   4  18 752]]
+[[0.96366083 0.0013459  0.         0.03499327]
+ [0.01851852 0.9691358  0.         0.01234568]
+ [0.00390625 0.         0.95703125 0.0390625 ]
+ [0.15869565 0.00434783 0.01956522 0.8173913 ]]
+	 Final score: 0.9129957241029005 [('val/ResNet50/normal/f1-score', 0.8899937849596022), ('val/ResNet50/monotone/f1-score', 0.9691358024691359), ('val/ResNet50/screenshot/f1-score', 0.9441233140655105), ('val/ResNet50/unknown/f1-score', 0.8795321637426902)]
+	 Time elapsed : 581.01164 _________________________________
+
+Epoch: 1, batch loss: 0.33311 Loss Sum: 146.57259, accuracy : 0.91002, val loss: 6.47333, val accuracy: 0.87938
+[[724   1   0  18]
+ [  6 153   0   3]
+ [  3   0 233  20]
+ [181   9  10 720]]
+[[0.97442799 0.0013459  0.         0.02422611]
+ [0.03703704 0.94444444 0.         0.01851852]
+ [0.01171875 0.         0.91015625 0.078125  ]
+ [0.19673913 0.00978261 0.01086957 0.7826087 ]]
+	 Final score: 0.8922015684240588 [('val/ResNet50/normal/f1-score', 0.8738684369342186), ('val/ResNet50/monotone/f1-score', 0.9415384615384614), ('val/ResNet50/screenshot/f1-score', 0.9338677354709419), ('val/ResNet50/unknown/f1-score', 0.8566329565734683)]
+	 Time elapsed : 1174.10851 _________________________________
+
+Epoch: 2, batch loss: 0.16015 Loss Sum: 132.18046, accuracy : 0.91830, val loss: 5.75344, val accuracy: 0.89188
+[[717   0   0  26]
+ [  8 151   0   3]
+ [  0   0 244  12]
+ [153   1  22 744]]
+[[0.96500673 0.         0.         0.03499327]
+ [0.04938272 0.93209877 0.         0.01851852]
+ [0.         0.         0.953125   0.046875  ]
+ [0.16630435 0.00108696 0.02391304 0.80869565]]
+	 Final score: 0.9052424253366428 [('val/ResNet50/normal/f1-score', 0.8846391116594695), ('val/ResNet50/monotone/f1-score', 0.961783439490446), ('val/ResNet50/screenshot/f1-score', 0.9348659003831417), ('val/ResNet50/unknown/f1-score', 0.8727272727272728)]
+	 Time elapsed : 1765.92850 _________________________________
+
+Epoch: 3, batch loss: 0.35439 Loss Sum: 118.96255, accuracy : 0.92587, val loss: 6.34973, val accuracy: 0.87074
+[[724   1   0  18]
+ [  2 157   0   3]
+ [  2   0 237  17]
+ [202   7  17 694]]
+[[0.97442799 0.0013459  0.         0.02422611]
+ [0.01234568 0.9691358  0.         0.01851852]
+ [0.0078125  0.         0.92578125 0.06640625]
+ [0.21956522 0.0076087  0.01847826 0.75434783]]
+	 Final score: 0.8887780111193027 [('val/ResNet50/normal/f1-score', 0.8655110579796772), ('val/ResNet50/monotone/f1-score', 0.9602446483180428), ('val/ResNet50/screenshot/f1-score', 0.9294117647058823), ('val/ResNet50/unknown/f1-score', 0.8401937046004843)]
+	 Time elapsed : 2365.51407 _________________________________
+
+Early stopping!! 
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [0, 15],
+ 'gamma': 0.3,
+ 'learning_rate': 1e-05,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.01681 Loss Sum: 111.30827, accuracy : 0.95096, val loss: 7.25606, val accuracy: 0.88852
+[[738   0   0   5]
+ [  9 150   0   3]
+ [  2   0 227  27]
+ [176   2   8 734]]
+[[0.99327052 0.         0.         0.00672948]
+ [0.05555556 0.92592593 0.         0.01851852]
+ [0.0078125  0.         0.88671875 0.10546875]
+ [0.19130435 0.00217391 0.00869565 0.79782609]]
+	 Final score: 0.8999605230240949 [('val/ResNet50/normal/f1-score', 0.8848920863309353), ('val/ResNet50/monotone/f1-score', 0.9554140127388535), ('val/ResNet50/screenshot/f1-score', 0.9246435845213848), ('val/ResNet50/unknown/f1-score', 0.8691533451746595)]
+	 Time elapsed : 676.21028 _________________________________
+
+Epoch: 1, batch loss: 0.00286 Loss Sum: 11.48914, accuracy : 0.99656, val loss: 10.01012, val accuracy: 0.87506
+[[738   0   0   5]
+ [ 10 151   0   1]
+ [  4   0 232  20]
+ [208   3   9 700]]
+[[0.99327052 0.         0.         0.00672948]
+ [0.0617284  0.93209877 0.         0.00617284]
+ [0.015625   0.         0.90625    0.078125  ]
+ [0.22608696 0.00326087 0.00978261 0.76086957]]
+	 Final score: 0.8920262719575545 [('val/ResNet50/normal/f1-score', 0.8667058132706987), ('val/ResNet50/monotone/f1-score', 0.9556962025316457), ('val/ResNet50/screenshot/f1-score', 0.9336016096579476), ('val/ResNet50/unknown/f1-score', 0.850546780072904)]
+	 Time elapsed : 1352.44716 _________________________________
+
+Epoch: 2, batch loss: 0.00224 Loss Sum: 2.93515, accuracy : 0.99947, val loss: 9.98018, val accuracy: 0.88515
+[[735   0   0   8]
+Downloading: "https://download.pytorch.org/models/resnet50-19c8e357.pth" to /home/nsml/.cache/torch/checkpoints/resnet50-19c8e357.pth
+ [ 21 138   0   3]
+ [  3   0 234  19]
+ [174   1  10 735]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.12962963 0.85185185 0.         0.01851852]
+ [0.01171875 0.         0.9140625  0.07421875]
+ [0.18913043 0.00108696 0.01086957 0.79891304]]
+	 Final score: 0.8916498138447507 [('val/ResNet50/normal/f1-score', 0.8770883054892601), ('val/ResNet50/monotone/f1-score', 0.9169435215946844), ('val/ResNet50/screenshot/f1-score', 0.9359999999999999), ('val/ResNet50/unknown/f1-score', 0.8724035608308606)]
+	 Time elapsed : 2029.06795 _________________________________
+
+Epoch: 3, batch loss: 0.00121 Loss Sum: 1.44034, accuracy : 0.99984, val loss: 11.34415, val accuracy: 0.88323
+[[736   0   0   7]
+ [ 11 148   0   3]
+ [  4   0 233  19]
+ [191   2   6 721]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.06790123 0.91358025 0.         0.01851852]
+ [0.015625   0.         0.91015625 0.07421875]
+ [0.2076087  0.00217391 0.00652174 0.78369565]]
+	 Final score: 0.8978841931020997 [('val/ResNet50/normal/f1-score', 0.8735905044510386), ('val/ResNet50/monotone/f1-score', 0.9487179487179487), ('val/ResNet50/screenshot/f1-score', 0.9414141414141415), ('val/ResNet50/unknown/f1-score', 0.8634730538922154)]
+	 Time elapsed : 2707.89289 _________________________________
+
+Early stopping!! 
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [0, 15],
+ 'gamma': 0.1,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.06596 Loss Sum: 63.57613, accuracy : 0.96324, val loss: 5.72667, val accuracy: 0.91831
+[[734   0   0   9]
+ [  5 153   0   4]
+ [  1   0 244  11]
+ [123   3  14 780]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.0308642  0.94444444 0.         0.02469136]
+ [0.00390625 0.         0.953125   0.04296875]
+ [0.13369565 0.00326087 0.01521739 0.84782609]]
+	 Final score: 0.9264334658419364 [('val/ResNet50/normal/f1-score', 0.9140722291407224), ('val/ResNet50/monotone/f1-score', 0.9622641509433962), ('val/ResNet50/screenshot/f1-score', 0.9494163424124514), ('val/ResNet50/unknown/f1-score', 0.9048723897911832)]
+	 Time elapsed : 773.02017 _________________________________
+
+Epoch: 1, batch loss: 0.00840 Loss Sum: 17.69416, accuracy : 0.99001, val loss: 7.98272, val accuracy: 0.90245
+[[735   0   0   8]
+ [  4 153   0   5]
+ [  2   0 244  10]
+ [150   2  22 746]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.02469136 0.94444444 0.         0.0308642 ]
+ [0.0078125  0.         0.953125   0.0390625 ]
+ [0.16304348 0.00217391 0.02391304 0.81086957]]
+	 Final score: 0.913319076644429 [('val/ResNet50/normal/f1-score', 0.8996328029375765), ('val/ResNet50/monotone/f1-score', 0.9652996845425867), ('val/ResNet50/screenshot/f1-score', 0.9348659003831417), ('val/ResNet50/unknown/f1-score', 0.8833629366489048)]
+	 Time elapsed : 1550.75372 _________________________________
+
+Epoch: 2, batch loss: 0.00856 Loss Sum: 13.58504, accuracy : 0.99213, val loss: 7.98475, val accuracy: 0.91062
+[[734   0   0   9]
+ [  2 158   0   2]
+ [  3   0 244   9]
+ [143   2  16 759]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.01234568 0.97530864 0.         0.01234568]
+ [0.01171875 0.         0.953125   0.03515625]
+ [0.15543478 0.00217391 0.0173913  0.825     ]]
+	 Final score: 0.9242448133037332 [('val/ResNet50/normal/f1-score', 0.9033846153846155), ('val/ResNet50/monotone/f1-score', 0.9813664596273292), ('val/ResNet50/screenshot/f1-score', 0.9457364341085271), ('val/ResNet50/unknown/f1-score', 0.8934667451442024)]
+	 Time elapsed : 2327.14120 _________________________________
+
+Epoch: 3, batch loss: 0.00481 Loss Sum: 8.42501, accuracy : 0.99558, val loss: 8.32949, val accuracy: 0.91543
+[[734   0   0   9]
+ [  4 154   0   4]
+ [  2   0 244  10]
+ [130   3  14 773]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.02469136 0.95061728 0.         0.02469136]
+ [0.0078125  0.         0.953125   0.0390625 ]
+ [0.14130435 0.00326087 0.01521739 0.84021739]]
+	 Final score: 0.9250857479737512 [('val/ResNet50/normal/f1-score', 0.9101053936763794), ('val/ResNet50/monotone/f1-score', 0.9655172413793103), ('val/ResNet50/screenshot/f1-score', 0.9494163424124514), ('val/ResNet50/unknown/f1-score', 0.9009324009324009)]
+	 Time elapsed : 3103.76471 _________________________________
+
+Early stopping!! 
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.02518 Loss Sum: 59.84725, accuracy : 0.96791, val loss: 7.70200, val accuracy: 0.88659
+[[736   0   0   7]
+ [ 12 146   0   4]
+ [  2   0 240  14]
+ [181   4  12 723]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.07407407 0.90123457 0.         0.02469136]
+ [0.0078125  0.         0.9375     0.0546875 ]
+ [0.19673913 0.00434783 0.01304348 0.78586957]]
+	 Final score: 0.89802846982238 [('val/ResNet50/normal/f1-score', 0.8793309438470729), ('val/ResNet50/monotone/f1-score', 0.935897435897436), ('val/ResNet50/screenshot/f1-score', 0.9448818897637795), ('val/ResNet50/unknown/f1-score', 0.8669064748201439)]
+	 Time elapsed : 884.22929 _________________________________
+
+Epoch: 1, batch loss: 0.00974 Loss Sum: 11.27505, accuracy : 0.99451, val loss: 9.25116, val accuracy: 0.90485
+[[734   0   0   9]
+ [  7 154   0   1]
+ [  1   0 239  16]
+ [154   2   8 756]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.04320988 0.95061728 0.         0.00617284]
+ [0.00390625 0.         0.93359375 0.0625    ]
+ [0.1673913  0.00217391 0.00869565 0.82173913]]
+	 Final score: 0.9185572526793826 [('val/ResNet50/normal/f1-score', 0.8956680902989628), ('val/ResNet50/monotone/f1-score', 0.9685534591194969), ('val/ResNet50/screenshot/f1-score', 0.9502982107355864), ('val/ResNet50/unknown/f1-score', 0.8883666274970623)]
+	 Time elapsed : 1768.20555 _________________________________
+
+Epoch: 2, batch loss: 0.01072 Loss Sum: 5.30722, accuracy : 0.99720, val loss: 11.45404, val accuracy: 0.89380
+[[738   0   0   5]
+ [  8 149   0   5]
+ [  1   0 239  16]
+ [171   3  12 734]]
+[[0.99327052 0.         0.         0.00672948]
+ [0.04938272 0.91975309 0.         0.0308642 ]
+ [0.00390625 0.         0.93359375 0.0625    ]
+ [0.18586957 0.00326087 0.01304348 0.79782609]]
+	 Final score: 0.9054520759282327 [('val/ResNet50/normal/f1-score', 0.8886213124623721), ('val/ResNet50/monotone/f1-score', 0.9490445859872612), ('val/ResNet50/screenshot/f1-score', 0.9428007889546351), ('val/ResNet50/unknown/f1-score', 0.8738095238095238)]
+	 Time elapsed : 2653.81552 _________________________________
+
+Epoch: 3, batch loss: 0.00241 Loss Sum: 5.43846, accuracy : 0.99735, val loss: 11.11111, val accuracy: 0.89716
+[[733   0   0  10]
+ [  9 150   0   3]
+ [  6   0 239  11]
+ [162   3  10 745]]
+[[0.98654105 0.         0.         0.01345895]
+ [0.05555556 0.92592593 0.         0.01851852]
+ [0.0234375  0.         0.93359375 0.04296875]
+ [0.17608696 0.00326087 0.01086957 0.80978261]]
+	 Final score: 0.9091697716236727 [('val/ResNet50/normal/f1-score', 0.8868723532970357), ('val/ResNet50/monotone/f1-score', 0.9523809523809523), ('val/ResNet50/screenshot/f1-score', 0.9465346534653465), ('val/ResNet50/unknown/f1-score', 0.8821788040260509)]
+	 Time elapsed : 3538.09414 _________________________________
+
+Epoch: 4, batch loss: 0.00449 Loss Sum: 5.19983, accuracy : 0.99734, val loss: 12.02132, val accuracy: 0.88900
+[[738   0   0   5]
+ [ 11 148   0   3]
+ [  6   0 234  16]
+ [179   3   8 730]]
+[[0.99327052 0.         0.         0.00672948]
+ [0.06790123 0.91358025 0.         0.01851852]
+ [0.0234375  0.         0.9140625  0.0625    ]
+ [0.19456522 0.00326087 0.00869565 0.79347826]]
+	 Final score: 0.9009568188989415 [('val/ResNet50/normal/f1-score', 0.8801431127012522), ('val/ResNet50/monotone/f1-score', 0.9456869009584664), ('val/ResNet50/screenshot/f1-score', 0.9397590361445782), ('val/ResNet50/unknown/f1-score', 0.8721624850657108)]
+	 Time elapsed : 4422.10967 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [0, 15],
+ 'gamma': 0.1,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.01895 Loss Sum: 66.28577, accuracy : 0.96118, val loss: 5.66190, val accuracy: 0.91735
+[[729   1   0  13]
+ [  2 159   0   1]
+ [  2   0 241  13]
+ [116   6  18 780]]
+[[0.98115747 0.0013459  0.         0.01749664]
+ [0.01234568 0.98148148 0.         0.00617284]
+ [0.0078125  0.         0.94140625 0.05078125]
+ [0.12608696 0.00652174 0.01956522 0.84782609]]
+	 Final score: 0.9247600040918807 [('val/ResNet50/normal/f1-score', 0.9158291457286433), ('val/ResNet50/monotone/f1-score', 0.9695121951219512), ('val/ResNet50/screenshot/f1-score', 0.9359223300970874), ('val/ResNet50/unknown/f1-score', 0.903300521134916)]
+	 Time elapsed : 772.18998 _________________________________
+
+Epoch: 1, batch loss: 0.10549 Loss Sum: 27.76758, accuracy : 0.98438, val loss: 6.94050, val accuracy: 0.90630
+[[728   0   0  15]
+ [  6 151   0   5]
+ [  1   0 240  15]
+ [137   3  13 767]]
+[[0.97981157 0.         0.         0.02018843]
+ [0.03703704 0.93209877 0.         0.0308642 ]
+ [0.00390625 0.         0.9375     0.05859375]
+ [0.14891304 0.00326087 0.01413043 0.83369565]]
+	 Final score: 0.9156209877467056 [('val/ResNet50/normal/f1-score', 0.901547987616099), ('val/ResNet50/monotone/f1-score', 0.9556962025316457), ('val/ResNet50/screenshot/f1-score', 0.9430255402750491), ('val/ResNet50/unknown/f1-score', 0.8908246225319396)]
+	 Time elapsed : 1550.72858 _________________________________
+
+Epoch: 2, batch loss: 0.05279 Loss Sum: 6.98498, accuracy : 0.99698, val loss: 7.63714, val accuracy: 0.91062
+[[736   0   0   7]
+ [  6 154   0   2]
+ [  2   0 242  12]
+ [144   2  11 763]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.03703704 0.95061728 0.         0.01234568]
+ [0.0078125  0.         0.9453125  0.046875  ]
+ [0.15652174 0.00217391 0.01195652 0.82934783]]
+	 Final score: 0.9226428650663923 [('val/ResNet50/normal/f1-score', 0.9025137952176578), ('val/ResNet50/monotone/f1-score', 0.9685534591194969), ('val/ResNet50/screenshot/f1-score', 0.9508840864440079), ('val/ResNet50/unknown/f1-score', 0.8955399061032864)]
+	 Time elapsed : 2335.88484 _________________________________
+
+Epoch: 3, batch loss: 0.00344 Loss Sum: 2.50236, accuracy : 0.99919, val loss: 8.07644, val accuracy: 0.91158
+[[735   0   0   8]
+ [  3 157   0   2]
+ [  3   0 240  13]
+ [139   2  14 765]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.01851852 0.9691358  0.         0.01234568]
+ [0.01171875 0.         0.9375     0.05078125]
+ [0.15108696 0.00217391 0.01521739 0.83152174]]
+	 Final score: 0.9235170641326909 [('val/ResNet50/normal/f1-score', 0.9057301293900184), ('val/ResNet50/monotone/f1-score', 0.9781931464174456), ('val/ResNet50/screenshot/f1-score', 0.9411764705882352), ('val/ResNet50/unknown/f1-score', 0.895784543325527)]
+	 Time elapsed : 3120.40662 _________________________________
+
+Early stopping!! 
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [0, 15],
+ 'gamma': 0.1,
+ 'learning_rate': 0.001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.25327 Loss Sum: 176.80880, accuracy : 0.89112, val loss: 6.26996, val accuracy: 0.86545
+[[713   1   0  29]
+ [  4 154   0   4]
+ [  1   0 227  28]
+ [187  11  15 707]]
+[[0.95962315 0.0013459  0.         0.03903096]
+ [0.02469136 0.95061728 0.         0.02469136]
+ [0.00390625 0.         0.88671875 0.109375  ]
+ [0.20326087 0.01195652 0.01630435 0.76847826]]
+	 Final score: 0.877961098362161 [('val/ResNet50/normal/f1-score', 0.8652912621359223), ('val/ResNet50/monotone/f1-score', 0.9390243902439024), ('val/ResNet50/screenshot/f1-score', 0.9116465863453814), ('val/ResNet50/unknown/f1-score', 0.8376777251184834)]
+	 Time elapsed : 574.53019 _________________________________
+
+Epoch: 1, batch loss: 0.29257 Loss Sum: 149.20786, accuracy : 0.90808, val loss: 6.10573, val accuracy: 0.86737
+[[727   0   0  16]
+ [  7 153   0   2]
+ [  2   0 242  12]
+ [198   5  34 683]]
+[[0.97846568 0.         0.         0.02153432]
+ [0.04320988 0.94444444 0.         0.01234568]
+ [0.0078125  0.         0.9453125  0.046875  ]
+ [0.21521739 0.00543478 0.03695652 0.7423913 ]]
+	 Final score: 0.8819720613783139 [('val/ResNet50/normal/f1-score', 0.8670244484197972), ('val/ResNet50/monotone/f1-score', 0.9562499999999999), ('val/ResNet50/screenshot/f1-score', 0.9097744360902256), ('val/ResNet50/unknown/f1-score', 0.8364972443355786)]
+	 Time elapsed : 1152.86404 _________________________________
+
+Epoch: 2, batch loss: 0.12431 Loss Sum: 95.09043, accuracy : 0.94237, val loss: 5.83804, val accuracy: 0.90101
+[[723   0   1  19]
+ [  6 152   0   4]
+ [  1   0 234  21]
+ [136   5  13 766]]
+[[0.9730821  0.         0.0013459  0.02557201]
+ [0.03703704 0.9382716  0.         0.02469136]
+ [0.00390625 0.         0.9140625  0.08203125]
+ [0.14782609 0.00543478 0.01413043 0.8326087 ]]
+	 Final score: 0.9088034019071487 [('val/ResNet50/normal/f1-score', 0.8986948415164699), ('val/ResNet50/monotone/f1-score', 0.9529780564263323), ('val/ResNet50/screenshot/f1-score', 0.9285714285714286), ('val/ResNet50/unknown/f1-score', 0.8855491329479768)]
+	 Time elapsed : 1735.53598 _________________________________
+
+Epoch: 3, batch loss: 0.12215 Loss Sum: 59.24740, accuracy : 0.96592, val loss: 6.46580, val accuracy: 0.88996
+[[717   0   0  26]
+ [  7 151   0   4]
+ [  1   0 240  15]
+ [147   2  27 744]]
+[[0.96500673 0.         0.         0.03499327]
+ [0.04320988 0.93209877 0.         0.02469136]
+ [0.00390625 0.         0.9375     0.05859375]
+ [0.15978261 0.00217391 0.02934783 0.80869565]]
+	 Final score: 0.9002548735971141 [('val/ResNet50/normal/f1-score', 0.8879256965944273), ('val/ResNet50/monotone/f1-score', 0.9587301587301588), ('val/ResNet50/screenshot/f1-score', 0.9177820267686424), ('val/ResNet50/unknown/f1-score', 0.8706846108835576)]
+	 Time elapsed : 2321.57183 _________________________________
+
+Epoch: 4, batch loss: 0.04119 Loss Sum: 27.73743, accuracy : 0.98860, val loss: 7.96986, val accuracy: 0.88035
+[[734   0   0   9]
+ [  8 151   0   3]
+ [  2   0 236  18]
+ [189   4  16 711]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.04938272 0.93209877 0.         0.01851852]
+ [0.0078125  0.         0.921875   0.0703125 ]
+ [0.20543478 0.00434783 0.0173913  0.77282609]]
+	 Final score: 0.8942454101057035 [('val/ResNet50/normal/f1-score', 0.8758949880668258), ('val/ResNet50/monotone/f1-score', 0.9526813880126184), ('val/ResNet50/screenshot/f1-score', 0.9291338582677166), ('val/ResNet50/unknown/f1-score', 0.8561107766405781)]
+	 Time elapsed : 2905.49505 _________________________________
+
+Epoch: 5, batch loss: 0.06736 Loss Sum: 19.63611, accuracy : 0.99337, val loss: 8.63088, val accuracy: 0.87602
+[[729   0   0  14]
+ [  9 148   0   5]
+ [  2   0 237  17]
+ [188   4  19 709]]
+[[0.98115747 0.         0.         0.01884253]
+ [0.05555556 0.91358025 0.         0.0308642 ]
+ [0.0078125  0.         0.92578125 0.06640625]
+ [0.20434783 0.00434783 0.02065217 0.77065217]]
+	 Final score: 0.8885946308082425 [('val/ResNet50/normal/f1-score', 0.8725314183123878), ('val/ResNet50/monotone/f1-score', 0.9426751592356688), ('val/ResNet50/screenshot/f1-score', 0.92578125), ('val/ResNet50/unknown/f1-score', 0.8516516516516516)]
+	 Time elapsed : 3495.87454 _________________________________
+
+Early stopping!! 
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 1e-05,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.14954 Loss Sum: 171.91609, accuracy : 0.90771, val loss: 4.97878, val accuracy: 0.89765
+[[730   0   0  13]
+ [  8 150   0   4]
+ [  0   0 225  31]
+ [149   2   6 763]]
+[[0.98250336 0.         0.         0.01749664]
+ [0.04938272 0.92592593 0.         0.02469136]
+ [0.         0.         0.87890625 0.12109375]
+ [0.16195652 0.00217391 0.00652174 0.82934783]]
+	 Final score: 0.9062813797744672 [('val/ResNet50/normal/f1-score', 0.8957055214723926), ('val/ResNet50/monotone/f1-score', 0.9554140127388535), ('val/ResNet50/screenshot/f1-score', 0.9240246406570842), ('val/ResNet50/unknown/f1-score', 0.8815713460427499)]
+	 Time elapsed : 882.92354 _________________________________
+
+Epoch: 1, batch loss: 0.05718 Loss Sum: 42.44080, accuracy : 0.98047, val loss: 6.69450, val accuracy: 0.88275
+[[737   0   0   6]
+ [  9 146   0   7]
+ [  2   0 230  24]
+ [189   3   4 724]]
+[[0.99192463 0.         0.         0.00807537]
+ [0.05555556 0.90123457 0.         0.04320988]
+ [0.0078125  0.         0.8984375  0.09375   ]
+ [0.20543478 0.00326087 0.00434783 0.78695652]]
+	 Final score: 0.8951248573720131 [('val/ResNet50/normal/f1-score', 0.8773809523809523), ('val/ResNet50/monotone/f1-score', 0.9389067524115756), ('val/ResNet50/screenshot/f1-score', 0.9387755102040816), ('val/ResNet50/unknown/f1-score', 0.8613920285544319)]
+	 Time elapsed : 1767.73536 _________________________________
+
+Epoch: 2, batch loss: 0.01493 Loss Sum: 15.73024, accuracy : 0.99437, val loss: 7.75933, val accuracy: 0.88179
+[[737   0   0   6]
+ [ 14 147   0   1]
+ [  2   0 233  21]
+ [190   4   8 718]]
+[[0.99192463 0.         0.         0.00807537]
+ [0.08641975 0.90740741 0.         0.00617284]
+ [0.0078125  0.         0.91015625 0.08203125]
+ [0.20652174 0.00434783 0.00869565 0.78043478]]
+	 Final score: 0.8942139093643086 [('val/ResNet50/normal/f1-score', 0.8742586002372479), ('val/ResNet50/monotone/f1-score', 0.9392971246006391), ('val/ResNet50/screenshot/f1-score', 0.9376257545271629), ('val/ResNet50/unknown/f1-score', 0.8619447779111645)]
+	 Time elapsed : 2651.80511 _________________________________
+
+Epoch: 3, batch loss: 0.00796 Loss Sum: 6.61286, accuracy : 0.99838, val loss: 8.34985, val accuracy: 0.88659
+[[736   0   0   7]
+ [  8 149   0   5]
+ [  3   0 238  15]
+ [184   4  10 722]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.04938272 0.91975309 0.         0.0308642 ]
+ [0.01171875 0.         0.9296875  0.05859375]
+ [0.2        0.00434783 0.01086957 0.78478261]]
+	 Final score: 0.900069409518344 [('val/ResNet50/normal/f1-score', 0.8793309438470729), ('val/ResNet50/monotone/f1-score', 0.946031746031746), ('val/ResNet50/screenshot/f1-score', 0.9444444444444444), ('val/ResNet50/unknown/f1-score', 0.8651887357699222)]
+	 Time elapsed : 3537.00321 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 0.001,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.05132 Loss Sum: 66.88533, accuracy : 0.96085, val loss: 7.35269, val accuracy: 0.90389
+[[732   0   0  11]
+ [ 10 150   0   2]
+ [  1   0 242  13]
+ [148   5  10 757]]
+[[0.98519515 0.         0.         0.01480485]
+ [0.0617284  0.92592593 0.         0.01234568]
+ [0.00390625 0.         0.9453125  0.05078125]
+ [0.16086957 0.00543478 0.01086957 0.82282609]]
+	 Final score: 0.913679307073399 [('val/ResNet50/normal/f1-score', 0.8959608323133416), ('val/ResNet50/monotone/f1-score', 0.9463722397476341), ('val/ResNet50/screenshot/f1-score', 0.9527559055118109), ('val/ResNet50/unknown/f1-score', 0.8890193775689958)]
+	 Time elapsed : 575.02730 _________________________________
+
+Epoch: 1, batch loss: 0.02839 Loss Sum: 16.70216, accuracy : 0.99119, val loss: 11.38188, val accuracy: 0.89813
+[[735   0   0   8]
+ [ 12 146   0   4]
+ [  3   0 245   8]
+ [146   3  28 743]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.07407407 0.90123457 0.         0.02469136]
+ [0.01171875 0.         0.95703125 0.03125   ]
+ [0.15869565 0.00326087 0.03043478 0.8076087 ]]
+	 Final score: 0.9032916278802304 [('val/ResNet50/normal/f1-score', 0.896888346552776), ('val/ResNet50/monotone/f1-score', 0.9389067524115756), ('val/ResNet50/screenshot/f1-score', 0.9262759924385634), ('val/ResNet50/unknown/f1-score', 0.8829471182412358)]
+	 Time elapsed : 1149.43331 _________________________________
+
+Epoch: 2, batch loss: 0.00014 Loss Sum: 2.34896, accuracy : 0.99907, val loss: 13.90094, val accuracy: 0.89861
+[[738   0   0   5]
+ [  6 154   0   2]
+ [  2   0 241  13]
+ [168   4  11 737]]
+[[0.99327052 0.         0.         0.00672948]
+ [0.03703704 0.95061728 0.         0.01234568]
+ [0.0078125  0.         0.94140625 0.05078125]
+ [0.1826087  0.00434783 0.01195652 0.80108696]]
+	 Final score: 0.9125717075415344 [('val/ResNet50/normal/f1-score', 0.8907664453832227), ('val/ResNet50/monotone/f1-score', 0.9625), ('val/ResNet50/screenshot/f1-score', 0.9488188976377953), ('val/ResNet50/unknown/f1-score', 0.8789505068574837)]
+	 Time elapsed : 1727.16708 _________________________________
+
+Epoch: 3, batch loss: 0.00010 Loss Sum: 0.89328, accuracy : 0.99968, val loss: 14.88389, val accuracy: 0.90005
+[[737   0   0   6]
+ [  7 152   0   3]
+ [  2   0 242  12]
+ [165   4   9 742]]
+[[0.99192463 0.         0.         0.00807537]
+ [0.04320988 0.9382716  0.         0.01851852]
+ [0.0078125  0.         0.9453125  0.046875  ]
+ [0.17934783 0.00434783 0.00978261 0.80652174]]
+	 Final score: 0.9133074279398321 [('val/ResNet50/normal/f1-score', 0.8911729141475211), ('val/ResNet50/monotone/f1-score', 0.9559748427672956), ('val/ResNet50/screenshot/f1-score', 0.9546351084812623), ('val/ResNet50/unknown/f1-score', 0.8817587641117053)]
+	 Time elapsed : 2299.65574 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 1e-05,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.09905 Loss Sum: 158.83075, accuracy : 0.92007, val loss: 5.31767, val accuracy: 0.89524
+[[733   0   0  10]
+ [ 11 145   0   6]
+ [  2   0 234  20]
+ [158   4   7 751]]
+[[0.98654105 0.         0.         0.01345895]
+ [0.06790123 0.89506173 0.         0.03703704]
+ [0.0078125  0.         0.9140625  0.078125  ]
+ [0.17173913 0.00434783 0.0076087  0.81630435]]
+	 Final score: 0.902933148334447 [('val/ResNet50/normal/f1-score', 0.8901032179720703), ('val/ResNet50/monotone/f1-score', 0.932475884244373), ('val/ResNet50/screenshot/f1-score', 0.9416498993963782), ('val/ResNet50/unknown/f1-score', 0.8799062683069713)]
+	 Time elapsed : 874.55462 _________________________________
+
+Epoch: 1, batch loss: 0.01712 Loss Sum: 35.44032, accuracy : 0.98452, val loss: 7.16569, val accuracy: 0.87890
+[[732   0   0  11]
+ [ 13 144   0   5]
+ [  2   0 232  22]
+ [186   2  11 721]]
+[[0.98519515 0.         0.         0.01480485]
+ [0.08024691 0.88888889 0.         0.0308642 ]
+ [0.0078125  0.         0.90625    0.0859375 ]
+ [0.20217391 0.00217391 0.01195652 0.78369565]]
+	 Final score: 0.8900060408927938 [('val/ResNet50/normal/f1-score', 0.8735083532219571), ('val/ResNet50/monotone/f1-score', 0.935064935064935), ('val/ResNet50/screenshot/f1-score', 0.9298597194388777), ('val/ResNet50/unknown/f1-score', 0.8588445503275759)]
+	 Time elapsed : 1746.16099 _________________________________
+
+Epoch: 2, batch loss: 0.01073 Loss Sum: 17.02942, accuracy : 0.99486, val loss: 7.21848, val accuracy: 0.88611
+[[737   0   0   6]
+ [ 11 146   0   5]
+ [  2   0 234  20]
+ [182   2   9 727]]
+[[0.99192463 0.         0.         0.00807537]
+ [0.06790123 0.90123457 0.         0.0308642 ]
+ [0.0078125  0.         0.9140625  0.078125  ]
+ [0.19782609 0.00217391 0.00978261 0.79021739]]
+	 Final score: 0.8978543424188861 [('val/ResNet50/normal/f1-score', 0.8800000000000001), ('val/ResNet50/monotone/f1-score', 0.9419354838709678), ('val/ResNet50/screenshot/f1-score', 0.9378757515030061), ('val/ResNet50/unknown/f1-score', 0.866507747318236)]
+	 Time elapsed : 2617.67188 _________________________________
+
+Epoch: 3, batch loss: 0.01380 Loss Sum: 14.56056, accuracy : 0.99612, val loss: 7.68354, val accuracy: 0.88419
+[[734   0   0   9]
+ [  9 149   0   4]
+ [  4   0 233  19]
+ [184   2  10 724]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.05555556 0.91975309 0.         0.02469136]
+ [0.015625   0.         0.91015625 0.07421875]
+ [0.2        0.00217391 0.01086957 0.78695652]]
+	 Final score: 0.8978548272251999 [('val/ResNet50/normal/f1-score', 0.8769414575866189), ('val/ResNet50/monotone/f1-score', 0.952076677316294), ('val/ResNet50/screenshot/f1-score', 0.9338677354709419), ('val/ResNet50/unknown/f1-score', 0.863961813842482)]
+	 Time elapsed : 3488.54393 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---
+with extra feature std
+ResNet50 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.04480 Loss Sum: 53.92409, accuracy : 0.97284, val loss: 10.89557, val accuracy: 0.86737
+[[737   0   0   6]
+ [ 19 139   0   4]
+ [  2   0 234  20]
+ [216   2   7 695]]
+[[0.99192463 0.         0.         0.00807537]
+ [0.11728395 0.85802469 0.         0.02469136]
+ [0.0078125  0.         0.9140625  0.078125  ]
+ [0.23478261 0.00217391 0.0076087  0.75543478]]
+	 Final score: 0.8803489127479809 [('val/ResNet50/normal/f1-score', 0.858474082702388), ('val/ResNet50/monotone/f1-score', 0.9174917491749176), ('val/ResNet50/screenshot/f1-score', 0.9416498993963782), ('val/ResNet50/unknown/f1-score', 0.8449848024316109)]
+	 Time elapsed : 664.59022 _________________________________
+
+Epoch: 1, batch loss: 0.02766 Loss Sum: 11.95422, accuracy : 0.99414, val loss: 10.62598, val accuracy: 0.88659
+[[736   0   0   7]
+ [  9 148   0   5]
+ [  2   0 235  19]
+ [184   4   6 726]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.05555556 0.91358025 0.         0.0308642 ]
+ [0.0078125  0.         0.91796875 0.07421875]
+ [0.2        0.00434783 0.00652174 0.78913043]]
+	 Final score: 0.8996987573206882 [('val/ResNet50/normal/f1-score', 0.8793309438470729), ('val/ResNet50/monotone/f1-score', 0.9426751592356688), ('val/ResNet50/screenshot/f1-score', 0.9456740442655934), ('val/ResNet50/unknown/f1-score', 0.8658318425760286)]
+	 Time elapsed : 1331.77603 _________________________________
+
+Epoch: 2, batch loss: 0.01852 Loss Sum: 11.82453, accuracy : 0.99380, val loss: 10.32249, val accuracy: 0.88563
+[[737   0   0   6]
+ [ 11 147   0   4]
+ [  1   0 234  21]
+ [181   2  12 725]]
+[[0.99192463 0.         0.         0.00807537]
+ [0.06790123 0.90740741 0.         0.02469136]
+ [0.00390625 0.         0.9140625  0.08203125]
+ [0.19673913 0.00217391 0.01304348 0.78804348]]
+	 Final score: 0.8971797000403856 [('val/ResNet50/normal/f1-score', 0.8810520023909145), ('val/ResNet50/monotone/f1-score', 0.9453376205787781), ('val/ResNet50/screenshot/f1-score', 0.9322709163346613), ('val/ResNet50/unknown/f1-score', 0.8651551312649164)]
+	 Time elapsed : 1996.74466 _________________________________
+
+Epoch: 3, batch loss: 0.00454 Loss Sum: 9.61308, accuracy : 0.99503, val loss: 10.62220, val accuracy: 0.88707
+[[733   0   0  10]
+ [ 15 143   0   4]
+ [  1   0 239  16]
+ [181   2   6 731]]
+[[0.98654105 0.         0.         0.01345895]
+ [0.09259259 0.88271605 0.         0.02469136]
+ [0.00390625 0.         0.93359375 0.0625    ]
+ [0.19673913 0.00217391 0.00652174 0.79456522]]
+	 Final score: 0.8992164266759823 [('val/ResNet50/normal/f1-score', 0.8762701733413032), ('val/ResNet50/monotone/f1-score', 0.9315960912052118), ('val/ResNet50/screenshot/f1-score', 0.9540918163672655), ('val/ResNet50/unknown/f1-score', 0.8697204045211183)]
+	 Time elapsed : 2660.80728 _________________________________
+
+Epoch: 4, batch loss: 0.00526 Loss Sum: 8.06944, accuracy : 0.99627, val loss: 11.50306, val accuracy: 0.87650
+[[738   0   0   5]
+ [ 10 146   0   6]
+ [  4   0 231  21]
+ [206   2   3 709]]
+[[0.99327052 0.         0.         0.00672948]
+ [0.0617284  0.90123457 0.         0.03703704]
+ [0.015625   0.         0.90234375 0.08203125]
+ [0.22391304 0.00217391 0.00326087 0.77065217]]
+	 Final score: 0.8920847160829029 [('val/ResNet50/normal/f1-score', 0.8677248677248676), ('val/ResNet50/monotone/f1-score', 0.9419354838709678), ('val/ResNet50/screenshot/f1-score', 0.9428571428571428), ('val/ResNet50/unknown/f1-score', 0.8537025888019265)]
+	 Time elapsed : 3321.75374 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---

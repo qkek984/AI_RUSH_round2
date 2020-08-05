@@ -1,0 +1,876 @@
+with extra feature std
+DenseNet121 Loaded!
+before fit
+Trying out 384 number of hyperparameter combinations!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 0.001,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.03157 Loss Sum: 85.55302, accuracy : 0.94939, val loss: 5.96284, val accuracy: 0.90005
+[[726   1   0  16]
+ [  6 153   0   3]
+ [  2   0 241  13]
+ [154   4   9 753]]
+[[0.97711978 0.0013459  0.         0.02153432]
+ [0.03703704 0.94444444 0.         0.01851852]
+ [0.0078125  0.         0.94140625 0.05078125]
+ [0.1673913  0.00434783 0.00978261 0.81847826]]
+	 Final score: 0.9130124392318191 [('val/DenseNet121/normal/f1-score', 0.8902513795217658), ('val/DenseNet121/monotone/f1-score', 0.9562499999999999), ('val/DenseNet121/screenshot/f1-score', 0.9525691699604742), ('val/DenseNet121/unknown/f1-score', 0.8832844574780058)]
+	 Time elapsed : 779.60239 _________________________________
+
+Trying to save to /tmp/tmpafa7htk1/model_DenseNet121
+Epoch: 1, batch loss: 0.00613 Loss Sum: 21.52704, accuracy : 0.98817, val loss: 6.89005, val accuracy: 0.90485
+[[725   1   0  17]
+ [  3 153   0   6]
+ [  2   0 241  13]
+ [137   4  15 764]]
+[[0.97577389 0.0013459  0.         0.02288022]
+ [0.01851852 0.94444444 0.         0.03703704]
+ [0.0078125  0.         0.94140625 0.05078125]
+ [0.14891304 0.00434783 0.01630435 0.83043478]]
+	 Final score: 0.9143920155847711 [('val/DenseNet121/normal/f1-score', 0.9006211180124224), ('val/DenseNet121/monotone/f1-score', 0.9562499999999999), ('val/DenseNet121/screenshot/f1-score', 0.94140625), ('val/DenseNet121/unknown/f1-score', 0.8883720930232558)]
+	 Time elapsed : 1550.01993 _________________________________
+
+Trying to save to /tmp/tmpfl8xwgt0/model_DenseNet121
+Epoch: 2, batch loss: 0.06208 Loss Sum: 11.17285, accuracy : 0.99452, val loss: 8.36397, val accuracy: 0.90774
+[[731   1   0  11]
+ [  6 153   0   3]
+ [  3   0 232  21]
+ [134   5   8 773]]
+[[0.98384926 0.0013459  0.         0.01480485]
+ [0.03703704 0.94444444 0.         0.01851852]
+ [0.01171875 0.         0.90625    0.08203125]
+ [0.14565217 0.00543478 0.00869565 0.84021739]]
+	 Final score: 0.9147769622735666 [('val/DenseNet121/normal/f1-score', 0.9041434755720471), ('val/DenseNet121/monotone/f1-score', 0.9532710280373832), ('val/DenseNet121/screenshot/f1-score', 0.9354838709677419), ('val/DenseNet121/unknown/f1-score', 0.8946759259259258)]
+	 Time elapsed : 2323.31553 _________________________________
+
+Trying to save to /tmp/tmpzy799kko/model_DenseNet121
+Epoch: 3, batch loss: 0.00446 Loss Sum: 9.18998, accuracy : 0.99505, val loss: 8.86683, val accuracy: 0.90341
+[[727   0   0  16]
+ [ 10 147   0   5]
+ [  1   0 242  13]
+ [131   3  22 764]]
+[[0.97846568 0.         0.         0.02153432]
+ [0.0617284  0.90740741 0.         0.0308642 ]
+ [0.00390625 0.         0.9453125  0.05078125]
+ [0.1423913  0.00326087 0.02391304 0.83043478]]
+	 Final score: 0.9085815318902362 [('val/DenseNet121/normal/f1-score', 0.901985111662531), ('val/DenseNet121/monotone/f1-score', 0.9423076923076924), ('val/DenseNet121/screenshot/f1-score', 0.9307692307692308), ('val/DenseNet121/unknown/f1-score', 0.889406286379511)]
+	 Time elapsed : 3096.29485 _________________________________
+
+Epoch: 4, batch loss: 0.02463 Loss Sum: 7.03373, accuracy : 0.99638, val loss: 10.21869, val accuracy: 0.89716
+[[733   0   0  10]
+ [ 10 150   0   2]
+ [  2   0 242  12]
+ [161   4  13 742]]
+[[0.98654105 0.         0.         0.01345895]
+ [0.0617284  0.92592593 0.         0.01234568]
+ [0.0078125  0.         0.9453125  0.046875  ]
+ [0.175      0.00434783 0.01413043 0.80652174]]
+	 Final score: 0.9085894974813876 [('val/DenseNet121/normal/f1-score', 0.8890236506973923), ('val/DenseNet121/monotone/f1-score', 0.949367088607595), ('val/DenseNet121/screenshot/f1-score', 0.9471624266144814), ('val/DenseNet121/unknown/f1-score', 0.8801897983392645)]
+	 Time elapsed : 3865.63352 _________________________________
+
+Epoch: 5, batch loss: 0.06011 Loss Sum: 13.28627, accuracy : 0.99270, val loss: 10.51841, val accuracy: 0.89380
+[[731   1   0  11]
+ [  7 153   0   2]
+ [  1   0 242  13]
+ [166   4  16 734]]
+[[0.98384926 0.0013459  0.         0.01480485]
+ [0.04320988 0.94444444 0.         0.01234568]
+ [0.00390625 0.         0.9453125  0.05078125]
+ [0.18043478 0.00434783 0.0173913  0.79782609]]
+	 Final score: 0.9066017132565417 [('val/DenseNet121/normal/f1-score', 0.887135922330097), ('val/DenseNet121/monotone/f1-score', 0.9562499999999999), ('val/DenseNet121/screenshot/f1-score', 0.9416342412451363), ('val/DenseNet121/unknown/f1-score', 0.8738095238095238)]
+	 Time elapsed : 750.01185 _________________________________
+
+Epoch: 6, batch loss: 0.00155 Loss Sum: 6.86970, accuracy : 0.99608, val loss: 9.20882, val accuracy: 0.90918
+[[730   1   0  12]
+ [  5 151   0   6]
+ [  1   0 242  13]
+ [134   2  15 769]]
+[[0.98250336 0.0013459  0.         0.01615074]
+ [0.0308642  0.93209877 0.         0.03703704]
+ [0.00390625 0.         0.9453125  0.05078125]
+ [0.14565217 0.00217391 0.01630435 0.83586957]]
+	 Final score: 0.9176759213058571 [('val/DenseNet121/normal/f1-score', 0.9051456912585244), ('val/DenseNet121/monotone/f1-score', 0.9556962025316457), ('val/DenseNet121/screenshot/f1-score', 0.9434697855750488), ('val/DenseNet121/unknown/f1-score', 0.8941860465116278)]
+	 Time elapsed : 1534.89020 _________________________________
+
+Trying to save to /tmp/tmpd8tx09ag/model_DenseNet121
+Epoch: 7, batch loss: 0.00414 Loss Sum: 3.25575, accuracy : 0.99851, val loss: 8.90464, val accuracy: 0.90918
+[[730   1   0  12]
+ [  3 157   0   2]
+ [  0   0 242  14]
+ [140   4  13 763]]
+[[0.98250336 0.0013459  0.         0.01615074]
+ [0.01851852 0.9691358  0.         0.01234568]
+ [0.         0.         0.9453125  0.0546875 ]
+ [0.15217391 0.00434783 0.01413043 0.82934783]]
+	 Final score: 0.9210423059011487 [('val/DenseNet121/normal/f1-score', 0.9034653465346536), ('val/DenseNet121/monotone/f1-score', 0.9691358024691359), ('val/DenseNet121/screenshot/f1-score', 0.9471624266144814), ('val/DenseNet121/unknown/f1-score', 0.89187609585038)]
+	 Time elapsed : 2328.28274 _________________________________
+
+Trying to save to /tmp/tmpdye1ds_j/model_DenseNet121
+Epoch: 8, batch loss: 0.00022 Loss Sum: 5.27116, accuracy : 0.99733, val loss: 9.25830, val accuracy: 0.90389
+[[731   1   0  11]
+ [  7 152   0   3]
+ [  2   0 239  15]
+ [151   4   6 759]]
+[[0.98384926 0.0013459  0.         0.01480485]
+ [0.04320988 0.9382716  0.         0.01851852]
+ [0.0078125  0.         0.93359375 0.05859375]
+ [0.16413043 0.00434783 0.00652174 0.825     ]]
+	 Final score: 0.9153495873112718 [('val/DenseNet121/normal/f1-score', 0.894736842105263), ('val/DenseNet121/monotone/f1-score', 0.9529780564263323), ('val/DenseNet121/screenshot/f1-score', 0.9540918163672655), ('val/DenseNet121/unknown/f1-score', 0.8887587822014051)]
+	 Time elapsed : 3140.83941 _________________________________
+
+Epoch: 9, batch loss: 0.00417 Loss Sum: 4.60350, accuracy : 0.99749, val loss: 9.95997, val accuracy: 0.90822
+[[732   1   0  10]
+ [  3 156   0   3]
+ [  2   0 244  10]
+ [142   3  17 758]]
+[[0.98519515 0.0013459  0.         0.01345895]
+ [0.01851852 0.96296296 0.         0.01851852]
+ [0.0078125  0.         0.953125   0.0390625 ]
+ [0.15434783 0.00326087 0.01847826 0.82391304]]
+	 Final score: 0.9197060250241637 [('val/DenseNet121/normal/f1-score', 0.9025893958076447), ('val/DenseNet121/monotone/f1-score', 0.9689440993788819), ('val/DenseNet121/screenshot/f1-score', 0.9439071566731142), ('val/DenseNet121/unknown/f1-score', 0.8912404467960025)]
+	 Time elapsed : 3952.23809 _________________________________
+
+Epoch: 10, batch loss: 0.00051 Loss Sum: 2.09581, accuracy : 0.99894, val loss: 10.46702, val accuracy: 0.91158
+[[736   0   0   7]
+ [  7 153   0   2]
+ [  1   0 243  12]
+ [140   2  13 765]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.04320988 0.94444444 0.         0.01234568]
+ [0.00390625 0.         0.94921875 0.046875  ]
+ [0.15217391 0.00217391 0.01413043 0.83152174]]
+	 Final score: 0.922336509730599 [('val/DenseNet121/normal/f1-score', 0.9047326367547635), ('val/DenseNet121/monotone/f1-score', 0.9652996845425867), ('val/DenseNet121/screenshot/f1-score', 0.94921875), ('val/DenseNet121/unknown/f1-score', 0.8968347010550998)]
+	 Time elapsed : 4765.73889 _________________________________
+
+Trying to save to /tmp/tmp511q_4wt/model_DenseNet121
+Epoch: 11, batch loss: 0.00067 Loss Sum: 0.73345, accuracy : 0.99979, val loss: 9.76446, val accuracy: 0.91014
+[[736   0   0   7]
+ [  6 154   0   2]
+ [  1   0 241  14]
+ [142   2  13 763]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.03703704 0.95061728 0.         0.01234568]
+ [0.00390625 0.         0.94140625 0.0546875 ]
+ [0.15434783 0.00217391 0.01413043 0.82934783]]
+	 Final score: 0.9212761525983477 [('val/DenseNet121/normal/f1-score', 0.9041769041769041), ('val/DenseNet121/monotone/f1-score', 0.9685534591194969), ('val/DenseNet121/screenshot/f1-score', 0.9450980392156861), ('val/DenseNet121/unknown/f1-score', 0.8944900351699883)]
+	 Time elapsed : 5564.93354 _________________________________
+
+Epoch: 12, batch loss: 0.00267 Loss Sum: 0.47890, accuracy : 0.99988, val loss: 10.44048, val accuracy: 0.90533
+[[733   1   0   9]
+ [  6 154   0   2]
+ [  1   0 239  16]
+ [148   2  12 758]]
+[[0.98654105 0.0013459  0.         0.01211306]
+ [0.03703704 0.95061728 0.         0.01234568]
+ [0.00390625 0.         0.93359375 0.0625    ]
+ [0.16086957 0.00217391 0.01304348 0.82391304]]
+	 Final score: 0.916892839821403 [('val/DenseNet121/normal/f1-score', 0.8988350705088902), ('val/DenseNet121/monotone/f1-score', 0.9655172413793103), ('val/DenseNet121/screenshot/f1-score', 0.9428007889546351), ('val/DenseNet121/unknown/f1-score', 0.8891495601173021)]
+	 Time elapsed : 6364.41421 _________________________________
+
+Epoch: 13, batch loss: 0.00078 Loss Sum: 0.35837, accuracy : 0.99992, val loss: 10.10611, val accuracy: 0.91062
+[[734   0   0   9]
+ [  6 154   0   2]
+ [  1   0 242  13]
+ [141   2  12 765]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.03703704 0.95061728 0.         0.01234568]
+ [0.00390625 0.         0.9453125  0.05078125]
+ [0.15326087 0.00217391 0.01304348 0.83152174]]
+	 Final score: 0.9223131719436943 [('val/DenseNet121/normal/f1-score', 0.9033846153846155), ('val/DenseNet121/monotone/f1-score', 0.9685534591194969), ('val/DenseNet121/screenshot/f1-score', 0.9490196078431371), ('val/DenseNet121/unknown/f1-score', 0.8952603861907549)]
+	 Time elapsed : 7161.60171 _________________________________
+
+Early stopping!! 
+---train finished---
+with extra feature std
+DenseNet121 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [5, 10],
+ 'gamma': 0.3,
+ 'learning_rate': 0.001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.00883 Loss Sum: 79.08746, accuracy : 0.95268, val loss: 5.22241, val accuracy: 0.91927
+[[723   1   0  19]
+ [  3 154   0   5]
+ [  2   0 245   9]
+ [116   2  11 791]]
+[[0.9730821  0.0013459  0.         0.02557201]
+ [0.01851852 0.95061728 0.         0.0308642 ]
+ [0.0078125  0.         0.95703125 0.03515625]
+ [0.12608696 0.00217391 0.01195652 0.85978261]]
+	 Final score: 0.9291244063922011 [('val/DenseNet121/normal/f1-score', 0.9111531190926276), ('val/DenseNet121/monotone/f1-score', 0.9655172413793103), ('val/DenseNet121/screenshot/f1-score', 0.95703125), ('val/DenseNet121/unknown/f1-score', 0.9071100917431192)]
+	 Time elapsed : 599.87875 _________________________________
+
+Trying to save to /tmp/tmpofid6ct6/model_DenseNet121
+Epoch: 1, batch loss: 0.00233 Loss Sum: 14.08164, accuracy : 0.99312, val loss: 7.91316, val accuracy: 0.90053
+[[730   1   0  12]
+ [  5 155   0   2]
+ [  3   0 238  15]
+ [156   3  10 751]]
+[[0.98250336 0.0013459  0.         0.01615074]
+ [0.0308642  0.95679012 0.         0.01234568]
+ [0.01171875 0.         0.9296875  0.05859375]
+ [0.16956522 0.00326087 0.01086957 0.81630435]]
+	 Final score: 0.9138597020612601 [('val/DenseNet121/normal/f1-score', 0.8918753817959683), ('val/DenseNet121/monotone/f1-score', 0.9657320872274143), ('val/DenseNet121/screenshot/f1-score', 0.9444444444444444), ('val/DenseNet121/unknown/f1-score', 0.8835294117647059)]
+	 Time elapsed : 1199.41686 _________________________________
+
+Epoch: 2, batch loss: 0.03058 Loss Sum: 7.88829, accuracy : 0.99638, val loss: 8.29200, val accuracy: 0.91879
+[[729   1   0  13]
+ [  7 152   0   3]
+ [  2   0 241  13]
+ [118   2  10 790]]
+[[0.98115747 0.0013459  0.         0.01749664]
+ [0.04320988 0.9382716  0.         0.01851852]
+ [0.0078125  0.         0.94140625 0.05078125]
+ [0.12826087 0.00217391 0.01086957 0.85869565]]
+	 Final score: 0.9263177597086122 [('val/DenseNet121/normal/f1-score', 0.9118198874296436), ('val/DenseNet121/monotone/f1-score', 0.9589905362776024), ('val/DenseNet121/screenshot/f1-score', 0.9506903353057199), ('val/DenseNet121/unknown/f1-score', 0.9085681426106957)]
+	 Time elapsed : 1797.78047 _________________________________
+
+Epoch: 3, batch loss: 0.03691 Loss Sum: 7.39381, accuracy : 0.99598, val loss: 8.69978, val accuracy: 0.90870
+[[728   1   0  14]
+ [  5 154   0   3]
+ [  1   0 241  14]
+ [138   3  11 768]]
+[[0.97981157 0.0013459  0.         0.01884253]
+ [0.0308642  0.95061728 0.         0.01851852]
+ [0.00390625 0.         0.94140625 0.0546875 ]
+ [0.15       0.00326087 0.01195652 0.83478261]]
+	 Final score: 0.9196916646326336 [('val/DenseNet121/normal/f1-score', 0.901547987616099), ('val/DenseNet121/monotone/f1-score', 0.9625), ('val/DenseNet121/screenshot/f1-score', 0.9488188976377953), ('val/DenseNet121/unknown/f1-score', 0.8935427574171029)]
+	 Time elapsed : 2396.15728 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---
+with extra feature std
+DenseNet121 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [0, 15],
+ 'gamma': 0.3,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+Downloading: "https://download.pytorch.org/models/densenet121-a639ec97.pth" to /home/nsml/.cache/torch/checkpoints/densenet121-a639ec97.pth
+
+  0%|          | 0.00/30.8M [00:00<?, ?B/s]
+ 27%|██▋       | 8.44M/30.8M [00:00<00:00, 88.4MB/s]
+ 56%|█████▌    | 17.3M/30.8M [00:00<00:00, 89.8MB/s]
+ 97%|█████████▋| 30.0M/30.8M [00:00<00:00, 99.6MB/s]
+100%|██████████| 30.8M/30.8M [00:00<00:00, 106MB/s] 
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.04302 Loss Sum: 63.56552, accuracy : 0.96714, val loss: 8.92793, val accuracy: 0.87794
+[[737   0   0   6]
+ [  4 153   0   5]
+ [  2   0 240  14]
+ [217   2   4 697]]
+[[0.99192463 0.         0.         0.00807537]
+ [0.02469136 0.94444444 0.         0.0308642 ]
+ [0.0078125  0.         0.9375     0.0546875 ]
+ [0.23586957 0.00217391 0.00434783 0.7576087 ]]
+	 Final score: 0.9004993728327485 [('val/DenseNet121/normal/f1-score', 0.8655314151497357), ('val/DenseNet121/monotone/f1-score', 0.9652996845425867), ('val/DenseNet121/screenshot/f1-score', 0.96), ('val/DenseNet121/unknown/f1-score', 0.8489646772228989)]
+	 Time elapsed : 686.14607 _________________________________
+
+Epoch: 1, batch loss: 0.02923 Loss Sum: 14.24329, accuracy : 0.99310, val loss: 9.72027, val accuracy: 0.88852
+[[731   0   0  12]
+ [  5 152   0   5]
+ [  1   0 238  17]
+ [182   4   6 728]]
+[[0.98384926 0.         0.         0.01615074]
+ [0.0308642  0.9382716  0.         0.0308642 ]
+ [0.00390625 0.         0.9296875  0.06640625]
+ [0.19782609 0.00434783 0.00652174 0.79130435]]
+	 Final score: 0.9048240415662864 [('val/DenseNet121/normal/f1-score', 0.8796630565583633), ('val/DenseNet121/monotone/f1-score', 0.9559748427672956), ('val/DenseNet121/screenshot/f1-score', 0.9520000000000001), ('val/DenseNet121/unknown/f1-score', 0.8656361474435197)]
+	 Time elapsed : 1393.63184 _________________________________
+
+Epoch: 2, batch loss: 0.00100 Loss Sum: 2.93713, accuracy : 0.99901, val loss: 12.15868, val accuracy: 0.88035
+[[739   0   0   4]
+ [ 10 148   0   4]
+ [  2   0 238  16]
+ [208   1   4 707]]
+[[0.99461642 0.         0.         0.00538358]
+ [0.0617284  0.91358025 0.         0.02469136]
+ [0.0078125  0.         0.9296875  0.0625    ]
+ [0.22608696 0.00108696 0.00434783 0.76847826]]
+	 Final score: 0.8989288373558885 [('val/DenseNet121/normal/f1-score', 0.8683901292596944), ('val/DenseNet121/monotone/f1-score', 0.9517684887459807), ('val/DenseNet121/screenshot/f1-score', 0.9558232931726908), ('val/DenseNet121/unknown/f1-score', 0.856450635978195)]
+	 Time elapsed : 2104.83709 _________________________________
+
+Epoch: 3, batch loss: 0.00041 Loss Sum: 0.78248, accuracy : 0.99988, val loss: 12.37465, val accuracy: 0.88371
+[[738   0   0   5]
+ [  8 147   0   7]
+ [  2   0 240  14]
+ [200   4   2 714]]
+[[0.99327052 0.         0.         0.00672948]
+ [0.04938272 0.90740741 0.         0.04320988]
+ [0.0078125  0.         0.9375     0.0546875 ]
+ [0.2173913  0.00434783 0.00217391 0.77608696]]
+	 Final score: 0.9000877327327853 [('val/DenseNet121/normal/f1-score', 0.8728562980484921), ('val/DenseNet121/monotone/f1-score', 0.9392971246006391), ('val/DenseNet121/screenshot/f1-score', 0.963855421686747), ('val/DenseNet121/unknown/f1-score', 0.8602409638554217)]
+	 Time elapsed : 2818.18116 _________________________________
+
+Epoch: 4, batch loss: 0.00030 Loss Sum: 0.49259, accuracy : 0.99996, val loss: 12.40400, val accuracy: 0.88515
+[[736   0   0   7]
+ [  8 150   0   4]
+ [  4   0 237  15]
+ [195   2   4 719]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.04938272 0.92592593 0.         0.02469136]
+ [0.015625   0.         0.92578125 0.05859375]
+ [0.21195652 0.00217391 0.00434783 0.78152174]]
+	 Final score: 0.9027089709358539 [('val/DenseNet121/normal/f1-score', 0.8730723606168446), ('val/DenseNet121/monotone/f1-score', 0.9554140127388535), ('val/DenseNet121/screenshot/f1-score', 0.9537223340040241), ('val/DenseNet121/unknown/f1-score', 0.8636636636636636)]
+	 Time elapsed : 3530.24617 _________________________________
+
+Early stopping!! 
+---train finished---
+with extra feature std
+DenseNet121 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 1e-05,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.62937 Loss Sum: 554.94068, accuracy : 0.66529, val loss: 12.11101, val accuracy: 0.72129
+[[718   0   0  25]
+ [ 29  98   0  35]
+ [ 25   0 100 131]
+ [327   0   8 585]]
+[[0.96635262 0.         0.         0.03364738]
+ [0.17901235 0.60493827 0.         0.21604938]
+ [0.09765625 0.         0.390625   0.51171875]
+ [0.35543478 0.         0.00869565 0.63586957]]
+	 Final score: 0.663952690999709 [('val/DenseNet121/normal/f1-score', 0.7795874049945711), ('val/DenseNet121/monotone/f1-score', 0.7538461538461538), ('val/DenseNet121/screenshot/f1-score', 0.5494505494505494), ('val/DenseNet121/unknown/f1-score', 0.6898584905660378)]
+	 Time elapsed : 695.56870 _________________________________
+
+Score too low 0.663952690999709
+---train finished---
+with extra feature std
+DenseNet121 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [0, 15],
+ 'gamma': 0.1,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.01173 Loss Sum: 71.15240, accuracy : 0.95858, val loss: 5.69844, val accuracy: 0.90630
+[[733   0   0  10]
+ [  2 158   0   2]
+ [  2   0 239  15]
+ [149   3  12 756]]
+[[0.98654105 0.         0.         0.01345895]
+ [0.01234568 0.97530864 0.         0.01234568]
+ [0.0078125  0.         0.93359375 0.05859375]
+ [0.16195652 0.00326087 0.01304348 0.82173913]]
+	 Final score: 0.9201343302982908 [('val/DenseNet121/normal/f1-score', 0.899938612645795), ('val/DenseNet121/monotone/f1-score', 0.978328173374613), ('val/DenseNet121/screenshot/f1-score', 0.9428007889546351), ('val/DenseNet121/unknown/f1-score', 0.887844979448033)]
+	 Time elapsed : 790.00360 _________________________________
+
+Epoch: 1, batch loss: 0.00892 Loss Sum: 14.99652, accuracy : 0.99212, val loss: 6.75948, val accuracy: 0.90726
+[[734   0   0   9]
+ [  2 159   0   1]
+ [  2   0 241  13]
+ [153   5   8 754]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.01234568 0.98148148 0.         0.00617284]
+ [0.0078125  0.         0.94140625 0.05078125]
+ [0.16630435 0.00543478 0.00869565 0.81956522]]
+	 Final score: 0.9222771713432103 [('val/DenseNet121/normal/f1-score', 0.8984088127294982), ('val/DenseNet121/monotone/f1-score', 0.9754601226993865), ('val/DenseNet121/screenshot/f1-score', 0.9544554455445544), ('val/DenseNet121/unknown/f1-score', 0.8886269888037713)]
+	 Time elapsed : 1598.23622 _________________________________
+
+Epoch: 2, batch loss: 0.04469 Loss Sum: 8.66241, accuracy : 0.99589, val loss: 6.53343, val accuracy: 0.91639
+[[728   0   0  15]
+ [  4 155   0   3]
+ [  1   0 243  12]
+ [127   2  10 781]]
+[[0.97981157 0.         0.         0.02018843]
+ [0.02469136 0.95679012 0.         0.01851852]
+ [0.00390625 0.         0.94921875 0.046875  ]
+ [0.13804348 0.00217391 0.01086957 0.84891304]]
+	 Final score: 0.9280536541578168 [('val/DenseNet121/normal/f1-score', 0.9082969432314411), ('val/DenseNet121/monotone/f1-score', 0.9717868338557994), ('val/DenseNet121/screenshot/f1-score', 0.9548133595284873), ('val/DenseNet121/unknown/f1-score', 0.902368573079145)]
+	 Time elapsed : 2404.98647 _________________________________
+
+Epoch: 3, batch loss: 0.00709 Loss Sum: 6.67024, accuracy : 0.99656, val loss: 8.40036, val accuracy: 0.90918
+[[736   0   0   7]
+ [  6 154   0   2]
+ [  1   0 246   9]
+ [151   1  12 756]]
+[[0.99057873 0.         0.         0.00942127]
+ [0.03703704 0.95061728 0.         0.01234568]
+ [0.00390625 0.         0.9609375  0.03515625]
+ [0.16413043 0.00108696 0.01304348 0.82173913]]
+	 Final score: 0.9233389777622351 [('val/DenseNet121/normal/f1-score', 0.8992058643860721), ('val/DenseNet121/monotone/f1-score', 0.971608832807571), ('val/DenseNet121/screenshot/f1-score', 0.9571984435797667), ('val/DenseNet121/unknown/f1-score', 0.8925619834710744)]
+	 Time elapsed : 3212.07090 _________________________________
+
+Epoch: 4, batch loss: 0.07069 Loss Sum: 6.82302, accuracy : 0.99620, val loss: 9.34835, val accuracy: 0.90485
+[[738   0   0   5]
+ [  2 158   0   2]
+ [  1   0 245  10]
+ [156   4  18 742]]
+[[0.99327052 0.         0.         0.00672948]
+ [0.01234568 0.97530864 0.         0.01234568]
+ [0.00390625 0.         0.95703125 0.0390625 ]
+ [0.16956522 0.00434783 0.01956522 0.80652174]]
+	 Final score: 0.9185997451445582 [('val/DenseNet121/normal/f1-score', 0.9000000000000001), ('val/DenseNet121/monotone/f1-score', 0.9753086419753086), ('val/DenseNet121/screenshot/f1-score', 0.9441233140655105), ('val/DenseNet121/unknown/f1-score', 0.8838594401429424)]
+	 Time elapsed : 4020.55389 _________________________________
+
+Epoch: 5, batch loss: 0.02328 Loss Sum: 2.46727, accuracy : 0.99893, val loss: 8.92000, val accuracy: 0.90870
+[[735   0   0   8]
+ [  6 154   0   2]
+ [  2   0 241  13]
+ [142   3  14 761]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.03703704 0.95061728 0.         0.01234568]
+ [0.0078125  0.         0.94140625 0.05078125]
+ [0.15434783 0.00326087 0.01521739 0.82717391]]
+	 Final score: 0.9192908867795354 [('val/DenseNet121/normal/f1-score', 0.902948402948403), ('val/DenseNet121/monotone/f1-score', 0.9655172413793103), ('val/DenseNet121/screenshot/f1-score', 0.9432485322896281), ('val/DenseNet121/unknown/f1-score', 0.8931924882629109)]
+	 Time elapsed : 4828.30661 _________________________________
+
+Early stopping!! 
+---train finished---
+with extra feature std
+DenseNet121 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [5, 10],
+ 'gamma': 0.1,
+ 'learning_rate': 1e-05,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 2,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.69349 Loss Sum: 595.95009, accuracy : 0.60222, val loss: 11.83622, val accuracy: 0.77895
+[[694   0   0  49]
+ [ 21 124   0  17]
+ [ 26   0 165  65]
+ [262   2  18 638]]
+[[0.93405114 0.         0.         0.06594886]
+ [0.12962963 0.7654321  0.         0.10493827]
+ [0.1015625  0.         0.64453125 0.25390625]
+ [0.28478261 0.00217391 0.01956522 0.69347826]]
+	 Final score: 0.772846322630892 [('val/DenseNet121/normal/f1-score', 0.7949599083619703), ('val/DenseNet121/monotone/f1-score', 0.861111111111111), ('val/DenseNet121/screenshot/f1-score', 0.7517084282460138), ('val/DenseNet121/unknown/f1-score', 0.7554766133806986)]
+	 Time elapsed : 601.10436 _________________________________
+
+Epoch: 1, batch loss: 0.52438 Loss Sum: 320.71244, accuracy : 0.84268, val loss: 8.15174, val accuracy: 0.85344
+[[712   1   0  30]
+ [ 12 143   0   7]
+ [ 13   0 208  35]
+ [189   1  17 713]]
+[[0.95827725 0.0013459  0.         0.04037685]
+ [0.07407407 0.88271605 0.         0.04320988]
+ [0.05078125 0.         0.8125     0.13671875]
+ [0.20543478 0.00108696 0.01847826 0.775     ]]
+	 Final score: 0.8598904027942984 [('val/DenseNet121/normal/f1-score', 0.853205512282804), ('val/DenseNet121/monotone/f1-score', 0.9315960912052118), ('val/DenseNet121/screenshot/f1-score', 0.8648648648648648), ('val/DenseNet121/unknown/f1-score', 0.8363636363636364)]
+	 Time elapsed : 1200.10818 _________________________________
+
+Epoch: 2, batch loss: 0.40783 Loss Sum: 259.92629, accuracy : 0.87644, val loss: 7.67287, val accuracy: 0.85680
+[[708   1   0  34]
+ [ 10 143   0   9]
+ [ 10   0 222  24]
+ [187   2  21 710]]
+[[0.95289367 0.0013459  0.         0.04576043]
+ [0.0617284  0.88271605 0.         0.05555556]
+ [0.0390625  0.         0.8671875  0.09375   ]
+ [0.20326087 0.00217391 0.02282609 0.77173913]]
+	 Final score: 0.8661544790439828 [('val/DenseNet121/normal/f1-score', 0.8540410132689988), ('val/DenseNet121/monotone/f1-score', 0.9285714285714286), ('val/DenseNet121/screenshot/f1-score', 0.8897795591182365), ('val/DenseNet121/unknown/f1-score', 0.836770771950501)]
+	 Time elapsed : 1798.62982 _________________________________
+
+Epoch: 3, batch loss: 0.45689 Loss Sum: 251.45950, accuracy : 0.88136, val loss: 7.66026, val accuracy: 0.86112
+[[715   1   0  27]
+ [ 10 142   0  10]
+ [ 12   0 214  30]
+ [177   2  20 721]]
+[[0.96231494 0.0013459  0.         0.03633917]
+ [0.0617284  0.87654321 0.         0.0617284 ]
+ [0.046875   0.         0.8359375  0.1171875 ]
+ [0.1923913  0.00217391 0.02173913 0.78369565]]
+	 Final score: 0.8654670157271444 [('val/DenseNet121/normal/f1-score', 0.8630054315027158), ('val/DenseNet121/monotone/f1-score', 0.9250814332247556), ('val/DenseNet121/screenshot/f1-score', 0.8734693877551021), ('val/DenseNet121/unknown/f1-score', 0.8442622950819673)]
+	 Time elapsed : 2397.71132 _________________________________
+
+Epoch: 4, batch loss: 0.44072 Loss Sum: 246.72523, accuracy : 0.88265, val loss: 7.68504, val accuracy: 0.85872
+[[714   1   0  28]
+ [ 14 138   0  10]
+ [  7   0 220  29]
+ [181   3  21 715]]
+[[0.96096904 0.0013459  0.         0.03768506]
+ [0.08641975 0.85185185 0.         0.0617284 ]
+ [0.02734375 0.         0.859375   0.11328125]
+ [0.19673913 0.00326087 0.02282609 0.77717391]]
+	 Final score: 0.8624675256603627 [('val/DenseNet121/normal/f1-score', 0.860759493670886), ('val/DenseNet121/monotone/f1-score', 0.9078947368421053), ('val/DenseNet121/screenshot/f1-score', 0.8853118712273642), ('val/DenseNet121/unknown/f1-score', 0.8401880141010576)]
+	 Time elapsed : 2997.75214 _________________________________
+
+Epoch: 5, batch loss: 0.38146 Loss Sum: 241.30122, accuracy : 0.88625, val loss: 7.31321, val accuracy: 0.86209
+[[717   1   0  25]
+ [ 10 145   0   7]
+ [  9   0 224  23]
+ [187   2  23 708]]
+[[0.96500673 0.0013459  0.         0.03364738]
+ [0.0617284  0.89506173 0.         0.04320988]
+ [0.03515625 0.         0.875      0.08984375]
+ [0.20326087 0.00217391 0.025      0.76956522]]
+	 Final score: 0.8712916138674027 [('val/DenseNet121/normal/f1-score', 0.8607442977190877), ('val/DenseNet121/monotone/f1-score', 0.9354838709677419), ('val/DenseNet121/screenshot/f1-score', 0.8906560636182903), ('val/DenseNet121/unknown/f1-score', 0.841354723707665)]
+	 Time elapsed : 599.72948 _________________________________
+
+Epoch: 6, batch loss: 0.40270 Loss Sum: 235.33584, accuracy : 0.88968, val loss: 7.35907, val accuracy: 0.85920
+[[716   0   0  27]
+ [ 11 145   0   6]
+ [  9   0 216  31]
+ [181   2  26 711]]
+[[0.96366083 0.         0.         0.03633917]
+ [0.06790123 0.89506173 0.         0.03703704]
+ [0.03515625 0.         0.84375    0.12109375]
+ [0.19673913 0.00217391 0.02826087 0.77282609]]
+	 Final score: 0.8656519156690577 [('val/DenseNet121/normal/f1-score', 0.8626506024096386), ('val/DenseNet121/monotone/f1-score', 0.9385113268608414), ('val/DenseNet121/screenshot/f1-score', 0.8674698795180722), ('val/DenseNet121/unknown/f1-score', 0.8389380530973451)]
+	 Time elapsed : 1217.36322 _________________________________
+
+Epoch: 7, batch loss: 0.44677 Loss Sum: 234.47542, accuracy : 0.89039, val loss: 7.19269, val accuracy: 0.86305
+[[714   1   0  28]
+ [ 13 143   0   6]
+ [  8   0 226  22]
+ [178   2  27 713]]
+[[0.96096904 0.0013459  0.         0.03768506]
+ [0.08024691 0.88271605 0.         0.03703704]
+ [0.03125    0.         0.8828125  0.0859375 ]
+ [0.19347826 0.00217391 0.02934783 0.775     ]]
+	 Final score: 0.8700854848959804 [('val/DenseNet121/normal/f1-score', 0.8623188405797102), ('val/DenseNet121/monotone/f1-score', 0.9285714285714286), ('val/DenseNet121/screenshot/f1-score', 0.888015717092338), ('val/DenseNet121/unknown/f1-score', 0.8442865600947306)]
+	 Time elapsed : 1825.18144 _________________________________
+
+Epoch: 8, batch loss: 0.31412 Loss Sum: 233.82415, accuracy : 0.89068, val loss: 7.19822, val accuracy: 0.86160
+[[711   0   0  32]
+ [ 14 140   0   8]
+ [  8   0 227  21]
+ [180   3  22 715]]
+[[0.95693136 0.         0.         0.04306864]
+ [0.08641975 0.86419753 0.         0.04938272]
+ [0.03125    0.         0.88671875 0.08203125]
+ [0.19565217 0.00326087 0.02391304 0.77717391]]
+	 Final score: 0.8689815950773122 [('val/DenseNet121/normal/f1-score', 0.8586956521739132), ('val/DenseNet121/monotone/f1-score', 0.9180327868852458), ('val/DenseNet121/screenshot/f1-score', 0.899009900990099), ('val/DenseNet121/unknown/f1-score', 0.8431603773584905)]
+	 Time elapsed : 2434.92981 _________________________________
+
+Early stopping!! 
+---train finished---
+with extra feature std
+DenseNet121 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [0, 15],
+ 'gamma': 0.1,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.01157 Loss Sum: 62.04774, accuracy : 0.96869, val loss: 8.26654, val accuracy: 0.88083
+[[732   0   0  11]
+ [  8 149   0   5]
+ [  4   0 228  24]
+ [181   4  11 724]]
+[[0.98519515 0.         0.         0.01480485]
+ [0.04938272 0.91975309 0.         0.0308642 ]
+ [0.015625   0.         0.890625   0.09375   ]
+ [0.19673913 0.00434783 0.01195652 0.78695652]]
+	 Final score: 0.8920181453732483 [('val/DenseNet121/normal/f1-score', 0.8776978417266188), ('val/DenseNet121/monotone/f1-score', 0.946031746031746), ('val/DenseNet121/screenshot/f1-score', 0.9212121212121213), ('val/DenseNet121/unknown/f1-score', 0.8598574821852731)]
+	 Time elapsed : 694.64958 _________________________________
+
+Epoch: 1, batch loss: 0.07406 Loss Sum: 13.37685, accuracy : 0.99389, val loss: 8.77187, val accuracy: 0.89572
+[[730   0   0  13]
+ [  9 148   0   5]
+ [  0   0 237  19]
+ [156   5  10 749]]
+[[0.98250336 0.         0.         0.01749664]
+ [0.05555556 0.91358025 0.         0.0308642 ]
+ [0.         0.         0.92578125 0.07421875]
+ [0.16956522 0.00543478 0.01086957 0.81413043]]
+	 Final score: 0.9048400141190858 [('val/DenseNet121/normal/f1-score', 0.8913308913308914), ('val/DenseNet121/monotone/f1-score', 0.9396825396825397), ('val/DenseNet121/screenshot/f1-score', 0.9423459244532804), ('val/DenseNet121/unknown/f1-score', 0.8780773739742087)]
+	 Time elapsed : 1417.10060 _________________________________
+
+Epoch: 2, batch loss: 0.05454 Loss Sum: 13.49193, accuracy : 0.99309, val loss: 10.67509, val accuracy: 0.89332
+[[734   0   0   9]
+ [  3 154   0   5]
+ [  1   0 233  22]
+ [173   4   5 738]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.01851852 0.95061728 0.         0.0308642 ]
+ [0.00390625 0.         0.91015625 0.0859375 ]
+ [0.18804348 0.00434783 0.00543478 0.80217391]]
+	 Final score: 0.9080618292414466 [('val/DenseNet121/normal/f1-score', 0.8875453446191052), ('val/DenseNet121/monotone/f1-score', 0.9625), ('val/DenseNet121/screenshot/f1-score', 0.9433198380566801), ('val/DenseNet121/unknown/f1-score', 0.8713105076741441)]
+	 Time elapsed : 2132.76113 _________________________________
+
+Epoch: 3, batch loss: 0.01682 Loss Sum: 11.67658, accuracy : 0.99372, val loss: 10.09110, val accuracy: 0.89236
+[[730   0   0  13]
+ [  6 151   0   5]
+ [  3   0 237  16]
+ [173   2   6 739]]
+[[0.98250336 0.         0.         0.01749664]
+ [0.03703704 0.93209877 0.         0.0308642 ]
+ [0.01171875 0.         0.92578125 0.0625    ]
+ [0.18804348 0.00217391 0.00652174 0.80326087]]
+	 Final score: 0.9077900415574962 [('val/DenseNet121/normal/f1-score', 0.8821752265861028), ('val/DenseNet121/monotone/f1-score', 0.9587301587301588), ('val/DenseNet121/screenshot/f1-score', 0.9498997995991985), ('val/DenseNet121/unknown/f1-score', 0.8730064973419963)]
+	 Time elapsed : 2841.80224 _________________________________
+
+Epoch: 4, batch loss: 0.00835 Loss Sum: 9.26909, accuracy : 0.99546, val loss: 12.51469, val accuracy: 0.87554
+[[735   0   0   8]
+ [  9 150   0   3]
+ [  1   0 215  40]
+ [188   5   5 722]]
+[[0.98923284 0.         0.         0.01076716]
+ [0.05555556 0.92592593 0.         0.01851852]
+ [0.00390625 0.         0.83984375 0.15625   ]
+ [0.20434783 0.00543478 0.00543478 0.78478261]]
+	 Final score: 0.8852325560588961 [('val/DenseNet121/normal/f1-score', 0.8770883054892601), ('val/DenseNet121/monotone/f1-score', 0.9463722397476341), ('val/DenseNet121/screenshot/f1-score', 0.9033613445378151), ('val/DenseNet121/unknown/f1-score', 0.8529238038984052)]
+	 Time elapsed : 3553.03653 _________________________________
+
+Epoch: 5, batch loss: 0.00160 Loss Sum: 3.36996, accuracy : 0.99879, val loss: 13.07673, val accuracy: 0.88419
+[[734   0   0   9]
+ [  9 149   0   4]
+ [  1   0 240  15]
+ [194   2   7 717]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.05555556 0.91975309 0.         0.02469136]
+ [0.00390625 0.         0.9375     0.05859375]
+ [0.21086957 0.00217391 0.0076087  0.77934783]]
+	 Final score: 0.9013664545164952 [('val/DenseNet121/normal/f1-score', 0.8732897085068411), ('val/DenseNet121/monotone/f1-score', 0.952076677316294), ('val/DenseNet121/screenshot/f1-score', 0.9542743538767395), ('val/DenseNet121/unknown/f1-score', 0.8612612612612613)]
+	 Time elapsed : 4273.60435 _________________________________
+
+Early stopping!! 
+---train finished---
+with extra feature std
+DenseNet121 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.5, 0.1, 0.15, 0.4],
+ 'epoch': [5, 10],
+ 'gamma': 0.3,
+ 'learning_rate': 0.0001,
+ 'loss_cls_weight': tensor([1.0000, 1.0000, 1.0000, 1.1000]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [2,
+                Compose(
+    ColorJitter(brightness=None, contrast=None, saturation=[0.95, 1.05], hue=[-0.05, 0.05])
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0}
+Dataloader constructed! 
+	 Train size = 75597 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [32869, 6573, 9860, 26295]
+	 Training dataset proportion  [43, 8, 13, 34]
+Epoch: 0, batch loss: 0.16890 Loss Sum: 199.54925, accuracy : 0.88346, val loss: 4.33632, val accuracy: 0.91350
+[[720   1   0  22]
+ [  3 155   0   4]
+ [  2   0 241  13]
+ [118   3  14 785]]
+[[0.96904441 0.0013459  0.         0.02960969]
+ [0.01851852 0.95679012 0.         0.02469136]
+ [0.0078125  0.         0.94140625 0.05078125]
+ [0.12826087 0.00326087 0.01521739 0.85326087]]
+	 Final score: 0.9227038850539897 [('val/DenseNet121/normal/f1-score', 0.9079445145018916), ('val/DenseNet121/monotone/f1-score', 0.9657320872274143), ('val/DenseNet121/screenshot/f1-score', 0.9432485322896281), ('val/DenseNet121/unknown/f1-score', 0.9002293577981652)]
+	 Time elapsed : 794.99309 _________________________________
+
+Epoch: 1, batch loss: 0.09260 Loss Sum: 59.33677, accuracy : 0.97165, val loss: 5.59174, val accuracy: 0.90630
+[[731   1   0  11]
+ [  2 154   0   6]
+ [  1   0 244  11]
+ [146   4  13 757]]
+[[0.98384926 0.0013459  0.         0.01480485]
+ [0.01234568 0.95061728 0.         0.03703704]
+ [0.00390625 0.         0.953125   0.04296875]
+ [0.15869565 0.00434783 0.01413043 0.82282609]]
+	 Final score: 0.9177821080837487 [('val/DenseNet121/normal/f1-score', 0.9008009858287122), ('val/DenseNet121/monotone/f1-score', 0.9595015576323987), ('val/DenseNet121/screenshot/f1-score', 0.9512670565302145), ('val/DenseNet121/unknown/f1-score', 0.8879765395894428)]
+	 Time elapsed : 1587.72728 _________________________________
+
+Epoch: 2, batch loss: 0.02109 Loss Sum: 23.80984, accuracy : 0.99194, val loss: 6.74451, val accuracy: 0.89861
+[[733   1   0   9]
+ [  3 154   0   5]
+ [  1   0 244  11]
+ [157   4  20 739]]
+[[0.98654105 0.0013459  0.         0.01211306]
+ [0.01851852 0.95061728 0.         0.0308642 ]
+ [0.00390625 0.         0.953125   0.04296875]
+ [0.17065217 0.00434783 0.02173913 0.80326087]]
+	 Final score: 0.9100350664411756 [('val/DenseNet121/normal/f1-score', 0.8955406230910201), ('val/DenseNet121/monotone/f1-score', 0.9595015576323987), ('val/DenseNet121/screenshot/f1-score', 0.9384615384615383), ('val/DenseNet121/unknown/f1-score', 0.8776722090261282)]
+	 Time elapsed : 2379.57356 _________________________________
+
+Epoch: 3, batch loss: 0.03013 Loss Sum: 11.51110, accuracy : 0.99701, val loss: 7.08173, val accuracy: 0.89668
+[[733   1   0   9]
+ [  3 155   0   4]
+ [  1   0 241  14]
+ [169   4  10 737]]
+[[0.98654105 0.0013459  0.         0.01211306]
+ [0.01851852 0.95679012 0.         0.02469136]
+ [0.00390625 0.         0.94140625 0.0546875 ]
+ [0.18369565 0.00434783 0.01086957 0.80108696]]
+	 Final score: 0.911598731915667 [('val/DenseNet121/normal/f1-score', 0.8890236506973923), ('val/DenseNet121/monotone/f1-score', 0.9627329192546583), ('val/DenseNet121/screenshot/f1-score', 0.9506903353057199), ('val/DenseNet121/unknown/f1-score', 0.8752969121140142)]
+	 Time elapsed : 3173.28303 _________________________________
+
+Early stopping!! 
+Score too low -1
+---train finished---
+with extra feature std
+DenseNet121 Loaded!
+{'batch_size': 128,
+ 'class_ratio': [0.6, 0.08, 0.1, 0.45],
+ 'epoch': [0, 15],
+ 'gamma': 0.3,
+ 'learning_rate': 0.001,
+ 'loss_cls_weight': tensor([1., 1., 1., 1.]),
+ 'optimizer': 'Adam',
+ 'step_size': 5,
+ 'transforms': [1, None],
+ 'val_ratio': [0.012, 0.25, 0.2, 0.2],
+ 'weight_decay': 0.001}
+Dataloader constructed! 
+	 Train size = 80857 	Validation size = 2081
+	 Validation dataset composition  [35, 7, 12, 44]
+	 Training dataset composition  [39443, 5259, 6573, 29582]
+	 Training dataset proportion  [48, 6, 8, 36]
+Epoch: 0, batch loss: 0.16432 Loss Sum: 151.54266, accuracy : 0.91103, val loss: 5.99674, val accuracy: 0.86449
+[[718   2   0  23]
+ [  0 161   0   1]
+ [  4   0 226  26]
+ [203  11  12 694]]
+[[0.96635262 0.00269179 0.         0.03095559]
+ [0.         0.99382716 0.         0.00617284]
+ [0.015625   0.         0.8828125  0.1015625 ]
+ [0.22065217 0.01195652 0.01304348 0.75434783]]
+	 Final score: 0.8814856759327547 [('val/DenseNet121/normal/f1-score', 0.8609112709832133), ('val/DenseNet121/monotone/f1-score', 0.9583333333333333), ('val/DenseNet121/screenshot/f1-score', 0.9149797570850202), ('val/DenseNet121/unknown/f1-score', 0.8341346153846153)]
+	 Time elapsed : 694.96891 _________________________________
+
+Epoch: 1, batch loss: 0.28268 Loss Sum: 133.74240, accuracy : 0.92225, val loss: 6.43737, val accuracy: 0.86977
+[[723   0   0  20]
+ [  9 148   0   5]
+ [  3   0 215  38]
+ [182   6   8 724]]
+[[0.9730821  0.         0.         0.0269179 ]
+ [0.05555556 0.91358025 0.         0.0308642 ]
+ [0.01171875 0.         0.83984375 0.1484375 ]
+ [0.19782609 0.00652174 0.00869565 0.78695652]]
+	 Final score: 0.8782865309136083 [('val/DenseNet121/normal/f1-score', 0.8710843373493975), ('val/DenseNet121/monotone/f1-score', 0.9367088607594937), ('val/DenseNet121/screenshot/f1-score', 0.897703549060543), ('val/DenseNet121/unknown/f1-score', 0.8482718219097832)]
+	 Time elapsed : 1396.87276 _________________________________
+
+Epoch: 2, batch loss: 0.13082 Loss Sum: 118.27417, accuracy : 0.93032, val loss: 5.86595, val accuracy: 0.88179
+[[722   0   0  21]
+ [  6 151   0   5]
+ [  2   0 235  19]
+ [174  10   9 727]]
+[[0.9717362  0.         0.         0.0282638 ]
+ [0.03703704 0.93209877 0.         0.0308642 ]
+ [0.0078125  0.         0.91796875 0.07421875]
+ [0.18913043 0.01086957 0.00978261 0.79021739]]
+	 Final score: 0.8936626627619253 [('val/DenseNet121/normal/f1-score', 0.8767455980570734), ('val/DenseNet121/monotone/f1-score', 0.934984520123839), ('val/DenseNet121/screenshot/f1-score', 0.94), ('val/DenseNet121/unknown/f1-score', 0.859338061465721)]
+	 Time elapsed : 2102.93997 _________________________________
+
+Epoch: 3, batch loss: 0.14586 Loss Sum: 103.86741, accuracy : 0.93899, val loss: 6.35949, val accuracy: 0.87794
+[[723   0   0  20]
+ [ 10 149   0   3]
+ [  2   0 225  29]
+ [177   3  10 730]]
+[[0.9730821  0.         0.         0.0269179 ]
+ [0.0617284  0.91975309 0.         0.01851852]
+ [0.0078125  0.         0.87890625 0.11328125]
+ [0.1923913  0.00326087 0.01086957 0.79347826]]
+	 Final score: 0.8898609610600892 [('val/DenseNet121/normal/f1-score', 0.8737160120845922), ('val/DenseNet121/monotone/f1-score', 0.9490445859872612), ('val/DenseNet121/screenshot/f1-score', 0.9164969450101833), ('val/DenseNet121/unknown/f1-score', 0.8578143360752056)]
+	 Time elapsed : 2823.45974 _________________________________
+
+Epoch: 4, batch loss: 0.17429 Loss Sum: 90.74207, accuracy : 0.94691, val loss: 7.07509, val accuracy: 0.87410
+[[721   0   0  22]
+ [ 17 141   0   4]
+ [  1   0 225  30]
+ [182   3   3 732]]
+[[0.97039031 0.         0.         0.02960969]
+ [0.10493827 0.87037037 0.         0.02469136]
+ [0.00390625 0.         0.87890625 0.1171875 ]
+ [0.19782609 0.00326087 0.00326087 0.79565217]]
+	 Final score: 0.8840564463913934 [('val/DenseNet121/normal/f1-score', 0.8665865384615383), ('val/DenseNet121/monotone/f1-score', 0.9215686274509804), ('val/DenseNet121/screenshot/f1-score', 0.9297520661157024), ('val/DenseNet121/unknown/f1-score', 0.8571428571428571)]
+	 Time elapsed : 3535.31617 _________________________________
+
+Epoch: 5, batch loss: 0.03586 Loss Sum: 43.99136, accuracy : 0.97794, val loss: 9.00773, val accuracy: 0.86737
+[[734   0   0   9]
+ [ 11 147   0   4]
+ [  2   0 228  26]
+ [212   5   7 696]]
+[[0.98788694 0.         0.         0.01211306]
+ [0.06790123 0.90740741 0.         0.02469136]
+ [0.0078125  0.         0.890625   0.1015625 ]
+ [0.23043478 0.00543478 0.0076087  0.75652174]]
+	 Final score: 0.8819209604298743 [('val/DenseNet121/normal/f1-score', 0.862514688601645), ('val/DenseNet121/monotone/f1-score', 0.9363057324840764), ('val/DenseNet121/screenshot/f1-score', 0.9287169042769857), ('val/DenseNet121/unknown/f1-score', 0.8410876132930514)]
+	 Time elapsed : 4242.71237 _________________________________
+
+Early stopping!! 
+---train finished---
