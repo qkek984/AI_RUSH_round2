@@ -1,2 +1,4 @@
-efficientnet_pytorch
-xgboost
+#nsml: registry.navercorp.com/nsml/airush2020:pytorch1.5
+openpyxl
+adamp
+scikit-learn==0.23.1

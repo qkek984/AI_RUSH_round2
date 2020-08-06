@@ -1,67 +1,68 @@
-# Spam classification
+# Tagging Classification
 
-Repo for training a baseline model for the AI Rush Spam classification challenge. The model is just a simple ResNet50v2
-model. We first fine-tune the last layer a few epochs and then train the full model until convergence. Note that the
-dataset has unlabeled data, but to train the baseline model we only use the labeled data. 
+Repo for training a baseline model for the AI Rush tagging classification challenge. The model is just a simple 
+ResNet50 model. We have additional image information which is its category. The categories are separated as 
+four parts; primary category(대카테고리), secondary category(중카테고리), third category(소카테고리), and last category(세카테고리). 
+Hence, you can use both images and their categories for improving the performance.
 
 ## Important notes
-1. The function that's bind to NSML infer needs to output a dataframe with the two columns `filename` and `y_pred`,
-where `filename` is the name of the file that's being predicted and `y_pred` is an integer value of the predicted class.
+1. The function that's bind to NSML infer needs to output a dataframe with the two columns `image_name` and `y_pred`,
+where `image_name` is the name of the file that's being predicted and `y_pred` is an integer value of the predicted class.
 
-## Repository format
-`spam/spam_classifier/networks` contains the neural network definitions.
-
-`spam/spam_classifier/models` contains your full model code, this handles things like training, evaluation, 
-instantiation of datasets and neural networks, chaining of different neural networks etc.
-
-`spam/spam_classifier/datasets` contains logic related to loading data.
-
-`spam/training/experiments` contains all of your experiment configs, setting things like which model and dataset to use,
-to parameters related to models and networks.
-
-`spam/training/train.py` glues everything together with NSML. Loads the experiment config and starts the training.
-
-`nsml_train.py` This file is just used do make sure that the project runs properly on NSML. It should always be the
-entrypoint when running `nsml run` but you can ignore it otherwise.
+2. Train dataset is only annotated by users. It means that it can be mislabeled. You should build a model which is the 
+robust in noisy training set. 
 
 ## Run experiment
 
-To run the baseline model training, stand in the `airush2020/spam` folder and run 
+To run the baseline model training, stand in the `airush2020/tagging` folder and run 
 ```
-nsml run -e nsml_train.py -d spam-1 -m "A good message" -g 1 -a "--experiment_name v1"
+nsml run -d {DATASET_NAME} -e main.py -g 1 --cpus 4 --memory 16G --shm-size 16G -a "--pretrain --num_epoch 0"
 ```
+You can change the arguments such as learning rate, optimizer, the number of cpus, size of memory, etc.
+
 
 ## Metric
-Using a geometric mean over all spam classes.
+Using a geometric mean over all tagging classes.
 ```
-score = (f1_score_monotone * f1_score_screenshot * f1_score_unknown) ** (1 / 3)
+score = (f1_score_착용샷 * f1_score_설치후배치컷 * f1_발색샷 * f1_요리완성 * f1_미분류) ** (1 / 5)
 ```
+## Submission 
+You can submit your model as follows. 
+``` 
+nsml submit {SESSION_NAME} {CHECKPOINT}
+```
+When submitting baseline model, it takes about 145.05 seconds and the score is about 0.46. 
 
 ## Data
 ### Description
-There are four different classes; normal, monotone, screenshot, and unknown. The latter three are spam classes. 
+There are five different classes; 착용샷, 설치 후 배치컷, 요리완성, 발색샷, and 미분류. 
 The mapping between class names and the integer values used in the labels file is 
-`normal: 0, monotone: 1, screenshot: 2, unknown: 3, unlabeled: -1`.
-#### Normal
-Normal review images, that should not be detected as spam.
+`착용샷: 0, 설치 후 배치컷: 1, 발색샷: 2, 요리완성: 3, 미분류: 4`.
+#### 착용샷
+착용샷 is the review image that people are wearing something such as clothes, pants, accessories, and etc. 
+![착용샷](images/suit.JPEG)
 
-![normal](./images/normal.jpg)
-#### Monotone
-Images that are not real review images, and mostly containing one color.
+#### 설치 후 배치컷
+설치 후 배치컷 is that the product is located after installation. The furniture is the one of the examples to get those 
+kind of images after installation. 
 
-![monotone](./images/monotone.jpg)
-#### Screenshot 
-Images that are not real review images, and contain screenshots from the Naver shopping website.
+![설치후배치컷](images/installation.JPEG)
+#### 요리완성
+요리완성 is the food image that is completely finished for cooking. 
 
-![screenshot](./images/screenshot_1.png)
-#### Unknown
-Images that are not real review images, but don't fall under any of the classes above.
+![요리완성](images/food.JPEG)
 
-![unknown](./images/unknown_2.png)
-#### Unlabeled
-Images that have not been labeled yet. Can be used to train the model in a semi-supervised way if you want.
+#### 발색샷
+발색샷 is the image that indicates the color by product. For example, lip stick is the one of the representative examples.
+![발색샷](images/color.JPEG)
+
+#### 미분류
+미분류 is the image that is not included in those 4 kinds of classes as shown in the above. 
+
+![미분류](images/unknown.JPEG)
 
 ### Format
 See AI Rush dataset documentation.
 
+```
 
