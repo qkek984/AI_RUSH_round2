@@ -8,6 +8,7 @@ logger = logging.getLogger('Tagging Classification')
 train_transform = transforms.Compose([
     transforms.Resize((256, 256)),
     transforms.CenterCrop(224),
+    transforms.ColorJitter(hue=.1, saturation=.1),
     transforms.RandomHorizontalFlip(0.5),
     transforms.RandomVerticalFlip(0.5),
     transforms.ToTensor()

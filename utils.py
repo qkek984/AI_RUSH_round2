@@ -140,12 +140,12 @@ def inference(model, test_path: str) -> pd.DataFrame:
             category_pos = category_pos.to(device)
             category_oneh = category_oneh.to(device)
 
-            logit, pred = model(x, cat_oneh)
+            logit, pred = model(x, category_oneh)
 
             filename_list += data['image_name']
             
-            category_pred = torch.argmax(logit * category_pos, dim=-1)
-            y_category_pred += category_pred.type(torch.IntTensor).detach().cpu().tolist() 
+            # category_pred = torch.argmax(logit * category_pos, dim=-1)
+            # y_category_pred += category_pred.type(torch.IntTensor).detach().cpu().tolist() 
 
             y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
 

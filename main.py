@@ -13,13 +13,16 @@ from configuration.config import logger, train_transform, test_transform
 from data_loader import TagImageDataset
 from utils import select_optimizer, select_model, evaluate, train
 import random
+import time
 
 def train_process(args, model, train_loader, test_loader, optimizer, criterion, device):
     best_acc = 0.0
     for epoch in range(args.num_epoch):
         model.train()
+        start = time.time()
         train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=optimizer,
                                       criterion=criterion, device=device, epoch=epoch, total_epochs=args.num_epoch)
+        end = time.time()
         model.eval()
         test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
 
@@ -31,6 +34,8 @@ def train_process(args, model, train_loader, test_loader, optimizer, criterion, 
         report_dict["test__f1"] = test_f1
         report_dict["train__lr"] = optimizer.param_groups[0]['lr']
         nsml.report(False, step=epoch, **report_dict)
+
+        logger.info(f"Time taken for epoch : {end-start}")
         if best_acc < test_acc:
             checkpoint = 'best'
             logger.info(f'[{epoch}] Find the best model! Change the best model.')
@@ -58,12 +63,13 @@ def load_weight(model, weight_file):
         print('weight file {} is not exist.'.format(weight_file))
         print('=> random initialized model will be used.')
 
-def train_val_df(df, val_ratio = 0.2, class_num = 5):
+def train_val_df(df, val_ratio = 0.2, class_num = 5, sed=None, oversample_ratio=[1,1,7,1,0.8]):
     columns = [col for col in df]
-    trainData = [[] for i in range(0, class_num)]
-    valData = [[] for i in range(0, class_num)]
+    trainData = [[] for i in range(class_num)]
+    valData = [[] for i in range(class_num)]
 
-    for i in range(0, len(df['answer'])):
+    # clas별로 정리
+    for i in range(len(df['answer'])):
         item=[]
         if df['answer'][i] >= class_num:
             continue
@@ -72,36 +78,40 @@ def train_val_df(df, val_ratio = 0.2, class_num = 5):
             item.append(df[columns[j]][i])
         trainData[df['answer'][i]].append(item)
 
-    for i in range(0, class_num):
+    # validation 빼놓기
+    for i in range(class_num):
         len_td = len(trainData[i])
         val_num = int(len_td * val_ratio)
-
+        if sed:
+            random.seed(sed)
         num = [j for j in range(0, len_td)]
-        val_num = random.sample(num, val_num)
-        minus = 0
+        val_num = sorted((random.sample(num, val_num)),reverse=True)
         for vn in val_num:
-            idx = vn-minus
-            valData[i].append(trainData[i].pop(idx))
-            minus += 1
+            valData[i].append(trainData[i].pop(vn))
 
-    print("trainSet\tvalSet")
+    # oversampling 구현
+    for i in range(class_num):
+        if oversample_ratio[i] >= 1:
+            trainData[i] = trainData[i] * (oversample_ratio[i] // 1) 
+
+            extra = (oversample_ratio[i] % 1) * len(trainData[i])
+            trainData[i] += random.sample(trainData[i], extra) 
+        else:
+            trainData[i] = random.sample(trainData[i], int(len(trainData[i])* oversample_ratio[i]))
+
     trainSet = []
     valSet = []
-    for i in range(0, class_num):
+    for i in range(class_num):
         trainSet += trainData[i]
         valSet += valData[i]
-        print(len(trainData[i]),"\t",len(valData[i]))
 
-    trainData = trainData[0]+trainData[1]+trainData[2]+trainData[3]+trainData[4]
-    valData = valData[0]+valData[1]+valData[2]+valData[3]+valData[4]
-    print("total trainSet: ", len(trainData))
-    print("val trainSet: ", len(valData))
+    print("total trainSet: ", len(trainSet), '\tclass composition : ', [len(l) for l in trainData], [int(len(class_)/sum([len(l) for l in trainData])* 100) for class_ in trainData])
+    print("val trainSet: ", len(valSet), '\tclass composition : ', [len(l) for l in valData], [int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData])
 
-    train_df = pd.DataFrame(trainData, columns=columns)
-    val_df = pd.DataFrame(valData, columns=columns)
+    train_df = pd.DataFrame(trainSet, columns=columns)
+    val_df = pd.DataFrame(valSet, columns=columns)
+
     return train_df, val_df
-
-
 
 def main():
     # Argument Settings
@@ -148,7 +158,6 @@ def main():
     logger.info('Set the dataset')
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
     train_df, val_df = train_val_df(df)
-    
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
