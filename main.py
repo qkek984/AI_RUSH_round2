@@ -103,7 +103,7 @@ def main():
     # Set the dataset
     logger.info('Set the dataset')
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
-
+    df = df.iloc[:1000]
     trainset = TagImageDataset(data_frame=df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=df, root_dir=f'{DATASET_PATH}/train/train_data',
