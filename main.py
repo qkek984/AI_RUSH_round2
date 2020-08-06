@@ -58,7 +58,7 @@ def load_weight(model, weight_file):
         print('weight file {} is not exist.'.format(weight_file))
         print('=> random initialized model will be used.')
 
-def train_val_df(df, val_ratio = 0.2, class_num = 5):
+def train_val_df(df, val_ratio = 0.2, class_num = 5, sed=None):
     columns = [col for col in df]
     trainData = [[] for i in range(0, class_num)]
     valData = [[] for i in range(0, class_num)]
@@ -72,17 +72,16 @@ def train_val_df(df, val_ratio = 0.2, class_num = 5):
             item.append(df[columns[j]][i])
         trainData[df['answer'][i]].append(item)
 
+
     for i in range(0, class_num):
         len_td = len(trainData[i])
         val_num = int(len_td * val_ratio)
-
+        if sed:
+            random.seed(sed)
         num = [j for j in range(0, len_td)]
-        val_num = random.sample(num, val_num)
-        minus = 0
+        val_num = sorted((random.sample(num, val_num)),reverse=True)
         for vn in val_num:
-            idx = vn-minus
-            valData[i].append(trainData[i].pop(idx))
-            minus += 1
+            valData[i].append(trainData[i].pop(vn))
 
     print("trainSet\tvalSet")
     trainSet = []
@@ -92,16 +91,12 @@ def train_val_df(df, val_ratio = 0.2, class_num = 5):
         valSet += valData[i]
         print(len(trainData[i]),"\t",len(valData[i]))
 
-    trainData = trainData[0]+trainData[1]+trainData[2]+trainData[3]+trainData[4]
-    valData = valData[0]+valData[1]+valData[2]+valData[3]+valData[4]
-    print("total trainSet: ", len(trainData))
-    print("val trainSet: ", len(valData))
+    print("total trainSet: ", len(trainSet))
+    print("val trainSet: ", len(valSet))
 
-    train_df = pd.DataFrame(trainData, columns=columns)
-    val_df = pd.DataFrame(valData, columns=columns)
+    train_df = pd.DataFrame(trainSet, columns=columns)
+    val_df = pd.DataFrame(valSet, columns=columns)
     return train_df, val_df
-
-
 
 def main():
     # Argument Settings
@@ -147,9 +142,9 @@ def main():
     # Set the dataset
     logger.info('Set the dataset')
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
-    tarin_df, val_df = train_val_df(df)
-    
-    trainset = TagImageDataset(data_frame=tarin_df, root_dir=f'{DATASET_PATH}/train/train_data',
+    train_df, val_df = train_val_df(df)
+
+    trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
                               transform=test_transform)
