@@ -15,13 +15,15 @@ from utils import select_optimizer, select_model, evaluate, train
 import random
 import time
 
-def train_process(args, model, train_loader, test_loader, optimizer, criterion, device):
+def train_process(args, model, train_loader, test_loader, optimizer, criterion, device, threshold=3):
     best_acc = 0.0
+    patience = 0.0
+    best_f1 = 0.0
     for epoch in range(args.num_epoch):
         model.train()
         start = time.time()
         train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=optimizer,
-                                      criterion=criterion, device=device, epoch=epoch, total_epochs=args.num_epoch)
+                                      criterion=criterion, device=device, epoch=epoch, total_epochs=args.num_epoch + args.num_unfroze_epoch)
         end = time.time()
         model.eval()
         test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
@@ -36,20 +38,72 @@ def train_process(args, model, train_loader, test_loader, optimizer, criterion, 
         nsml.report(False, step=epoch, **report_dict)
 
         logger.info(f"Time taken for epoch : {end-start}")
-        if best_acc < test_acc:
+        if best_f1 < test_f1:
             checkpoint = 'best'
             logger.info(f'[{epoch}] Find the best model! Change the best model.')
             nsml.save(checkpoint)
-            best_acc = test_acc
+            best_f1 = test_f1
+            patience = 0        
+        else:
+            patience += 1
+
         if (epoch + 1) % 5 == 0:
             checkpoint = f'ckpt_{epoch + 1}'
             nsml.save(checkpoint)
+        if patience > threshold:
+            return 
 
         if (epoch + 1) % args.annealing_period == 0:
             for g in optimizer.param_groups:
                 g['lr'] = g['lr'] / args.learning_anneal
             logger.info('Learning rate annealed to : {lr:.6f} @epoch{epoch}'.format(
                 epoch=epoch, lr=optimizer.param_groups[0]['lr']))
+    ######################
+    unfreeze(model)
+    ######################
+    for epoch in range(args.num_unfroze_epoch):
+        model.train()
+        start = time.time()
+        train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=optimizer,
+                                      criterion=criterion, device=device, epoch=epoch+ args.num_epoch, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+        end = time.time()
+        model.eval()
+        test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
+
+        report_dict = dict()
+        report_dict["train__loss"] = train_loss
+        report_dict["train__acc"] = train_acc
+        report_dict["test__loss"] = test_loss
+        report_dict["test__acc"] = test_acc
+        report_dict["test__f1"] = test_f1
+        report_dict["train__lr"] = optimizer.param_groups[0]['lr']
+        nsml.report(False, step=epoch + args.num_epoch, **report_dict)
+
+        logger.info(f"Time taken for epoch : {end-start}")
+        if best_f1 < test_f1:
+            checkpoint = 'best'
+            logger.info(f'[{epoch}] Find the best model! Change the best model.')
+            nsml.save(checkpoint)
+            best_f1 = test_f1
+            patience = 0        
+        else:
+            patience += 1
+
+        if (epoch + 1) % 5 == 0:
+            checkpoint = f'ckpt_{epoch + 1}'
+            nsml.save(checkpoint)
+        if patience > threshold:
+            return 
+
+        if (epoch + 1) % args.annealing_period == 0:
+            for g in optimizer.param_groups:
+                g['lr'] = g['lr'] / args.learning_anneal
+            logger.info('Learning rate annealed to : {lr:.6f} @epoch{epoch}'.format(
+                epoch=epoch + args.num_epoch, lr=optimizer.param_groups[0]['lr']))
+
+def unfreeze(model):
+    for name, params in model.named_parameters():
+        params.requires_grad = True
 
 
 def load_weight(model, weight_file):
@@ -63,12 +117,12 @@ def load_weight(model, weight_file):
         print('weight file {} is not exist.'.format(weight_file))
         print('=> random initialized model will be used.')
 
-def train_val_df(df, val_ratio = 0.2, class_num = 5, sed=None, oversample_ratio=[1,1,7,1,0.8]):
+def train_val_df(df, val_ratio = 0.2, class_num = 5, sed=None, oversample_ratio=[1,1,7,1,0.7]):
     columns = [col for col in df]
     trainData = [[] for i in range(class_num)]
     valData = [[] for i in range(class_num)]
 
-    # clas별로 정리
+    # class별로 정리
     for i in range(len(df['answer'])):
         item=[]
         if df['answer'][i] >= class_num:
@@ -105,8 +159,8 @@ def train_val_df(df, val_ratio = 0.2, class_num = 5, sed=None, oversample_ratio=
         trainSet += trainData[i]
         valSet += valData[i]
 
-    print("total trainSet: ", len(trainSet), '\tclass composition : ', [len(l) for l in trainData], [int(len(class_)/sum([len(l) for l in trainData])* 100) for class_ in trainData])
-    print("val trainSet: ", len(valSet), '\tclass composition : ', [len(l) for l in valData], [int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData])
+    logger.info(f"Training Dataset size: {len(trainSet)} \tclass composition :  {[len(l) for l in trainData]} \t {[int(len(class_)/sum([len(l) for l in trainData])* 100) for class_ in trainData]}")
+    logger.info(f"Validation Dataset size: {len(valSet)} \tclass composition : {[len(l) for l in valData]} \t {[int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData]}")
 
     train_df = pd.DataFrame(trainSet, columns=columns)
     val_df = pd.DataFrame(valSet, columns=columns)
@@ -120,7 +174,8 @@ def main():
     parser.add_argument('--checkpoint', default='best', type=str, help='Checkpoint')
     parser.add_argument('--batch_size', default=256, type=int, help='batch size')
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
-    parser.add_argument('--num_epoch', default=100, type=int, help='The number of epochs')
+    parser.add_argument('--num_epoch', default=3, type=int, help='The number of epochs')
+    parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
     parser.add_argument('--model_name', default='resnet50', type=str, help='[resnet50, rexnet, dnet1244, dnet1222]')
     parser.add_argument('--optimizer', default='SGD', type=str)
     parser.add_argument('--lr', default=1e-2, type=float)
@@ -145,6 +200,11 @@ def main():
     load_weight(model, args.weight_file)
     model = model.to(device)
 
+    for name, params in model.named_parameters():
+        if 'linear' not in name:
+            params.requires_grad = False
+    logger.info(f"Trainable Parameters : {[ name for name,param in model.named_parameters() if param.requires_grad]}")
+
     nu.bind_model(model)
 
     if args.pause:
@@ -157,6 +217,9 @@ def main():
     # Set the dataset
     logger.info('Set the dataset')
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
+    df = df.iloc[:5000]
+    
+    logger.info(f"Transformation on train dataset\n{train_transform}")
     train_df, val_df = train_val_df(df)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
