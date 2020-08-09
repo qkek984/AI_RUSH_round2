@@ -14,8 +14,9 @@ from data_loader import TagImageDataset
 from utils import select_optimizer, select_model, evaluate, train
 import random
 import time
+from self_training import df_teacher
 
-def train_process(args, model, train_loader, test_loader, optimizer, criterion, device, threshold=3):
+def train_process(args, model, train_loader, test_loader, optimizer, unfroze_optimizer, criterion, device, threshold=3):
     best_acc = 0.0
     patience = 0.0
     best_f1 = 0.0
@@ -51,7 +52,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, criterion, 
             checkpoint = f'ckpt_{epoch + 1}'
             nsml.save(checkpoint)
         if patience > threshold:
-            return 
+            break
 
         if (epoch + 1) % args.annealing_period == 0:
             for g in optimizer.param_groups:
@@ -60,11 +61,12 @@ def train_process(args, model, train_loader, test_loader, optimizer, criterion, 
                 epoch=epoch, lr=optimizer.param_groups[0]['lr']))
     ######################
     unfreeze(model)
+    patience = 0 # init patience
     ######################
     for epoch in range(args.num_unfroze_epoch):
         model.train()
         start = time.time()
-        train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=optimizer,
+        train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=unfroze_optimizer,
                                       criterion=criterion, device=device, epoch=epoch+ args.num_epoch, total_epochs=args.num_epoch + args.num_unfroze_epoch)
         end = time.time()
         model.eval()
@@ -76,7 +78,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, criterion, 
         report_dict["test__loss"] = test_loss
         report_dict["test__acc"] = test_acc
         report_dict["test__f1"] = test_f1
-        report_dict["train__lr"] = optimizer.param_groups[0]['lr']
+        report_dict["train__lr"] = unfroze_optimizer.param_groups[0]['lr']
         nsml.report(False, step=epoch + args.num_epoch, **report_dict)
 
         logger.info(f"Time taken for epoch : {end-start}")
@@ -96,10 +98,10 @@ def train_process(args, model, train_loader, test_loader, optimizer, criterion, 
             return 
 
         if (epoch + 1) % args.annealing_period == 0:
-            for g in optimizer.param_groups:
+            for g in unfroze_optimizer.param_groups:
                 g['lr'] = g['lr'] / args.learning_anneal
             logger.info('Learning rate annealed to : {lr:.6f} @epoch{epoch}'.format(
-                epoch=epoch + args.num_epoch, lr=optimizer.param_groups[0]['lr']))
+                epoch=epoch + args.num_epoch, lr=unfroze_optimizer.param_groups[0]['lr']))
 
 def unfreeze(model):
     for name, params in model.named_parameters():
@@ -117,23 +119,20 @@ def load_weight(model, weight_file):
         print('weight file {} is not exist.'.format(weight_file))
         print('=> random initialized model will be used.')
 
-def train_val_df(df, val_ratio = 0.2, class_num = 5, sed=None, oversample_ratio=[1,1,7,1,0.7]):
+def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1, 1, 1, 1, 1]):
     columns = [col for col in df]
-    trainData = [[] for i in range(class_num)]
-    valData = [[] for i in range(class_num)]
+    trainData = [[] for i in range(n_class)]
+    valData = [[] for i in range(n_class)]
 
     # class별로 정리
     for i in range(len(df['answer'])):
         item=[]
-        if df['answer'][i] >= class_num:
-            continue
-
-        for j in range(0,len(columns)):
+        for j in range(len(columns)):
             item.append(df[columns[j]][i])
         trainData[df['answer'][i]].append(item)
 
     # validation 빼놓기
-    for i in range(class_num):
+    for i in range(n_class):
         len_td = len(trainData[i])
         val_num = int(len_td * val_ratio)
         if sed:
@@ -144,18 +143,22 @@ def train_val_df(df, val_ratio = 0.2, class_num = 5, sed=None, oversample_ratio=
             valData[i].append(trainData[i].pop(vn))
 
     # oversampling 구현
-    for i in range(class_num):
+    for i in range(n_class):
         if oversample_ratio[i] >= 1:
-            trainData[i] = trainData[i] * (oversample_ratio[i] // 1) 
-
+            trainData[i] = trainData[i] * (oversample_ratio[i] // 1)
             extra = (oversample_ratio[i] % 1) * len(trainData[i])
-            trainData[i] += random.sample(trainData[i], extra) 
+            trainData[i] += random.sample(trainData[i], extra)
+            ##
+            valData[i] = valData[i] * (oversample_ratio[i] // 1)
+            extra = (oversample_ratio[i] % 1) * len(valData[i])
+            valData[i] += random.sample(valData[i], extra)
         else:
             trainData[i] = random.sample(trainData[i], int(len(trainData[i])* oversample_ratio[i]))
+            valData[i] = random.sample(valData[i], int(len(valData[i]) * oversample_ratio[i]))
 
     trainSet = []
     valSet = []
-    for i in range(class_num):
+    for i in range(n_class):
         trainSet += trainData[i]
         valSet += valData[i]
 
@@ -172,13 +175,15 @@ def main():
     parser = argparse.ArgumentParser(description='Image Tagging Classification from Naver Shopping Reviews')
     parser.add_argument('--sess_name', default='', type=str, help='Session name that is loaded')
     parser.add_argument('--checkpoint', default='best', type=str, help='Checkpoint')
-    parser.add_argument('--batch_size', default=256, type=int, help='batch size')
+    parser.add_argument('--batch_size', default=128, type=int, help='batch size')
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
-    parser.add_argument('--num_epoch', default=3, type=int, help='The number of epochs')
+    parser.add_argument('--num_epoch', default=5, type=int, help='The number of epochs')
     parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
     parser.add_argument('--model_name', default='resnet50', type=str, help='[resnet50, rexnet, dnet1244, dnet1222]')
-    parser.add_argument('--optimizer', default='SGD', type=str)
+    parser.add_argument('--optimizer', default='SGDP', type=str)
+    parser.add_argument('--unfroze_optimizer', default='SGDP', type=str)
     parser.add_argument('--lr', default=1e-2, type=float)
+    parser.add_argument('--unfroze_lr', default=1e-4, type=float)
     parser.add_argument('--weight_decay', default=1e-5, type=float)
     parser.add_argument('--learning_anneal', default=1.1, type=float)
     parser.add_argument('--annealing_period', default=10, type=int)
@@ -188,7 +193,15 @@ def main():
     parser.add_argument('--pause', default=0, type=int)
     parser.add_argument('--iteration', default=0, type=str)
     parser.add_argument('--weight_file', default='model.pth', type=str)
+    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-1/440')
     args = parser.parse_args()
+
+    # df setting by self-training
+    if args.self_training:
+        df = df_teacher(teacher_sess_name = args.self_training)
+        logger.info('df by self-training')
+    else:
+        df = None
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -197,7 +210,7 @@ def main():
     model = select_model(args.model_name, pretrain=args.pretrain, n_class=5)
     total_param = sum([p.numel() for p in model.parameters()])
     logger.info(f'Model size: {total_param} tensors')
-    load_weight(model, args.weight_file)
+    #load_weight(model, args.weight_file)
     model = model.to(device)
 
     for name, params in model.named_parameters():
@@ -216,28 +229,32 @@ def main():
 
     # Set the dataset
     logger.info('Set the dataset')
-    df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
-    df = df.iloc[:5000]
+    if df == None:
+        df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
+        logger.info('normal df')
+    #df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{train_transform}")
-    train_df, val_df = train_val_df(df)
+    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 1])
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
                               transform=test_transform)
 
     train_loader = DataLoader(dataset=trainset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
-    test_loader = DataLoader(dataset=testset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+    test_loader = DataLoader(dataset=testset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 
     criterion = nn.CrossEntropyLoss(reduction='mean')
     optimizer = select_optimizer(model.parameters(), args.optimizer, args.lr, args.weight_decay)
+    unfroze_optimizer = select_optimizer(model.parameters(), args.unfroze_optimizer, args.unfroze_lr, args.weight_decay)
+
 
     criterion = criterion.to(device)
 
     if args.mode == 'train':
         logger.info('Start to train!')
         train_process(args=args, model=model, train_loader=train_loader, test_loader=test_loader,
-                      optimizer=optimizer, criterion=criterion, device=device)
+                      optimizer=optimizer, unfroze_optimizer=unfroze_optimizer, criterion=criterion, device=device)
 
     elif args.mode == 'test':
         nsml.load(args.checkpoint, session=args.sess_name)

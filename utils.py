@@ -2,7 +2,7 @@ import time
 
 import pandas as pd
 import torch
-from adamp import AdamP
+from adamp import AdamP, SGDP
 from scipy.stats import gmean
 from sklearn.metrics import f1_score, classification_report, confusion_matrix
 from torch import optim
@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 from configuration.config import logger, test_transform
 from data_loader import TagImageInferenceDataset
 from models.model import Resnet50_FC2
+from models.teacher_model import Resnet50_FC2
 import os
 
 def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs):
@@ -62,6 +63,80 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
     torch.cuda.empty_cache()
     return total_loss / (i + 1), correct / num_data
 
+def get_confidence_score(model, test_loader, device, defaltThresh=0.95, n_class=5):
+    errorProb = [[] for _ in range(n_class)]
+    confid_score = [0 for _ in range(n_class)]
+    avg_score = [0 for _ in range(n_class)]
+    lentl = len(test_loader)
+    with torch.no_grad():
+        for i, data in enumerate(test_loader):
+            img_name = data['image_name']
+            x = data['image']
+            img_label = data['label']
+            category_pos = data['category_possible']
+            category_oneh = data['category_onehot']
+
+            category_pos = category_pos.to(device)
+            category_oneh = category_oneh.to(device)
+            x = x.to(device)
+
+            out = model(x, category_oneh)
+            logit, pred = out
+
+            category_pred = torch.argmax(logit * category_pos, dim=-1)
+
+            for item in zip(img_name, img_label, category_pred, logit):
+                fname = item[0]
+                label = int(item[1])
+                predict = int(item[2])
+                prob = float(item[3][predict])
+                if label != predict:
+                    errorProb[predict].append(prob)
+
+            if i % 50 == 0:#작업 경과 출력
+                logger.info(f'confidence score {i} / {lentl}')
+        del x, img_label, img_name
+
+    for i in range(n_class):
+        ep = sorted(errorProb[i],reverse=True)
+        if ep:
+            confid_score[i] = max(ep)
+            avg_score[i] = sum(ep) / len(ep)
+        else:
+            confid_score[i] = defaltThresh
+            avg_score[i] = defaltThresh/2
+        logger.info(f'Top 5 error score [{i}] label: {ep[:5]}')
+    logger.info(f'condidence score: {confid_score}')
+    logger.info(f'avg score: {avg_score}')
+    return confid_score, avg_score
+
+def unclassified_predict(model, unclassified_loader, device, confidence_score, avg_score=[0.5, 0.5, 0.5, 0.5, 0.5], n_class=5):
+    predictedUnclassified = [[],[]]
+    lenul = len(unclassified_loader)
+    with torch.no_grad():
+        for i, data in enumerate(unclassified_loader):
+            img_name = data['image_name']
+            x = data['image']
+            category_oneh = data['category_onehot']
+            category_oneh = category_oneh.to(device)
+            x = x.to(device)
+
+            out = model(x, category_oneh)
+            logit, pred = out
+
+            for item in zip(img_name, pred, logit):
+                fname = item[0]
+                predict = int(item[1])
+                prob = float(item[2][predict])
+                if prob > confidence_score[predict]:
+                    predictedUnclassified[0].append(fname)
+                    predictedUnclassified[1].append(predict)
+                elif prob < avg_score[predict]:# 평균 스코어보다 낫으면 라벨 4로 감
+                    predictedUnclassified[0].append(fname)
+                    predictedUnclassified[1].append(4)
+            if i % 50 == 0:#작업 경과 출력
+                logger.info(f'predict unclassied data {i} / {lenul}')
+    return predictedUnclassified
 
 def evaluate(model, test_loader, device, criterion):
     correct = 0.0
@@ -133,28 +208,29 @@ def inference(model, test_path: str) -> pd.DataFrame:
     with torch.no_grad():
         for i, data in enumerate(test_loader):
             x = data['image']
-            category_pos = data['category_possible']
-            category_oneh = data['category_onehot']
+            # category_pos = data['category_possible']
+            # category_oneh = data['category_onehot']
 
             x = x.to(device)
-            category_pos = category_pos.to(device)
-            category_oneh = category_oneh.to(device)
+            # category_pos = category_pos.to(device)
+            # category_oneh = category_oneh.to(device)
 
-            logit, pred = model(x, category_oneh)
+            logit, pred = model(x,None)  # , category_oneh
 
             filename_list += data['image_name']
-            
+
             # category_pred = torch.argmax(logit * category_pos, dim=-1)
-            # y_category_pred += category_pred.type(torch.IntTensor).detach().cpu().tolist() 
+            # y_category_pred += category_pred.type(torch.IntTensor).detach().cpu().tolist()
 
             y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
 
     ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_pred})
     return ret
 
-
 def select_model(model_name: str, pretrain: bool, n_class: int):
     if model_name == 'resnet50':
+        model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
+    elif model_name == 'teacher':
         model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
     else:
         raise NotImplementedError('Please select in [resnet50]')
@@ -163,9 +239,12 @@ def select_model(model_name: str, pretrain: bool, n_class: int):
 
 def select_optimizer(param, opt_name: str, lr: float, weight_decay: float):
     if opt_name == 'SGD':
-        optimizer = optim.SGD(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
+        optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
+    elif opt_name == 'SGDP':
+        optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
     elif opt_name == 'AdamP':
-        optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay, nesterov=True)
+        #optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay, nesterov=True)
+        optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
     else:
         raise NotImplementedError('The optimizer should be in [SGD]')
     return optimizer
