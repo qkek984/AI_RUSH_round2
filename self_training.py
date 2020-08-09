@@ -88,7 +88,20 @@ def unclassified_df(df):
     logger.info(f'unclassifiedData Len: {len(unclassifiedData)} ')
     return unclassified_df
 
+def all_df(df):
+    columns = [col for col in df]
+    allData=[]
+    for i in range(len(df['answer'])):
+        item = []
+        for j in range(0, len(columns)):
+            item.append(df[columns[j]][i])
+        allData.append(item)
+    all = pd.DataFrame(allData, columns=columns)
 
+    logger.info(f'unclassifiedData Len: {len(allData)} ')
+    return all
+
+'''
 def reclassified_df(df, predictedUnclassified):
     columns = [col for col in df]
     reclassifiedData = []
@@ -105,6 +118,23 @@ def reclassified_df(df, predictedUnclassified):
                 reclassifiedData.append(item)
         else:
             reclassifiedData.append(item)
+    reclassified_df = pd.DataFrame(reclassifiedData, columns=columns)
+    return reclassified_df
+'''
+def reclassified_df(df, predictedUnclassified):# for all data
+    columns = [col for col in df]
+    reclassifiedData = []
+    for i in range(len(df['answer'])):
+        item = []
+        for j in range(len(columns)):
+            item.append(df[columns[j]][i])
+
+        if df['image_name'][i] in predictedUnclassified[0]:
+            idx = predictedUnclassified[0].index(df['image_name'][i])
+            modefy_answer = predictedUnclassified[1][idx]
+            item[4] = modefy_answer
+            reclassifiedData.append(item)
+
     reclassified_df = pd.DataFrame(reclassifiedData, columns=columns)
     return reclassified_df
 
@@ -135,15 +165,22 @@ def df_teacher(teacher_sess_name):
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
     _, val_df = train_val_df(df, oversample_ratio=[1, 1, 1, 1, 1])
     uc_df = unclassified_df(df)
-
+    alldf = all_df(df)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
                               transform=test_transform)
+    '''
     unclassifiedset = TagImageDataset(data_frame=uc_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=test_transform)
 
     test_loader = DataLoader(dataset=testset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    
     unclassified_loader = DataLoader(dataset=unclassifiedset, batch_size=batch_size, shuffle=False,
                                      num_workers=num_workers)
-
+    '''
+    test_loader = DataLoader(dataset=testset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    allset = TagImageDataset(data_frame=alldf, root_dir=f'{DATASET_PATH}/train/train_data',
+                                      transform=test_transform)
+    unclassified_loader = DataLoader(dataset=allset, batch_size=batch_size, shuffle=False,
+                                     num_workers=num_workers)
 
     #####get confidence score
     nsml.load(checkpoint, session=sess_name)
@@ -152,7 +189,7 @@ def df_teacher(teacher_sess_name):
     model.eval()
     logger.info('[ST 1] Get confidence score----------')
     confidence_score, avg_score = get_confidence_score(model=model, test_loader=test_loader, device=device)
-    confidence_score= [1, 1, 0.98, 0.99, 0.99]
+    confidence_score= [0.99, 0.95, 0.95, 0.90, 0.99]
     #####
 
     #unclassified class predict

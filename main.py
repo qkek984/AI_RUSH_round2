@@ -197,11 +197,11 @@ def main():
     args = parser.parse_args()
 
     # df setting by self-training
+    df = None
     if args.self_training:
         df = df_teacher(teacher_sess_name = args.self_training)
         logger.info('df by self-training')
-    else:
-        df = None
+
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -229,13 +229,13 @@ def main():
 
     # Set the dataset
     logger.info('Set the dataset')
-    if df == None:
+    if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
     #df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{train_transform}")
-    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 1])
+    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 6, 2, 0.5])
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',

@@ -131,9 +131,11 @@ def unclassified_predict(model, unclassified_loader, device, confidence_score, a
                 if prob > confidence_score[predict]:
                     predictedUnclassified[0].append(fname)
                     predictedUnclassified[1].append(predict)
+                '''
                 elif prob < avg_score[predict]:# 평균 스코어보다 낫으면 라벨 4로 감
                     predictedUnclassified[0].append(fname)
                     predictedUnclassified[1].append(4)
+                '''
             if i % 50 == 0:#작업 경과 출력
                 logger.info(f'predict unclassied data {i} / {lenul}')
     return predictedUnclassified
