@@ -9,7 +9,7 @@ class LabelSmoothingLoss(nn.Module):
         self.cls = classes
         self.dim = dim
 
-    def forward(self, pred, target, category=None):
+    def forward(self, pred, target, category):
         '''        
         category should be of same shape as pred indicating which categories the label could belong to
         '''

@@ -13,7 +13,7 @@ base_transform = transforms.Compose([
     transforms.ColorJitter(hue=.1, saturation=.1),
     transforms.RandomHorizontalFlip(0.5),
     transforms.ToTensor(),
-    transforms.Normalize(rgb_mean, rgb_std)
+    #transforms.Normalize(rgb_mean, rgb_std)
 ])
 
 efficientnet_transform = transforms.Compose([
