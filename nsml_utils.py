@@ -11,6 +11,7 @@ def bind_model(model):
         filename = os.path.join(save_folder, 'model')
         state = torch.load(filename)
         model.load_state_dict(state, strict=True)
+        print("Load saved weight from", filename)
 
     def save(save_folder, **kwargs):
         filename = os.path.join(save_folder, 'model')

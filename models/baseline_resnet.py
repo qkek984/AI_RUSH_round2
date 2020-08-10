@@ -10,7 +10,7 @@ class Resnet50_FC2(torch.nn.Module):
         self.linear1 = torch.nn.Linear(1000 , 512)
         self.linear2 = torch.nn.Linear(512, n_class)
 
-    def forward(self, x, onehot):
+    def forward(self, x, onehot=None):
         x = self.basemodel(x)
         # x = torch.cat([x,onehot], axis=1)
 

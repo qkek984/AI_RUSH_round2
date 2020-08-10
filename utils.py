@@ -10,7 +10,12 @@ from torch.utils.data import DataLoader
 
 from configuration.config import logger, test_transform
 from data_loader import TagImageInferenceDataset
-from models.model import Resnet50_FC2
+from models.baseline_resnet import Resnet50_FC2
+from models.resnet import ResNet50
+from models.densenet import DenseNet121
+from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8
+from custom_loss import LabelSmoothingLoss
+
 import os
 
 def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs):
@@ -37,8 +42,10 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
         out = model(x,category_oneh)
 
         logit, pred = out
-        loss = criterion(logit, xlabel)
-
+        if isinstance(criterion, torch.nn.CrossEntropyLoss):
+            loss = criterion(logit, xlabel)
+        elif isinstance(criterion, LabelSmoothingLoss):
+            loss = criterion(logit, xlabel, category_pos)
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
@@ -86,7 +93,10 @@ def evaluate(model, test_loader, device, criterion):
             out = model(x, category_oneh)
 
             logit, pred = out
-            loss = criterion(logit, xlabel)
+            if isinstance(criterion, torch.nn.CrossEntropyLoss):
+                loss = criterion(logit, xlabel)
+            elif isinstance(criterion, LabelSmoothingLoss):
+                loss = criterion(logit, xlabel, category_pos)
 
             category_pred = torch.argmax(logit*category_pos, dim=-1)
             category_correct += torch.sum(category_pred == xlabel).item()
@@ -133,37 +143,48 @@ def inference(model, test_path: str) -> pd.DataFrame:
     with torch.no_grad():
         for i, data in enumerate(test_loader):
             x = data['image']
-            category_pos = data['category_possible']
-            category_oneh = data['category_onehot']
+            # category_pos = data['category_possible']
+            # category_oneh = data['category_onehot']
 
             x = x.to(device)
-            category_pos = category_pos.to(device)
-            category_oneh = category_oneh.to(device)
+            # category_pos = category_pos.to(device)
+            # category_oneh = category_oneh.to(device)
 
-            logit, pred = model(x, category_oneh)
+            logit, pred = model(x) # , category_oneh
 
             filename_list += data['image_name']
-            
+            # These predictions are yet to be used            
             # category_pred = torch.argmax(logit * category_pos, dim=-1)
             # y_category_pred += category_pred.type(torch.IntTensor).detach().cpu().tolist() 
 
             y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
 
     ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_pred})
+    # ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_category_pred})
+
     return ret
 
 
 def select_model(model_name: str, pretrain: bool, n_class: int):
     if model_name == 'resnet50':
-        model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
+        # model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
+        model = ResNet50()
+    elif model_name == 'densenet':
+        model = DenseNet121()
+    elif model_name == "efficientnet_b7":
+        model = EfficientNet_B7()
+    elif model_name == "efficientnet_b8":
+        model = EfficientNet_B8()
     else:
-        raise NotImplementedError('Please select in [resnet50]')
+        raise NotImplementedError('Please select in [resnet50, densenet, efficientnet_b7, efficientnet_b8]')
     return model
 
 
 def select_optimizer(param, opt_name: str, lr: float, weight_decay: float):
     if opt_name == 'SGD':
         optimizer = optim.SGD(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
+    elif opt_name == 'Adam':
+        return torch.optim.Adam(params, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
     elif opt_name == 'AdamP':
         optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay, nesterov=True)
     else:
