@@ -16,7 +16,7 @@ import random
 import time
 from self_training import df_teacher
 from custom_loss import LabelSmoothingLoss
-
+from models.trainable_embedding import Trainable_Embedding
 
 def train_process(args, model, train_loader, test_loader, optimizer, unfroze_optimizer, criterion, device, threshold=3):
     best_acc = 0.0
@@ -44,7 +44,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
 
         logger.info(f"Time taken for epoch : {end-start}")
         if best_f1 < test_f1:
-            checkpoint = 'best'
+            checkpoint = 'best_'+str(epoch)
             logger.info(f'[{epoch}] Find the best model! Change the best model.')
             nsml.save(checkpoint)
             best_f1 = test_f1
@@ -177,7 +177,7 @@ def main():
     parser = argparse.ArgumentParser(description='Image Tagging Classification from Naver Shopping Reviews')
     parser.add_argument('--sess_name', default='', type=str, help='Session name that is loaded')
     parser.add_argument('--checkpoint', default='best', type=str, help='Checkpoint')
-    parser.add_argument('--batch_size', default=32, type=int, help='batch size')
+    parser.add_argument('--batch_size', default=64, type=int, help='batch size')
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
     parser.add_argument('--num_epoch', default=5, type=int, help='The number of epochs')
     parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
@@ -197,7 +197,7 @@ def main():
     parser.add_argument('--weight_file', default='model.pth', type=str)
     parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-1/440')
     parser.add_argument('--smooth', default=False, type=bool)
-
+    parser.add_argument('--cat_embed', default=False, type=bool)
     args = parser.parse_args()
 
     # df setting by self-training
@@ -232,15 +232,18 @@ def main():
         train_transform = base_transform
     logger.info(f"Transformation on train dataset\n{train_transform}")
 
+    if args.cat_embed:
+        model = Trainable_Embedding(model)
+        
     # Set the dataset
     logger.info('Set the dataset')
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    #df = df.iloc[:5000]
+    # df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{train_transform}")
-    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 6, 2, 0.5])
+    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 6, 2, 0.5], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
@@ -250,7 +253,7 @@ def main():
     test_loader = DataLoader(dataset=testset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 
     if args.smooth:
-        criterion = LabelSmoothingLoss(classes=5, smoothing=0.3)
+        criterion = LabelSmoothingLoss(classes=5, smoothing=0.2)
     else:
         criterion = nn.CrossEntropyLoss(reduction='mean')
     logger.info(f"Loss function : {criterion}")
@@ -274,8 +277,8 @@ def main():
         logger.info('Start to test!')
         test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device,
                                                 criterion=criterion)
-        logger.info(test_loss, test_acc, test_f1)
-
+        logger.info(f"loss = {test_loss}, accuracy = {test_acc}, F1-score = {test_f1}")
+        nsml.save("best")
 
 if __name__ == '__main__':
     main()

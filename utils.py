@@ -243,7 +243,8 @@ def inference(model, test_path: str) -> pd.DataFrame:
 
 def select_model(model_name: str, pretrain: bool, n_class: int):
     if model_name == 'resnet50':
-        model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
+        model = ResNet50()
+        # model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
     elif model_name == 'teacher':
         model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
     elif model_name == 'densenet':
@@ -263,7 +264,7 @@ def select_optimizer(param, opt_name: str, lr: float, weight_decay: float):
     elif opt_name == 'SGDP':
         optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
     elif opt_name == 'Adam':
-        return torch.optim.Adam(params, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
+        return torch.optim.Adam(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
     elif opt_name == 'AdamP':
         #optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay, nesterov=True)
         optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)

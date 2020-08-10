@@ -13,7 +13,7 @@ base_transform = transforms.Compose([
     transforms.ColorJitter(hue=.1, saturation=.1),
     transforms.RandomHorizontalFlip(0.5),
     transforms.ToTensor(),
-    #transforms.Normalize(rgb_mean, rgb_std)
+    transforms.Normalize(rgb_mean, rgb_std)
 ])
 
 efficientnet_transform = transforms.Compose([
@@ -33,8 +33,8 @@ efficientnetb8_transform = transforms.Compose([
 ])
 
 test_transform = transforms.Compose([
-    transforms.Resize((600, 600)),
-    # transforms.Resize((256,256)),
+    # transforms.Resize((600, 600)),
+    transforms.Resize((256,256)),
     transforms.ToTensor(),
     transforms.Normalize(rgb_mean, rgb_std)
 ])
