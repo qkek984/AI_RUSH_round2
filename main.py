@@ -177,7 +177,7 @@ def main():
     parser = argparse.ArgumentParser(description='Image Tagging Classification from Naver Shopping Reviews')
     parser.add_argument('--sess_name', default='', type=str, help='Session name that is loaded')
     parser.add_argument('--checkpoint', default='best', type=str, help='Checkpoint')
-    parser.add_argument('--batch_size', default=64, type=int, help='batch size')
+    parser.add_argument('--batch_size', default=128, type=int, help='batch size')
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
     parser.add_argument('--num_epoch', default=5, type=int, help='The number of epochs')
     parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
@@ -198,6 +198,7 @@ def main():
     parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-1/440')
     parser.add_argument('--smooth', default=False, type=bool)
     parser.add_argument('--cat_embed', default=False, type=bool)
+    parser.add_argument('--embed_dim', default=90, type=int)
     args = parser.parse_args()
 
     # df setting by self-training
@@ -234,14 +235,14 @@ def main():
 
     if args.cat_embed:
         model.use_fc_ = False
-        model = Trainable_Embedding(model)
+        model = Trainable_Embedding(model, embed_dim=args.embed_dim)
         
     # Set the dataset
     logger.info('Set the dataset')
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    # df = df.iloc[:5000]
+    df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{train_transform}")
     train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 6, 2, 0.5], sed=42)

@@ -8,8 +8,11 @@ class Resnet50_FC2(torch.nn.Module):
         self.name = name
         #self.basemodel = models.resnet50(pretrained=pretrained)
         self.basemodel = models.resnext101_32x8d(pretrained=pretrained, progress=True)
-        self.linear1 = torch.nn.Linear(1000 , 512)
-        self.linear2 = torch.nn.Linear(512, n_class)
+        self.basemodel.fc = torch.nn.Linear(2048 , n_class)
+    
+        for name, param in self.basemodel.named_parameters():
+            if 'fc' not in name : # and 'layer4' not in name
+                param.requires_grad = False
 
         self.use_fc_ = use_fc_
 
