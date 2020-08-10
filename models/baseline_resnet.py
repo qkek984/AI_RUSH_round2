@@ -8,7 +8,8 @@ class Resnet50_FC2(torch.nn.Module):
         self.name = name
         #self.basemodel = models.resnet50(pretrained=pretrained)
         self.basemodel = models.resnext101_32x8d(pretrained=pretrained, progress=True)
-        self.basemodel.fc = torch.nn.Linear(2048 , n_class)
+        self.basemodel.fc = torch.nn.Identity() 
+        self.fc = torch.nn.Linear(2048 , n_class)
     
         for name, param in self.basemodel.named_parameters():
             if 'fc' not in name : # and 'layer4' not in name
@@ -19,8 +20,7 @@ class Resnet50_FC2(torch.nn.Module):
     def forward(self, x, onehot=None):
         x = self.basemodel(x)
         if self.use_fc_:
-            x = F.relu(self.linear1(x))
-            out = F.softmax(self.linear2(x), dim=-1)
+            out = F.softmax(self.fc(x),dim=-1)
             pred = torch.argmax(out, dim=-1)
 
             return out, pred

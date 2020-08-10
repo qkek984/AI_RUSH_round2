@@ -11,12 +11,11 @@ class Trainable_Embedding(nn.Module):
         if "ResNet" in self.model.name:     
             self.fc = nn.Linear(2048 + embed_dim, 5).cuda()
         elif "ResNext" in self.model.name:     
-            self.fc = nn.Linear(1000 + embed_dim, 5).cuda()
+            self.fc = nn.Linear(2048 + embed_dim, 5).cuda()
 
     def forward(self, x, category):
 
-        x, _ = self.model(x)
-        
+        x, _ = self.model(x)        
         with torch.no_grad():
             x = torch.cat([x, torch.gather(self.cat_embedding,0, category.repeat(1,int(self.embed_dim/9)).long())], axis=1)
         x = self.fc(x)

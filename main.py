@@ -196,7 +196,7 @@ def main():
     parser.add_argument('--iteration', default=0, type=str)
     parser.add_argument('--weight_file', default='model.pth', type=str)
     parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-1/440')
-    parser.add_argument('--smooth', default=False, type=bool)
+    parser.add_argument('--smooth', default=True, type=bool)
     parser.add_argument('--cat_embed', default=False, type=bool)
     parser.add_argument('--embed_dim', default=90, type=int)
     args = parser.parse_args()
@@ -231,7 +231,6 @@ def main():
         train_transform = efficientnetb8_transform
     else:
         train_transform = base_transform
-    logger.info(f"Transformation on train dataset\n{train_transform}")
 
     if args.cat_embed:
         model.use_fc_ = False
@@ -242,7 +241,7 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    df = df.iloc[:5000]
+    # df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{train_transform}")
     train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 6, 2, 0.5], sed=42)
