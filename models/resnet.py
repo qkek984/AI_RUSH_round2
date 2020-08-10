@@ -114,7 +114,7 @@ class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=5, zero_init_residual=False,
                  groups=1, width_per_group=64, replace_stride_with_dilation=None,
-                 norm_layer=None, name="ResNet", add_std=0, fc_=True):
+                 norm_layer=None, name="ResNet", add_std=0, use_fc_=True):
         super(ResNet, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
@@ -123,7 +123,7 @@ class ResNet(nn.Module):
         self.inplanes = 64
         self.dilation = 1
         self.add_std = add_std
-        self.fc_ = fc_
+        self.use_fc_ = use_fc_
         if add_std:
             print("with extra feature std")
 
@@ -213,7 +213,7 @@ class ResNet(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
 
-        if fc_:
+        if self.use_fc_:
             x = self.fc(x)
             pred = torch.argmax(x, dim=-1)
             return x, pred

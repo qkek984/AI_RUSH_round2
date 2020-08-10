@@ -2,19 +2,23 @@ import torch
 from torch import nn
 
 class Trainable_Embedding(nn.Module):
-    def __init__(self, model):
+    def __init__(self, model, embed_dim=90):
         super(Trainable_Embedding, self).__init__()
         self.name = "Trainable Embedding"
         self.model = model
-        self.cat_embedding = nn.Parameter(torch.Tensor([[0] * 50 ] * 9).cuda(), requires_grad=True)
+        self.cat_embedding = nn.Parameter(torch.randn(9, embed_dim), requires_grad=True).cuda()
         if "ResNet" in self.model.name:     
-            self.fc = nn.Linear(2048 + 50, 5)
+            self.fc = nn.Linear(2048 + embed_dim, 5).cuda()
+        elif "ResNext" in self.model.name:     
+            self.fc = nn.Linear(1000 + embed_dim, 5).cuda()
 
     def forward(self, x, category):
 
         x, _ = self.model(x)
-        x = torch.cat([x, torch.gather(cat_embedding,0, category.repeat(1,9).long())], axis=1)
+        
+        with torch.no_grad():
+            x = torch.cat([x, torch.gather(self.cat_embedding,0, category.repeat(1,10).long())], axis=1)
         x = self.fc(x)
-
-        return x 
+        pred = torch.argmax(x, dim=-1)
+        return x , pred
 

@@ -244,7 +244,8 @@ def inference(model, test_path: str) -> pd.DataFrame:
 def select_model(model_name: str, pretrain: bool, n_class: int):
     if model_name == 'resnet50':
         model = ResNet50()
-        # model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
+    elif model_name == "resnext":
+        model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
     elif model_name == 'teacher':
         model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
     elif model_name == 'densenet':

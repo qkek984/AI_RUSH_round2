@@ -156,7 +156,7 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
             trainData[i] += random.sample(trainData[i], extra) 
         else:
             trainData[i] = random.sample(trainData[i], int(len(trainData[i])* oversample_ratio[i]))
-            valData[i] = random.sample(valData[i], int(len(valData[i]) * oversample_ratio[i]))
+            # valData[i] = random.sample(valData[i], int(len(valData[i]) * oversample_ratio[i]))
 
     trainSet = []
     valSet = []
@@ -233,6 +233,7 @@ def main():
     logger.info(f"Transformation on train dataset\n{train_transform}")
 
     if args.cat_embed:
+        model.use_fc_ = False
         model = Trainable_Embedding(model)
         
     # Set the dataset
