@@ -33,8 +33,12 @@ efficientnetb8_transform = transforms.Compose([
 ])
 
 test_transform = transforms.Compose([
-    # transforms.Resize((600, 600)),
     transforms.Resize((256,256)),
+    transforms.ToTensor(),
+    transforms.Normalize(rgb_mean, rgb_std)
+])
+efficient_test_transform = transforms.Compose([
+    transforms.Resize((600, 600)),
     transforms.ToTensor(),
     transforms.Normalize(rgb_mean, rgb_std)
 ])

@@ -252,8 +252,10 @@ def main():
 
     if args.model_name == 'efficientnet_b7':
         train_transform = efficientnet_transform
+        test_transform = efficient_test_transform
     elif args.model_name == 'efficientnet_b8':
         train_transform = efficientnetb8_transform
+        test_transform = efficient_test_transform
     else:
         train_transform = base_transform
 

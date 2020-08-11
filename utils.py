@@ -367,9 +367,9 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int):
     elif model_name == 'densenet':
         model = DenseNet121()
     elif model_name == "efficientnet_b7":
-        model = EfficientNet_B7()
+        model = EfficientNet_B7(onehot=onehot)
     elif model_name == "efficientnet_b8":
-        model = EfficientNet_B8()        
+        model = EfficientNet_B8(onehot=onehot)        
     else:
         raise NotImplementedError('Please select in [resnet50, densenet, efficientnet_b7, efficientnet_b8]')
     return model
