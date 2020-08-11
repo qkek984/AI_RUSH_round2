@@ -12,7 +12,7 @@ from configuration.config import logger, test_transform
 from data_loader import TagImageInferenceDataset
 from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
-from models.resnet import ResNet50
+from models.resnet import ResNet50, resnext50_32x4d
 from models.densenet import DenseNet121
 from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8
 from custom_loss import LabelSmoothingLoss
@@ -70,7 +70,7 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
     torch.cuda.empty_cache()
     return total_loss / (i + 1), correct / num_data
 
-def get_confidence_score(model, test_loader, device, defaltThresh=0.95, n_class=5):
+def get_confidence_score(model, test_loader, device, defaltThresh=0, n_class=5):
     errorProb = [[] for _ in range(n_class)]
     confid_score = [0 for _ in range(n_class)]
     avg_score = [0 for _ in range(n_class)]
@@ -104,21 +104,24 @@ def get_confidence_score(model, test_loader, device, defaltThresh=0.95, n_class=
                 logger.info(f'confidence score {i} / {lentl}')
         del x, img_label, img_name
 
+    #weight=[0.1, 0.25, 0.25, 0.25, 0.01]
+
     for i in range(n_class):
         ep = sorted(errorProb[i],reverse=True)
         if ep:
-            confid_score[i] = max(ep)
-            avg_score[i] = sum(ep) / len(ep)
+            #confid_score[i] = max(ep) # max
+            #confid_score[i] = sum(ep) / len(ep) # avg
+            confid_score[i] = sum(ep[:10]) / len(ep[:10])  # avg
+            #confid_score[i] = ep[int(len(ep) * 0.25)] # 0.25
+            #confid_score[i] = ep[int(len(ep) * weight[i])] # weight
         else:
             confid_score[i] = defaltThresh
-            avg_score[i] = defaltThresh/2
         logger.info(f'Top 5 error score [{i}] label: {ep[:5]}')
     logger.info(f'condidence score: {confid_score}')
-    logger.info(f'avg score: {avg_score}')
-    return confid_score, avg_score
+    return confid_score
 
-def unclassified_predict(model, unclassified_loader, device, confidence_score, avg_score=[0.5, 0.5, 0.5, 0.5, 0.5], n_class=5):
-    predictedUnclassified = [[],[]]
+def unclassified_predict(model, unclassified_loader, device, confidence_score, n_class=5):
+    predictedUnclassified = [[],[],[]]
     lenul = len(unclassified_loader)
     with torch.no_grad():
         for i, data in enumerate(unclassified_loader):
@@ -135,15 +138,13 @@ def unclassified_predict(model, unclassified_loader, device, confidence_score, a
                 fname = item[0]
                 predict = int(item[1])
                 prob = float(item[2][predict])
+
                 if prob > confidence_score[predict]:
                     predictedUnclassified[0].append(fname)
                     predictedUnclassified[1].append(predict)
-                '''
-                elif prob < avg_score[predict]:# 평균 스코어보다 낫으면 라벨 4로 감
-                    predictedUnclassified[0].append(fname)
-                    predictedUnclassified[1].append(4)
-                '''
-            if i % 50 == 0:#작업 경과 출력
+                    predictedUnclassified[2].append(prob)
+
+            if i % 100 == 0:#작업 경과 출력
                 logger.info(f'predict unclassied data {i} / {lenul}')
     return predictedUnclassified
 
@@ -245,9 +246,9 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int):
     if model_name == 'resnet50':
         model = ResNet50(onehot=onehot)
     elif model_name == "resnext":
-        model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
+        model = resnext50_32x4d(onehot=onehot)
     elif model_name == 'teacher':
-        model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
+        model = resnext50_32x4d(onehot=onehot)
     elif model_name == 'densenet':
         model = DenseNet121()
     elif model_name == "efficientnet_b7":

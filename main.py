@@ -147,6 +147,9 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
         for vn in val_num:
             valData[i].append(trainData[i].pop(vn))
 
+    logger.info(f"origin class composition :  {[len(l) for l in trainData]} \t {[int(len(class_)/sum([len(l) for l in trainData])* 100) for class_ in trainData]}")
+    logger.info(f"origin class composition : {[len(l) for l in valData]} \t {[int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData]}")
+
     # oversampling 구현
     for i in range(n_class):
         if oversample_ratio[i] >= 1:
@@ -181,21 +184,21 @@ def main():
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
     parser.add_argument('--num_epoch', default=5, type=int, help='The number of epochs')
     parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
-    parser.add_argument('--model_name', default='resnet50', type=str, help='[resnet50, rexnet, dnet1244, dnet1222]')
-    parser.add_argument('--optimizer', default='SGDP', type=str)
-    parser.add_argument('--unfroze_optimizer', default='SGDP', type=str)
+    parser.add_argument('--model_name', default='resnet50', type=str, help='[resnet50, resnext, dnet1244, dnet1222]')
+    parser.add_argument('--optimizer', default='Adam', type=str)
+    parser.add_argument('--unfroze_optimizer', default='Adam', type=str)
     parser.add_argument('--lr', default=1e-2, type=float)
     parser.add_argument('--unfroze_lr', default=1e-4, type=float)
     parser.add_argument('--weight_decay', default=1e-5, type=float)
     parser.add_argument('--learning_anneal', default=1.1, type=float)
     parser.add_argument('--annealing_period', default=10, type=int)
     parser.add_argument('--num_gpu', default=1, type=int)
-    parser.add_argument('--pretrain', action='store_true', default=False)
+    parser.add_argument('--pretrain', action='store_true', default=True)
     parser.add_argument('--mode', default='train', help='Mode')
     parser.add_argument('--pause', default=0, type=int)
     parser.add_argument('--iteration', default=0, type=str)
     parser.add_argument('--weight_file', default='model.pth', type=str)
-    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-1/440')
+    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/92')
     parser.add_argument('--smooth', default=True, type=bool)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
@@ -205,9 +208,8 @@ def main():
     args = parser.parse_args()
 
     # df setting by self-training
-    df = None
-    if args.self_training:
-        df = df_teacher(teacher_sess_name = args.self_training)
+    if args.self_training and args.pause == 0:
+        df = df_teacher(teacher_sess_name=args.self_training, undersample_ratio=[0.9, 0.9, 0.95, 0.95, 0.35], data_cross=False)
         logger.info('df by self-training')
 
 
@@ -219,12 +221,7 @@ def main():
     total_param = sum([p.numel() for p in model.parameters()])
     #load_weight(model, args.weight_file)
 
-    if args.pause:
-        nsml.paused(scope=locals())
 
-    if args.num_epoch == 0:
-        nsml.save('best')
-        return
     if args.model_name == 'efficientnet_b7':
         train_transform = efficientnet_transform
     elif args.model_name == 'efficientnet_b8':
@@ -241,6 +238,12 @@ def main():
     model = model.to(device)
     nsml_utils.bind_model(model)
 
+    if args.pause:
+        nsml.paused(scope=locals())
+    if args.num_epoch == 0:
+        nsml.save('best')
+        return
+
     # Set the dataset
     logger.info('Set the dataset')
     if args.self_training == False:
@@ -249,7 +252,7 @@ def main():
     # df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{train_transform}")
-    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 7, 2, 1], sed=42)
+    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 6, 1, 1], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
