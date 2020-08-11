@@ -330,6 +330,7 @@ def inference(model, test_path: str) -> pd.DataFrame:
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     y_pred = []
     y_cat_pred = []
+    y_category_pred=[]
     filename_list = []
 
     with torch.no_grad():
@@ -342,16 +343,48 @@ def inference(model, test_path: str) -> pd.DataFrame:
             category_pos = category_pos.to(device)
             category_oneh = category_oneh.to(device)
 
-            logit, pred = model(x, category_oneh) # 
+            logit, pred = model(x, category_oneh) # ,
 
             filename_list += data['image_name']
-            # These predictions are yet to be used            
-            # category_pred = torch.argmax(logit * category_pos, dim=-1)
-            # y_category_pred += category_pred.type(torch.IntTensor).detach().cpu().tolist()
+            # These predictions are yet to be used
+            category_pred = torch.argmax(logit * category_pos, dim=-1)
+            y_category_pred += category_pred.type(torch.IntTensor).detach().cpu().tolist()
 
-            y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
+            #y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
 
-    ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_pred})
-    # ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_category_pred})
+    # ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_pred})
+    ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_category_pred})
 
     return ret
+
+def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int):
+    if model_name == 'resnet50':
+        model = ResNet50(onehot=onehot)
+    elif model_name == "resnext":
+        model = resnext50_32x4d(onehot=onehot)
+    elif model_name == 'teacher':
+        model = resnext50_32x4d(onehot=onehot)
+    elif model_name == 'densenet':
+        model = DenseNet121()
+    elif model_name == "efficientnet_b7":
+        model = EfficientNet_B7()
+    elif model_name == "efficientnet_b8":
+        model = EfficientNet_B8()        
+    else:
+        raise NotImplementedError('Please select in [resnet50, densenet, efficientnet_b7, efficientnet_b8]')
+    return model
+
+
+def select_optimizer(param, opt_name: str, lr: float, weight_decay: float):
+    if opt_name == 'SGD':
+        optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
+    elif opt_name == 'SGDP':
+        optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
+    elif opt_name == 'Adam':
+        return torch.optim.Adam(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
+    elif opt_name == 'AdamP':
+        #optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay, nesterov=True)
+        optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
+    else:
+        raise NotImplementedError('The optimizer should be in [SGD]')
+    return optimizer
