@@ -197,8 +197,11 @@ def main():
     parser.add_argument('--weight_file', default='model.pth', type=str)
     parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-1/440')
     parser.add_argument('--smooth', default=True, type=bool)
+    parser.add_argument('--smooth_w', default=0.3, type=float)
+    parser.add_argument('--smooth_att', default=1.5, type=float)
     parser.add_argument('--cat_embed', default=False, type=bool)
     parser.add_argument('--embed_dim', default=90, type=int)
+    parser.add_argument('--onehot', default=0, type=int)
     args = parser.parse_args()
 
     # df setting by self-training
@@ -212,12 +215,9 @@ def main():
 
     # Model
     logger.info('Build Model')
-    model = select_model(args.model_name, pretrain=args.pretrain, n_class=5)
+    model = select_model(args.model_name, pretrain=args.pretrain, n_class=5, onehot=args.onehot)
     total_param = sum([p.numel() for p in model.parameters()])
     #load_weight(model, args.weight_file)
-    model = model.to(device)
-    logger.info(f'Model size: {total_param} tensors')
-    nsml_utils.bind_model(model)
 
     if args.pause:
         nsml.paused(scope=locals())
@@ -233,9 +233,14 @@ def main():
         train_transform = base_transform
 
     if args.cat_embed:
+        logger.info("Trainable category embedding appended")
         model.use_fc_ = False
         model = Trainable_Embedding(model, embed_dim=args.embed_dim)
-        
+
+    logger.info(f'Model size: {total_param} tensors')
+    model = model.to(device)
+    nsml_utils.bind_model(model)
+
     # Set the dataset
     logger.info('Set the dataset')
     if args.self_training == False:
@@ -244,7 +249,7 @@ def main():
     # df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{train_transform}")
-    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 6, 2, 0.5], sed=42)
+    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 7, 2, 1], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
@@ -254,9 +259,10 @@ def main():
     test_loader = DataLoader(dataset=testset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 
     if args.smooth:
-        criterion = LabelSmoothingLoss(classes=5, smoothing=0.2)
+        criterion = LabelSmoothingLoss(classes=5, smoothing=args.smooth_w, attention=args.smooth_att)
     else:
         criterion = nn.CrossEntropyLoss(reduction='mean')
+
     logger.info(f"Loss function : {criterion}")
 
     optimizer = select_optimizer(model.parameters(), args.optimizer, args.lr, args.weight_decay)

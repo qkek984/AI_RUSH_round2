@@ -7,14 +7,13 @@ class Trainable_Embedding(nn.Module):
         self.name = "Trainable Embedding"
         self.model = model
         self.embed_dim = embed_dim
-        self.cat_embedding = nn.Parameter(torch.randn(9, embed_dim), requires_grad=True).cuda()
+        self.cat_embedding = nn.Parameter(torch.randn(9, embed_dim), requires_grad=True)
         if "ResNet" in self.model.name:     
-            self.fc = nn.Linear(2048 + embed_dim, 5).cuda()
+            self.fc = nn.Linear(2048 + embed_dim, 5)
         elif "ResNext" in self.model.name:     
-            self.fc = nn.Linear(2048 + embed_dim, 5).cuda()
+            self.fc = nn.Linear(2048 + embed_dim, 5)
 
     def forward(self, x, category):
-
         x, _ = self.model(x)        
         with torch.no_grad():
             x = torch.cat([x, torch.gather(self.cat_embedding,0, category.repeat(1,int(self.embed_dim/9)).long())], axis=1)
