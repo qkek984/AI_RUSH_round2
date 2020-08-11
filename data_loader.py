@@ -88,6 +88,6 @@ class TagImageInferenceDataset(Dataset):
         sample['image_name'] = img_name
         sample['category_possible'] = torch.Tensor(CAT2POS[category])
         sample['category'] = torch.Tensor([CAT2NUM[category]])
-        #sample['category_onehot'] = torch.Tensor(CAT2ONEH[category])
+        sample['category_onehot'] = torch.Tensor(CAT2ONEH[category])
         
         return sample

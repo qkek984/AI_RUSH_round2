@@ -11,14 +11,15 @@ import pandas as pd
 import nsml_utils 
 from configuration.config import *
 from data_loader import TagImageDataset
-from utils import select_optimizer, select_model, evaluate, train
+from utils import select_optimizer, select_model, evaluate, train, iterative_training, iterative_evaluate
 import random
 import time
 from self_training import df_teacher
-from custom_loss import LabelSmoothingLoss
+from custom_loss import LabelSmoothingLoss, AlphaCrossEntropyLoss
 from models.trainable_embedding import Trainable_Embedding
+from models.iterative_model import Iterative_Model
 
-def train_process(args, model, train_loader, test_loader, optimizer, unfroze_optimizer, criterion, device, threshold=3):
+def train_process(args, model, train_loader, test_loader, optimizer, unfroze_optimizer, criterion, device, class_samples, threshold=3, alpha=0.5):
     best_acc = 0.0
     patience = 0.0
     best_f1 = 0.0
@@ -27,11 +28,21 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
     for epoch in range(args.num_epoch):
         model.train()
         start = time.time()
-        train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=optimizer,
-                                      criterion=criterion, device=device, epoch=epoch, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+        if isinstance(model, Iterative_Model):
+            if epoch + 1 > model.starting_epoch:
+                criterion.alpha = alpha
+                model.prototype_update(class_samples, device)
+            train_loss, train_acc = iterative_training(model=model, train_loader=train_loader, optimizer=optimizer,
+                                        criterion=criterion, device=device, epoch=epoch + 1, total_epochs=args.num_epoch + args.num_unfroze_epoch, class_samples=class_samples)
+            model.eval()
+            test_loss, test_acc, test_f1 = iterative_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion, epoch=epoch)
+
+        else:
+            train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=optimizer,
+                                        criterion=criterion, device=device, epoch=epoch + 1, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+            model.eval()
+            test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
         end = time.time()
-        model.eval()
-        test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
 
         report_dict = dict()
         report_dict["train__loss"] = train_loss
@@ -56,6 +67,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
             checkpoint = f'ckpt_{epoch + 1}'
             nsml.save(checkpoint)
         if patience > threshold:
+            logger.info(f"Early stopping !!")
             break
 
         if (epoch + 1) % args.annealing_period == 0:
@@ -70,11 +82,21 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
     for epoch in range(args.num_unfroze_epoch):
         model.train()
         start = time.time()
-        train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=unfroze_optimizer,
-                                      criterion=criterion, device=device, epoch=epoch+ args.num_epoch, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+        if isinstance(model, Iterative_Model):
+            if epoch + args.num_epoch + 1 > model.starting_epoch:
+                criterion.alpha = alpha
+                model.prototype_update(class_samples, device)
+            train_loss, train_acc = iterative_training(model=model, train_loader=train_loader, optimizer=optimizer,
+                                        criterion=criterion, device=device, epoch=epoch + args.num_epoch + 1, total_epochs=args.num_epoch + args.num_unfroze_epoch, class_samples=class_samples)
+            model.eval()
+            test_loss, test_acc, test_f1 = iterative_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion, epoch=epoch + args.num_epoch)
+
+        else:
+            train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=optimizer,
+                                        criterion=criterion, device=device, epoch=epoch + args.num_epoch + 1, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+            model.eval()
+            test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
         end = time.time()
-        model.eval()
-        test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
 
         report_dict = dict()
         report_dict["train__loss"] = train_loss
@@ -87,8 +109,8 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
 
         logger.info(f"Time taken for epoch : {end-start}")
         if best_f1 < test_f1:
-            checkpoint = 'best'
-            logger.info(f'[{epoch}] Find the best model! Change the best model.')
+            checkpoint = 'best_'+str(epoch)
+            logger.info(f'[{epoch + args.num_epoch}] Find the best model! Change the best model.')
             nsml.save(checkpoint)
             best_f1 = test_f1
             patience = 0        
@@ -124,7 +146,7 @@ def load_weight(model, weight_file):
         print('weight file {} is not exist.'.format(weight_file))
         print('=> random initialized model will be used.')
 
-def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1, 1, 1, 1, 1]):
+def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1, 1, 1, 1, 1], cls_sample=0.05):
     columns = [col for col in df]
     trainData = [[] for i in range(n_class)]
     valData = [[] for i in range(n_class)]
@@ -147,6 +169,7 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
         for vn in val_num:
             valData[i].append(trainData[i].pop(vn))
 
+    class_smaples = [ random.sample(cls_data, int(len(cls_data) * cls_sample)) for cls_data in trainData]
     # oversampling 구현
     for i in range(n_class):
         if oversample_ratio[i] >= 1:
@@ -170,7 +193,9 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
     train_df = pd.DataFrame(trainSet, columns=columns)
     val_df = pd.DataFrame(valSet, columns=columns)
 
-    return train_df, val_df
+    train_samples = [ pd.DataFrame(class_data_, columns=columns) for class_data_ in class_smaples]
+
+    return train_df, val_df, train_samples
 
 def main():
     # Argument Settings
@@ -202,6 +227,7 @@ def main():
     parser.add_argument('--cat_embed', default=False, type=bool)
     parser.add_argument('--embed_dim', default=90, type=int)
     parser.add_argument('--onehot', default=0, type=int)
+    parser.add_argument('--iterative', default=0 , type=int)
     args = parser.parse_args()
 
     # df setting by self-training
@@ -219,12 +245,10 @@ def main():
     total_param = sum([p.numel() for p in model.parameters()])
     #load_weight(model, args.weight_file)
 
-    if args.pause:
-        nsml.paused(scope=locals())
-
     if args.num_epoch == 0:
         nsml.save('best')
         return
+
     if args.model_name == 'efficientnet_b7':
         train_transform = efficientnet_transform
     elif args.model_name == 'efficientnet_b8':
@@ -233,23 +257,30 @@ def main():
         train_transform = base_transform
 
     if args.cat_embed:
-        logger.info("Trainable category embedding appended")
+        logger.info("\n#############\nTrainable category embedding appended to model\n#############")
         model.use_fc_ = False
         model = Trainable_Embedding(model, embed_dim=args.embed_dim)
+    elif args.iterative:
+        logger.info("\n#############\nIterative appended to model\n#############")
+        model = Iterative_Model(model)
 
     logger.info(f'Model size: {total_param} tensors')
     model = model.to(device)
+    # nsml bind model
     nsml_utils.bind_model(model)
+    if args.pause:
+        nsml.paused(scope=locals())
 
     # Set the dataset
     logger.info('Set the dataset')
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    # df = df.iloc[:5000]
+    # df = df.iloc[:10000]
     
+    # load dataset  
     logger.info(f"Transformation on train dataset\n{train_transform}")
-    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 7, 2, 1], sed=42)
+    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 7, 2, 1], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
@@ -258,13 +289,24 @@ def main():
     train_loader = DataLoader(dataset=trainset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
     test_loader = DataLoader(dataset=testset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 
+    if args.iterative:
+        logger.info("Class Sample Sizes")
+        logger.info(f"\t{' '.join([str(class_.shape[0]) for i, class_ in enumerate(class_samples)])}")
+        class_samples = [TagImageDataset(data_frame=class_df, root_dir=f'{DATASET_PATH}/train/train_data', \
+                             transform=base_transform) for class_df in class_samples]
+        class_samples = [DataLoader(class_dataset, batch_size=args.batch_size, num_workers=args.num_workers) \
+                            for class_dataset in class_samples]
+
+    # loss function    
     if args.smooth:
         criterion = LabelSmoothingLoss(classes=5, smoothing=args.smooth_w, attention=args.smooth_att)
     else:
         criterion = nn.CrossEntropyLoss(reduction='mean')
-
+    
+    if args.iterative:
+        criterion = AlphaCrossEntropyLoss(loss_fcn=criterion)    
     logger.info(f"Loss function : {criterion}")
-
+    # optimizer
     optimizer = select_optimizer(model.parameters(), args.optimizer, args.lr, args.weight_decay)
     unfroze_optimizer = select_optimizer(model.parameters(), args.unfroze_optimizer, args.unfroze_lr, args.weight_decay)
 
@@ -274,7 +316,7 @@ def main():
     if args.mode == 'train':
         logger.info('Start to train!')
         train_process(args=args, model=model, train_loader=train_loader, test_loader=test_loader,
-                      optimizer=optimizer, unfroze_optimizer=unfroze_optimizer, criterion=criterion, device=device)
+                      optimizer=optimizer, unfroze_optimizer=unfroze_optimizer, criterion=criterion, device=device, class_samples=class_samples)
 
     elif args.mode == 'test':
         nsml.load(args.checkpoint, session=args.sess_name)
