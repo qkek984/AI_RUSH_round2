@@ -137,7 +137,7 @@ def reclassified_df(df, predictedUnclassified, undersample_ratio= [1, 1, 1, 1, 1
     reclassified_df = pd.DataFrame(reclassifiedData, columns=columns)
     return reclassified_df
 
-def df_teacher(teacher_sess_name, undersample_ratio, data_cross):
+def df_teacher(teacher_sess_name, undersample_ratio, data_cross, onehot):
     # setting #######################
     batch_size =256
     num_workers = 16
@@ -149,7 +149,7 @@ def df_teacher(teacher_sess_name, undersample_ratio, data_cross):
 
     # Model
     logger.info('Build teacher Model')
-    model = select_model('teacher', pretrain=False, n_class=5, onehot=0)
+    model = select_model('teacher', pretrain=False, n_class=5, onehot=onehot)
     total_param = sum([p.numel() for p in model.parameters()])
     logger.info(f'Model size: {total_param} tensors')
     load_weight(model, 'model.pth')

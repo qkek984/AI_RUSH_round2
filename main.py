@@ -150,6 +150,7 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
     logger.info(f"origin class composition :  {[len(l) for l in trainData]} \t {[int(len(class_)/sum([len(l) for l in trainData])* 100) for class_ in trainData]}")
     logger.info(f"origin class composition : {[len(l) for l in valData]} \t {[int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData]}")
 
+    logger.info(f'orversampling ratio: {oversample_ratio} ')
     # oversampling 구현
     for i in range(n_class):
         if oversample_ratio[i] >= 1:
@@ -180,11 +181,11 @@ def main():
     parser = argparse.ArgumentParser(description='Image Tagging Classification from Naver Shopping Reviews')
     parser.add_argument('--sess_name', default='', type=str, help='Session name that is loaded')
     parser.add_argument('--checkpoint', default='best', type=str, help='Checkpoint')
-    parser.add_argument('--batch_size', default=128, type=int, help='batch size')
+    parser.add_argument('--batch_size', default=256, type=int, help='batch size')
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
     parser.add_argument('--num_epoch', default=5, type=int, help='The number of epochs')
     parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
-    parser.add_argument('--model_name', default='resnet50', type=str, help='[resnet50, resnext, dnet1244, dnet1222]')
+    parser.add_argument('--model_name', default='resnext', type=str, help='[resnet50, resnext, dnet1244, dnet1222]')
     parser.add_argument('--optimizer', default='Adam', type=str)
     parser.add_argument('--unfroze_optimizer', default='Adam', type=str)
     parser.add_argument('--lr', default=1e-2, type=float)
@@ -198,7 +199,7 @@ def main():
     parser.add_argument('--pause', default=0, type=int)
     parser.add_argument('--iteration', default=0, type=str)
     parser.add_argument('--weight_file', default='model.pth', type=str)
-    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/92')
+    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/126')
     parser.add_argument('--smooth', default=True, type=bool)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
@@ -209,8 +210,9 @@ def main():
 
     # df setting by self-training
     if args.self_training and args.pause == 0:
-        df = df_teacher(teacher_sess_name=args.self_training, undersample_ratio=[0.9, 0.9, 0.95, 0.95, 0.35], data_cross=False)
-        logger.info('df by self-training')
+        logger.info(f'self-training teacher sees : {args.self_training}')
+        df = df_teacher(teacher_sess_name=args.self_training, undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=False, onehot=args.onehot)
+        logger.info('df by teacher')
 
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -252,7 +254,7 @@ def main():
     # df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{train_transform}")
-    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 6, 1, 1], sed=42)
+    train_df, val_df = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 0.5], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
