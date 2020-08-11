@@ -88,10 +88,14 @@ def unclassified_df(df, answer=[0,1,2,3,4]):
     logger.info(f'unclassifiedData Len: {len(unclassifiedData)} ')
     return unclassified_df
 
-def reclassified_df(df, predictedUnclassified, undersample_ratio= [1, 1, 1, 1, 1], data_cross=False):
+def relabeled_df(df, predictedUnclassified, undersample_ratio= [1, 1, 1, 1, 1], data_cross=False):
     columns = [col for col in df]
-    Data = [[] for i in range(5)]
-    predictedUnclassified2 =[[],[]]
+    len_columns = len(columns)
+    tmpData = [[] for i in range(5)]
+    if data_cross:
+        undersampledData = [[],[]]
+    else:
+        undersampledData = [[] for i in range(5)]
     reclassifiedData = []
 
     len_df_answer =len(df['answer'])
@@ -101,45 +105,56 @@ def reclassified_df(df, predictedUnclassified, undersample_ratio= [1, 1, 1, 1, 1
         predict = predictedUnclassified[1][i]
         prob = predictedUnclassified[2][i]
         item = (prob,fname,predict)
-        Data[predict].append(item)
+        tmpData[predict].append(item)
 
     logger.info(f'undersampling ratio: {undersample_ratio} ')
     for i in range(5):
-        if Data[i]:
-            Data[i] = sorted(Data[i], reverse=True)
-            print("reclassified len: ",len(Data[i]), ", [",i,"] score : ",max(Data[i])," ~ ", min(Data[i]))
-            end_idx = int(len(Data[i])*undersample_ratio[i])
-            Data[i] = Data[i][:end_idx]
-            print("undersampled len: ", len(Data[i]), ", [", i, "] score : ", max(Data[i]), " ~ ", min(Data[i]))
-            for j in range(len(Data[i])):
-                predictedUnclassified2[0].append(Data[i][j][1]) # fname
-                predictedUnclassified2[1].append(Data[i][j][2]) # predict
+        if tmpData[i]:
+            tmpData[i] = sorted(tmpData[i], reverse=True)
+            print("relabeled len: ",len(tmpData[i]), ", [",i,"] score : ",max(tmpData[i])," ~ ", min(tmpData[i]))
+            end_idx = int(len(tmpData[i])*undersample_ratio[i])
+            tmpData[i] = tmpData[i][:end_idx]
+            print("undersampled len: ", len(tmpData[i]), ", [", i, "] score : ", max(tmpData[i]), " ~ ", min(tmpData[i]))
+            if data_cross:
+                for j in range(len(tmpData[i])):
+                    undersampledData[0].append(tmpData[i][j][1]) # fname
+                    undersampledData[1].append(tmpData[i][j][2]) # predict
+            else:
+                for j in range(len(tmpData[i])):
+                    undersampledData[i].append(tmpData[i][j][1])
             print("---")
 
-    for i in range(len_df_answer):
-        item = []
-        for j in range(len(columns)):
-            item.append(df[columns[j]][i])
-
-        if df['image_name'][i] in predictedUnclassified2[0]:
-            idx = predictedUnclassified2[0].index(df['image_name'][i])
-            modefy_answer = predictedUnclassified2[1][idx]
-            if data_cross:
+    if data_cross:
+        logger.info('data cross ')
+        for i in range(len_df_answer):
+            if df['image_name'][i] in undersampledData[0]:
+                idx = undersampledData[0].index(df['image_name'][i])
+                modefy_answer = undersampledData[1][idx]
+                item = []
+                for j in range(len_columns):
+                    item.append(df[columns[j]][i])
                 item[4] = modefy_answer
                 reclassifiedData.append(item)
-            else:
-                if item[4] == modefy_answer:
-                    reclassifiedData.append(item)
-
-        if i%10000 == 0:
-            logger.info(f'reclassify {i}/{len_df_answer}')
+            if i%10000 == 0:
+                logger.info(f'relabeled {i}/{len_df_answer}')
+    else:
+        logger.info('disable data cross')
+        for i in range(len_df_answer):
+            label_idx = df['answer'][i]
+            if df['image_name'][i] in undersampledData[label_idx]:
+                item = []
+                for j in range(len_columns):
+                    item.append(df[columns[j]][i])
+                reclassifiedData.append(item)
+            if i%10000 == 0:
+                logger.info(f'relabeled {i}/{len_df_answer}')
 
     reclassified_df = pd.DataFrame(reclassifiedData, columns=columns)
     return reclassified_df
 
 def df_teacher(teacher_sess_name, undersample_ratio, data_cross, onehot):
     # setting #######################
-    batch_size =256
+    batch_size =512
     num_workers = 16
     checkpoint ='best'
     sess_name = teacher_sess_name
@@ -162,15 +177,12 @@ def df_teacher(teacher_sess_name, undersample_ratio, data_cross, onehot):
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
 
     #_, val_df = train_val_df(df, oversample_ratio=[1, 1, 1, 1, 1])# confi-score를 위한 val 데이터 구성
+    # testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=test_transform)
+    # test_loader = DataLoader(dataset=testset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+
     uc_df = unclassified_df(df, answer=[0,1,2,3,4]) #기존 라벨 데이터를 전부 prediction할 unclassified data로 전환
-
-    #testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=test_transform)
-    unclassifiedset = TagImageDataset(data_frame=uc_df, root_dir=f'{DATASET_PATH}/train/train_data',
-                                      transform=test_transform)
-
-    #test_loader = DataLoader(dataset=testset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
-    unclassified_loader = DataLoader(dataset=unclassifiedset, batch_size=batch_size, shuffle=False,
-                                     num_workers=num_workers)
+    unclassifiedset = TagImageDataset(data_frame=uc_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=test_transform)
+    unclassified_loader = DataLoader(dataset=unclassifiedset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     #####get confidence score
     nsml.load(checkpoint, session=sess_name)
@@ -187,7 +199,7 @@ def df_teacher(teacher_sess_name, undersample_ratio, data_cross, onehot):
     predictedUnclassified = unclassified_predict(model=model, unclassified_loader=unclassified_loader, device=device, confidence_score=confidence_score)
     ##
     logger.info('[ST 3] reclassify----------')
-    new_df = reclassified_df(df,predictedUnclassified, undersample_ratio, data_cross)
+    new_df = relabeled_df(df, predictedUnclassified, undersample_ratio, data_cross)
     logger.info('created reclassified_df !\n')
     return new_df
 

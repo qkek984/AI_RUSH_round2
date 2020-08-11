@@ -58,14 +58,14 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
         correct += torch.sum(pred == xlabel).item()
         num_data += xlabel.size(0)
         if i % 100 == 0:  # print every 100 mini-batches
-            logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch, total_epochs, i,
+            logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch+1, total_epochs, i,
                                                                                               len(train_loader),
                                                                                               running_loss / 2000,
                                                                                               time.time() - start))
             running_loss = 0.0
 
     logger.info(
-        '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch, total_epochs, total_loss / (i + 1), correct / num_data, category_correct / num_data))
+        '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch+1, total_epochs, total_loss / (i + 1), correct / num_data, category_correct / num_data))
     del x, xlabel
     torch.cuda.empty_cache()
     return total_loss / (i + 1), correct / num_data
@@ -311,7 +311,7 @@ def select_optimizer(param, opt_name: str, lr: float, weight_decay: float):
         return torch.optim.Adam(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
     elif opt_name == 'AdamP':
         #optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay, nesterov=True)
-        optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
+        optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, nesterov=True)
     else:
         raise NotImplementedError('The optimizer should be in [SGD]')
     return optimizer

@@ -199,13 +199,13 @@ def main():
     parser.add_argument('--pause', default=0, type=int)
     parser.add_argument('--iteration', default=0, type=str)
     parser.add_argument('--weight_file', default='model.pth', type=str)
-    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/126')
+    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/157')
     parser.add_argument('--smooth', default=True, type=bool)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
     parser.add_argument('--cat_embed', default=False, type=bool)
     parser.add_argument('--embed_dim', default=90, type=int)
-    parser.add_argument('--onehot', default=0, type=int)
+    parser.add_argument('--onehot', default=1, type=int)
     args = parser.parse_args()
 
     # df setting by self-training
