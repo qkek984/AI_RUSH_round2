@@ -255,7 +255,7 @@ def ResNet50(pretrained=True, progress=False, onehot=0, **kwargs):
                    **kwargs)
 
 
-def resnext50_32x4d(pretrained=True, progress=True, **kwargs):
+def resnext50_32x4d(pretrained=True, progress=True, onehot=0, **kwargs):
     r"""ResNeXt-50 32x4d model from
     `"Aggregated Residual Transformation for Deep Neural Networks" <https://arxiv.org/pdf/1611.05431.pdf>`_
     Args:
@@ -265,7 +265,7 @@ def resnext50_32x4d(pretrained=True, progress=True, **kwargs):
     kwargs['groups'] = 32
     kwargs['width_per_group'] = 4
     return _resnet('resnext50_32x4d', Bottleneck, [3, 4, 6, 3],
-                   pretrained, progress, **kwargs)
+                   pretrained, progress, onehot=onehot, **kwargs)
 
 
 def wide_resnet50_2(pretrained=True, progress=True, **kwargs):

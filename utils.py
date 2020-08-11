@@ -12,7 +12,7 @@ from configuration.config import logger, test_transform
 from data_loader import TagImageInferenceDataset
 from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
-from models.resnet import ResNet50
+from models.resnet import ResNet50, resnext50_32x4d
 from models.densenet import DenseNet121
 from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8
 from models.iterative_model import Iterative_Model
@@ -112,21 +112,19 @@ def iterative_training(model, train_loader, optimizer, criterion, device, epoch,
         correct += torch.sum(pred == xlabel).item()
         num_data += xlabel.size(0)
         if i % 100 == 0:  # print every 100 mini-batches
-            logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch, total_epochs, i,
+            logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch+1, total_epochs, i,
                                                                                               len(train_loader),
                                                                                               running_loss / 2000,
                                                                                               time.time() - start))
             running_loss = 0.0
 
     logger.info(
-        '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch, total_epochs, total_loss / (i + 1), correct / num_data, category_correct / num_data))
+        '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch+1, total_epochs, total_loss / (i + 1), correct / num_data, category_correct / num_data))
     del x, xlabel
     torch.cuda.empty_cache()
     return total_loss / (i + 1), correct / num_data
 
-
-
-def get_confidence_score(model, test_loader, device, defaltThresh=0.95, n_class=5):
+def get_confidence_score(model, test_loader, device, defaltThresh=0, n_class=5):
     errorProb = [[] for _ in range(n_class)]
     confid_score = [0 for _ in range(n_class)]
     avg_score = [0 for _ in range(n_class)]
@@ -160,21 +158,24 @@ def get_confidence_score(model, test_loader, device, defaltThresh=0.95, n_class=
                 logger.info(f'confidence score {i} / {lentl}')
         del x, img_label, img_name
 
+    #weight=[0.1, 0.25, 0.25, 0.25, 0.01]
+
     for i in range(n_class):
         ep = sorted(errorProb[i],reverse=True)
         if ep:
-            confid_score[i] = max(ep)
-            avg_score[i] = sum(ep) / len(ep)
+            #confid_score[i] = max(ep) # max
+            #confid_score[i] = sum(ep) / len(ep) # avg
+            confid_score[i] = sum(ep[:10]) / len(ep[:10])  # avg
+            #confid_score[i] = ep[int(len(ep) * 0.25)] # 0.25
+            #confid_score[i] = ep[int(len(ep) * weight[i])] # weight
         else:
             confid_score[i] = defaltThresh
-            avg_score[i] = defaltThresh/2
         logger.info(f'Top 5 error score [{i}] label: {ep[:5]}')
     logger.info(f'condidence score: {confid_score}')
-    logger.info(f'avg score: {avg_score}')
-    return confid_score, avg_score
+    return confid_score
 
-def unclassified_predict(model, unclassified_loader, device, confidence_score, avg_score=[0.5, 0.5, 0.5, 0.5, 0.5], n_class=5):
-    predictedUnclassified = [[],[]]
+def unclassified_predict(model, unclassified_loader, device, confidence_score, n_class=5):
+    predictedUnclassified = [[],[],[]]
     lenul = len(unclassified_loader)
     with torch.no_grad():
         for i, data in enumerate(unclassified_loader):
@@ -191,15 +192,13 @@ def unclassified_predict(model, unclassified_loader, device, confidence_score, a
                 fname = item[0]
                 predict = int(item[1])
                 prob = float(item[2][predict])
+
                 if prob > confidence_score[predict]:
                     predictedUnclassified[0].append(fname)
                     predictedUnclassified[1].append(predict)
-                '''
-                elif prob < avg_score[predict]:# 평균 스코어보다 낫으면 라벨 4로 감
-                    predictedUnclassified[0].append(fname)
-                    predictedUnclassified[1].append(4)
-                '''
-            if i % 50 == 0:#작업 경과 출력
+                    predictedUnclassified[2].append(prob)
+
+            if i % 100 == 0:#작업 경과 출력
                 logger.info(f'predict unclassied data {i} / {lenul}')
     return predictedUnclassified
 
@@ -356,35 +355,3 @@ def inference(model, test_path: str) -> pd.DataFrame:
     # ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_category_pred})
 
     return ret
-
-def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int):
-    if model_name == 'resnet50':
-        model = ResNet50(onehot=onehot)
-    elif model_name == "resnext":
-        model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
-    elif model_name == 'teacher':
-        model = Resnet50_FC2(n_class=n_class, pretrained=pretrain)
-    elif model_name == 'densenet':
-        model = DenseNet121()
-    elif model_name == "efficientnet_b7":
-        model = EfficientNet_B7()
-    elif model_name == "efficientnet_b8":
-        model = EfficientNet_B8()        
-    else:
-        raise NotImplementedError('Please select in [resnet50, densenet, efficientnet_b7, efficientnet_b8]')
-    return model
-
-
-def select_optimizer(param, opt_name: str, lr: float, weight_decay: float):
-    if opt_name == 'SGD':
-        optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
-    elif opt_name == 'SGDP':
-        optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
-    elif opt_name == 'Adam':
-        return torch.optim.Adam(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
-    elif opt_name == 'AdamP':
-        #optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay, nesterov=True)
-        optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
-    else:
-        raise NotImplementedError('The optimizer should be in [SGD]')
-    return optimizer

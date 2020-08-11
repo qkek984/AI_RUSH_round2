@@ -170,6 +170,10 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
             valData[i].append(trainData[i].pop(vn))
 
     class_smaples = [ random.sample(cls_data, int(len(cls_data) * cls_sample)) for cls_data in trainData]
+    logger.info(f"origin class composition :  {[len(l) for l in trainData]} \t {[int(len(class_)/sum([len(l) for l in trainData])* 100) for class_ in trainData]}")
+    logger.info(f"origin class composition : {[len(l) for l in valData]} \t {[int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData]}")
+
+    logger.info(f'orversampling ratio: {oversample_ratio} ')
     # oversampling 구현
     for i in range(n_class):
         if oversample_ratio[i] >= 1:
@@ -202,39 +206,40 @@ def main():
     parser = argparse.ArgumentParser(description='Image Tagging Classification from Naver Shopping Reviews')
     parser.add_argument('--sess_name', default='', type=str, help='Session name that is loaded')
     parser.add_argument('--checkpoint', default='best', type=str, help='Checkpoint')
-    parser.add_argument('--batch_size', default=128, type=int, help='batch size')
+    parser.add_argument('--batch_size', default=256, type=int, help='batch size')
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
     parser.add_argument('--num_epoch', default=5, type=int, help='The number of epochs')
     parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
-    parser.add_argument('--model_name', default='resnet50', type=str, help='[resnet50, rexnet, dnet1244, dnet1222]')
-    parser.add_argument('--optimizer', default='SGDP', type=str)
-    parser.add_argument('--unfroze_optimizer', default='SGDP', type=str)
+    parser.add_argument('--model_name', default='resnext', type=str, help='[resnet50, resnext, dnet1244, dnet1222]')
+    parser.add_argument('--optimizer', default='Adam', type=str)
+    parser.add_argument('--unfroze_optimizer', default='Adam', type=str)
     parser.add_argument('--lr', default=1e-2, type=float)
     parser.add_argument('--unfroze_lr', default=1e-4, type=float)
     parser.add_argument('--weight_decay', default=1e-5, type=float)
     parser.add_argument('--learning_anneal', default=1.1, type=float)
     parser.add_argument('--annealing_period', default=10, type=int)
     parser.add_argument('--num_gpu', default=1, type=int)
-    parser.add_argument('--pretrain', action='store_true', default=False)
+    parser.add_argument('--pretrain', action='store_true', default=True)
     parser.add_argument('--mode', default='train', help='Mode')
     parser.add_argument('--pause', default=0, type=int)
     parser.add_argument('--iteration', default=0, type=str)
     parser.add_argument('--weight_file', default='model.pth', type=str)
-    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-1/440')
+    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/157')
     parser.add_argument('--smooth', default=True, type=bool)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
     parser.add_argument('--cat_embed', default=False, type=bool)
     parser.add_argument('--embed_dim', default=90, type=int)
-    parser.add_argument('--onehot', default=0, type=int)
+    parser.add_argument('--onehot', default=1, type=int)
     parser.add_argument('--iterative', default=0 , type=int)
+
     args = parser.parse_args()
 
     # df setting by self-training
-    df = None
-    if args.self_training:
-        df = df_teacher(teacher_sess_name = args.self_training)
-        logger.info('df by self-training')
+    if args.self_training and args.pause == 0:
+        logger.info(f'self-training teacher sees : {args.self_training}')
+        df = df_teacher(teacher_sess_name=args.self_training, undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=False, onehot=args.onehot)
+        logger.info('df by teacher')
 
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -244,10 +249,6 @@ def main():
     model = select_model(args.model_name, pretrain=args.pretrain, n_class=5, onehot=args.onehot)
     total_param = sum([p.numel() for p in model.parameters()])
     #load_weight(model, args.weight_file)
-
-    if args.num_epoch == 0:
-        nsml.save('best')
-        return
 
     if args.model_name == 'efficientnet_b7':
         train_transform = efficientnet_transform
@@ -271,12 +272,18 @@ def main():
     if args.pause:
         nsml.paused(scope=locals())
 
+    if args.pause:
+        nsml.paused(scope=locals())
+    if args.num_epoch == 0:
+        nsml.save('best')
+        return
+
     # Set the dataset
     logger.info('Set the dataset')
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    # df = df.iloc[:10000]
+    df = df.iloc[:4000]
     
     # load dataset  
     logger.info(f"Transformation on train dataset\n{train_transform}")
