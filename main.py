@@ -169,7 +169,7 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
         for vn in val_num:
             valData[i].append(trainData[i].pop(vn))
 
-    class_smaples = [ random.sample(cls_data, int(len(cls_data) * cls_sample)) for cls_data in trainData]
+    class_smaples = [ random.sample(cls_data, max(420, int(len(cls_data) * cls_sample))) for cls_data in trainData]
     logger.info(f"origin class composition :  {[len(l) for l in trainData]} \t {[int(len(class_)/sum([len(l) for l in trainData])* 100) for class_ in trainData]}")
     logger.info(f"origin class composition : {[len(l) for l in valData]} \t {[int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData]}")
 
@@ -225,7 +225,7 @@ def main():
     parser.add_argument('--iteration', default=0, type=str)
     parser.add_argument('--weight_file', default='model.pth', type=str)
     parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/157')
-    parser.add_argument('--smooth', default=True, type=bool)
+    parser.add_argument('--smooth', default=1, type=int)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
     parser.add_argument('--cat_embed', default=False, type=bool)
@@ -250,7 +250,10 @@ def main():
     total_param = sum([p.numel() for p in model.parameters()])
     #load_weight(model, args.weight_file)
 
-    if args.model_name == 'efficientnet_b7':
+    if args.model_name == 'efficientnet_b5':
+        train_transform = efficientnetb5_transform
+        test_transform = efficientb5_test_transform
+    elif args.model_name == 'efficientnet_b7':
         train_transform = efficientnet_transform
         test_transform = efficient_test_transform
     elif args.model_name == 'efficientnet_b8':
@@ -258,6 +261,7 @@ def main():
         test_transform = efficient_test_transform
     else:
         train_transform = base_transform
+        test_transform = base_test_transform
 
     if args.cat_embed:
         logger.info("\n#############\nTrainable category embedding appended to model\n#############")
@@ -285,7 +289,7 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    df = df.iloc[:4000]
+    # df = df.iloc[:10000]
     
     # load dataset  
     logger.info(f"Transformation on train dataset\n{train_transform}")

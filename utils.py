@@ -8,13 +8,13 @@ from sklearn.metrics import f1_score, classification_report, confusion_matrix
 from torch import optim
 from torch.utils.data import DataLoader
 
-from configuration.config import logger, test_transform
+from configuration.config import logger, base_test_transform, efficient_test_transform
 from data_loader import TagImageInferenceDataset
 from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
 from models.resnet import ResNet50, resnext50_32x4d
 from models.densenet import DenseNet121
-from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8
+from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
 from models.iterative_model import Iterative_Model
 from custom_loss import LabelSmoothingLoss, AlphaCrossEntropyLoss
 
@@ -112,14 +112,14 @@ def iterative_training(model, train_loader, optimizer, criterion, device, epoch,
         correct += torch.sum(pred == xlabel).item()
         num_data += xlabel.size(0)
         if i % 100 == 0:  # print every 100 mini-batches
-            logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch+1, total_epochs, i,
+            logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch, total_epochs, i,
                                                                                               len(train_loader),
                                                                                               running_loss / 2000,
                                                                                               time.time() - start))
             running_loss = 0.0
 
     logger.info(
-        '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch+1, total_epochs, total_loss / (i + 1), correct / num_data, category_correct / num_data))
+        '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch, total_epochs, total_loss / (i + 1), correct / num_data, category_correct / num_data))
     del x, xlabel
     torch.cuda.empty_cache()
     return total_loss / (i + 1), correct / num_data
@@ -323,6 +323,11 @@ def inference(model, test_path: str) -> pd.DataFrame:
     :return:
     pandas.DataFrame: columns should be include "image_name" and "y_pred".
     """
+    if isinstance(model,EfficientNet_B7) or isinstance(model,EfficientNet_B8):
+        test_transform = efficient_test_transform
+    else:
+        test_transform = base_test_transform
+
     testset = TagImageInferenceDataset(root_dir=f'{test_path}/test_data',
                                        transform=test_transform)
 
@@ -366,6 +371,8 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int):
         model = resnext50_32x4d(onehot=onehot)
     elif model_name == 'densenet':
         model = DenseNet121()
+    elif model_name == "efficientnet_b5":
+        model = EfficientNet_B5(onehot=onehot)
     elif model_name == "efficientnet_b7":
         model = EfficientNet_B7(onehot=onehot)
     elif model_name == "efficientnet_b8":
@@ -377,7 +384,7 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int):
 
 def select_optimizer(param, opt_name: str, lr: float, weight_decay: float):
     if opt_name == 'SGD':
-        optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
+        optimizer = torch.optim.SGD(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
     elif opt_name == 'SGDP':
         optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
     elif opt_name == 'Adam':

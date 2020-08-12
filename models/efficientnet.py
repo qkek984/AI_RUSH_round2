@@ -160,14 +160,14 @@ class EfficientNet(nn.Module):
         >>> outputs = model(inputs)
     """
 
-    def __init__(self, blocks_args=None, global_params=None, name="EfficientNet", onehot=0):
+    def __init__(self, blocks_args=None, global_params=None, name="EfficientNet", use_oh=0):
         super().__init__()
         assert isinstance(blocks_args, list), 'blocks_args should be a list'
         assert len(blocks_args) > 0, 'block args must be greater than 0'
         self._global_params = global_params
         self._blocks_args = blocks_args
         self.name = name
-        self.onehot = onehot
+        self.use_oh = use_oh
         # Batch norm parameters
         bn_mom = 1 - self._global_params.batch_norm_momentum
         bn_eps = self._global_params.batch_norm_epsilon
@@ -213,7 +213,7 @@ class EfficientNet(nn.Module):
         # Final linear layer
         self._avg_pooling = nn.AdaptiveAvgPool2d(1)
         self._dropout = nn.Dropout(self._global_params.dropout_rate)
-        self._fc = nn.Linear(out_channels, self._global_params.num_classes)
+        self.fc = nn.Linear(out_channels, self._global_params.num_classes)
         self._swish = MemoryEfficientSwish()
 
     def set_swish(self, memory_efficient=True):
@@ -271,7 +271,7 @@ class EfficientNet(nn.Module):
 
         return endpoints
 
-    def extract_features(self, inputs):
+    def feat_extract(self, inputs):
         """use convolution layer to extract feature .
 
         Args:
@@ -293,7 +293,9 @@ class EfficientNet(nn.Module):
         
         # Head
         x = self._swish(self._bn1(self._conv_head(x)))
-
+        # Pooling and final linear layer
+        x = self._avg_pooling(x)
+        x = x.flatten(start_dim=1)
         return x
 
     def forward(self, inputs, onehot=None):
@@ -307,16 +309,12 @@ class EfficientNet(nn.Module):
             Output of this model after processing.
         """
         # Convolution layers
-        x = self.extract_features(inputs)
-
-        # Pooling and final linear layer
-        x = self._avg_pooling(x)
-        x = x.flatten(start_dim=1)
-        if self.onehot:
+        x = self.feat_extract(inputs)
+        if self.use_oh:
             x = torch.cat([x,onehot], axis=1)
 
         x = self._dropout(x)
-        x = self._fc(x)
+        x = self.fc(x)
         pred = torch.argmax(x, dim=-1)
 
         return x, pred
@@ -343,7 +341,7 @@ class EfficientNet(nn.Module):
         cls._check_model_name_is_valid(model_name)
         blocks_args, global_params = get_model_params(model_name, override_params)
         model = cls(blocks_args, global_params)
-        model.onehot = onehot
+        model.use_oh = onehot
         model._change_in_channels(in_channels)
         return model
 
@@ -377,9 +375,9 @@ class EfficientNet(nn.Module):
             A pretrained efficientnet model.
         """
         model = cls.from_name(model_name, num_classes = num_classes, **override_params)
-        load_pretrained_weights(model, model_name, weights_path=weights_path, load_fc=(num_classes == 1000), advprop=advprop)
+        load_pretrained_weights(model, model_name, weights_path=weights_path, load_fc=False, advprop=advprop)
         model._change_in_channels(in_channels)
-        model.onehot = onehot
+        model.use_oh = onehot
         return model
 
     @classmethod

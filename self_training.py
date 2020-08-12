@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 import pandas as pd
 
 import nsml_utils as nu
-from configuration.config import logger, test_transform
+from configuration.config import logger, base_test_transform, efficient_test_transform
 from data_loader import TagImageDataset
 from utils import select_model, get_confidence_score, unclassified_predict
 import random
@@ -171,6 +171,10 @@ def df_teacher(teacher_sess_name, undersample_ratio, data_cross, onehot):
     model = model.to(device)
 
     nu.bind_model(model)
+    if isinstance(model,EfficientNet_B7) or isinstance(model,EfficientNet_B8):
+        test_transform = efficient_test_transform
+    else:
+        test_transform = base_test_transform
 
     # Set the dataset
     logger.info('Set the dataset')

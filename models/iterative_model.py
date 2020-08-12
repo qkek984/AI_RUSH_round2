@@ -2,20 +2,24 @@ import torch
 from torch import nn
 
 class Iterative_Model(nn.Module):
-    def __init__(self, model, mode='train', alpha=0, starting_epoch=3):
+    def __init__(self, model, mode='train', alpha=0, starting_epoch=2, sample_size=8):
         super(Iterative_Model, self).__init__()
         self.name = "Iterative Model"
         self.model = model
         self.prototypes = {i : [] for i in range(5)} 
         self.alpha = 0
         self.mode = mode
-        self.starting_epoch = 3
+        self.starting_epoch = starting_epoch
+        self.sample_size = sample_size
 
     def forward(self, x, epoch, onehot=None):
         feats = self.model.feat_extract(x)
+        
         if self.model.use_oh:
-            feats = torch.cat([feats,onehot], axis=1)
-        out = self.model.fc(feats)
+            feats_w_cat = torch.cat([feats,onehot], axis=1)
+            out = self.model.fc(feats_w_cat)
+        else:
+            out = self.model.fc(feats)
 
         if self.mode == 'train' and epoch > self.starting_epoch:
             yhat = self.pseudo_labeling(feats)
@@ -42,10 +46,11 @@ class Iterative_Model(nn.Module):
                 for i in range(self.prototypes[cls_].size(0)):
                     prototype = self.prototypes[cls_][i,:]
                     score += torch.sum(vector * prototype) / (torch.sum(vector **2) * torch.sum(prototype **2)) ** 0.5
-                score = score / self.prototypes[cls_].size(0)
+                score = score / self.sample_size
                 if score > best_score:
                     best_score = score
                     final_cls = cls_
+            
         return torch.Tensor([final_cls]).long().cuda()
 
     def prototype_update(self, class_samples, device):
@@ -63,7 +68,7 @@ class Iterative_Model(nn.Module):
                 cls_feats[j] = torch.cat(cls_feats[j], axis=0)
                 self.prototypes[j] = self.select_prototype(cls_feats[j])
 
-    def select_prototype(self, feats, sample=8):
+    def select_prototype(self, feats):
         n = feats.size(0)
         density = torch.zeros(n)
         uniqueness = torch.zeros(n)
@@ -90,7 +95,11 @@ class Iterative_Model(nn.Module):
                     if density[idx] < density[k]:
                         uniqueness[idx] = rowcol[k]
                         break
-        final_idx = (uniqueness < 0.95).nonzero().squeeze(1)[:sample]
+        uniqueness_val, uniqueness_idx = torch.topk(uniqueness,uniqueness.shape[0],largest=False) 
+        tmp_idx = (uniqueness_val < 0.95).nonzero().squeeze(1)[:self.sample_size]
+        final_idx = uniqueness_idx[tmp_idx]
+        print("Prototype uniquness =", uniqueness[final_idx])
+        print("Prototype density : ",density[final_idx])
 
         return feats[final_idx]
 
