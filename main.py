@@ -210,7 +210,7 @@ def main():
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
     parser.add_argument('--num_epoch', default=5, type=int, help='The number of epochs')
     parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
-    parser.add_argument('--model_name', default='resnext', type=str, help='[resnet50, resnext, dnet1244, dnet1222]')
+    parser.add_argument('--model_name', default='resnext', type=str, help='[resnet50, resnext, efficientnet_b7, efficientnet_b8]')
     parser.add_argument('--optimizer', default='Adam', type=str)
     parser.add_argument('--unfroze_optimizer', default='Adam', type=str)
     parser.add_argument('--lr', default=1e-2, type=float)
@@ -224,7 +224,7 @@ def main():
     parser.add_argument('--pause', default=0, type=int)
     parser.add_argument('--iteration', default=0, type=str)
     parser.add_argument('--weight_file', default='model.pth', type=str)
-    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/157')
+    parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/221')
     parser.add_argument('--smooth', default=1, type=int)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
@@ -289,11 +289,11 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    # df = df.iloc[:10000]
+    #df = df.iloc[:4000]
     
     # load dataset  
     logger.info(f"Transformation on train dataset\n{train_transform}")
-    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 7, 2, 1], sed=42)
+    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 0.5], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=train_transform)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',

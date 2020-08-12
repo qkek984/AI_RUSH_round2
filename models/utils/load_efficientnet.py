@@ -9,7 +9,8 @@ def EfficientNet_B5(pretrained=True, advprop=False, onehot=0):
                 param.requires_grad = False
     else:
         model = EfficientNet.from_name('efficientnet-b5', onehot=onehot)
-    model.fc = nn.Linear(2560 + onehot * 9, 5)    
+    model.fc = nn.Linear(2048 + onehot * 9, 5)
+    model.name = "EfficientNet_B5"    
     print("EfficientNet B5 Loaded!")
 
     return model
@@ -23,6 +24,7 @@ def EfficientNet_B7(pretrained=True, advprop=False, onehot=0):
     else:
         model = EfficientNet.from_name('efficientnet-b7', onehot=onehot, advprop=advprop)
     model.fc = nn.Linear(2560 + onehot * 9, 5)    
+    model.name = "EfficientNet_B7"    
     print("EfficientNet B7 Loaded!")
 
     return model
@@ -36,6 +38,7 @@ def EfficientNet_B8(pretrained=True, onehot=0):
     else:
         model = EfficientNet.from_name('efficientnet-b8', onehot=onehot, advprop=True)
     model.fc = nn.Linear(2816 + onehot * 9 , 5)    
-    print("EfficientNet B7 Loaded!")
+    model.name = "EfficientNet_B8"    
+    print("EfficientNet B8 Loaded!")
 
     return model
