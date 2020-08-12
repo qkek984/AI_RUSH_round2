@@ -8,9 +8,8 @@ from sklearn.metrics import f1_score, classification_report, confusion_matrix
 from torch import optim
 from torch.utils.data import DataLoader
 
-from configuration.config import logger, test_transform
+from configuration.config import logger, base_test_transform
 from data_loader import TagImageInferenceDataset
-from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
 from models.resnet import ResNet50, resnext50_32x4d
 from models.densenet import DenseNet121
@@ -324,7 +323,7 @@ def inference(model, test_path: str) -> pd.DataFrame:
     pandas.DataFrame: columns should be include "image_name" and "y_pred".
     """
     testset = TagImageInferenceDataset(root_dir=f'{test_path}/test_data',
-                                       transform=test_transform)
+                                       transform=base_test_transform)
 
     test_loader = DataLoader(dataset=testset, batch_size=64, shuffle=False)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -362,14 +361,14 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int):
         model = ResNet50(onehot=onehot)
     elif model_name == "resnext":
         model = resnext50_32x4d(onehot=onehot)
-    elif model_name == 'teacher':
-        model = resnext50_32x4d(onehot=onehot)
     elif model_name == 'densenet':
         model = DenseNet121()
     elif model_name == "efficientnet_b7":
         model = EfficientNet_B7(onehot=onehot)
     elif model_name == "efficientnet_b8":
-        model = EfficientNet_B8(onehot=onehot)        
+        model = EfficientNet_B8(onehot=onehot)
+    elif model_name == 'teacher':
+        model = resnext50_32x4d(onehot=onehot)
     else:
         raise NotImplementedError('Please select in [resnet50, densenet, efficientnet_b7, efficientnet_b8]')
     return model
