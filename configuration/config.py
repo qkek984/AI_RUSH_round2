@@ -44,7 +44,7 @@ class Transforms():
             self.trainCompose += [SquarePad(),
                                   transforms.Resize(self.resolution),
                                   transforms.RandomRotation(5, expand=True),
-                                  transforms.CenterCrop(self.cropSize),
+                                  transforms.RandomCrop(self.cropSize),
                                   # transforms.ColorJitter(hue=.1, saturation=.1),
                                   transforms.RandomHorizontalFlip(0.5),
                                   transforms.ToTensor(),

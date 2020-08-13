@@ -23,6 +23,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
     best_acc = 0.0
     patience = 0.0
     best_f1 = 0.0
+    alpha= 0.5
     logger.info(f"Trainable Parameters : {[ name for name,param in model.named_parameters() if param.requires_grad]}")
 
     for epoch in range(args.num_epoch):
