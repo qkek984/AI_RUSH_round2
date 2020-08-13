@@ -7,11 +7,11 @@ from torch.utils.data import Dataset
 from category import *
 
 class TagImageDataset(Dataset):
-    def __init__(self, data_frame: pd.DataFrame, root_dir: str, category2: int , transform=None):
+    def __init__(self, data_frame: pd.DataFrame, root_dir: str, onehot2: int , transform=None):
         self.data_frame = data_frame
         self.root_dir = root_dir
         self.transform = transform
-        self.category2 = category2
+        self.onehot2 = onehot2
     def __len__(self):
         return len(self.data_frame)
 
@@ -35,8 +35,8 @@ class TagImageDataset(Dataset):
         sample['image_name'] = img_name
         
         sample['category_possible'] = torch.Tensor(CAT2POS[category])
-        sample['category_onehot'] = torch.Tensor(CAT2ONEH[category])
-        sample['category'] = torch.Tensor([ CAT2NUM[category] + (cat22oneh(category,category2) if self.category2 else [])])
+        sample['category_onehot'] = torch.Tensor(CAT2ONEH[category] + (cat22oneh(category,category2) if self.onehot2 else []))
+        sample['category'] = torch.Tensor([ CAT2NUM[category] ])
         
         return sample
 

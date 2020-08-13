@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 import pandas as pd
 
 import nsml_utils as nu
-from configuration.config import logger, test_transform
+from configuration.config import *
 from data_loader import TagImageDataset
 from utils import select_model, get_confidence_score, unclassified_predict
 import random
@@ -96,7 +96,7 @@ def relabeled_df(df, predictedUnclassified, undersample_ratio= [1, 1, 1, 1, 1], 
         undersampledData = [[],[]]
     else:
         undersampledData = [[] for i in range(5)]
-    reclassifiedData = []
+    relabeledData = []
 
     len_df_answer =len(df['answer'])
     len_predictedUnclassified = len(predictedUnclassified[0])
@@ -111,7 +111,7 @@ def relabeled_df(df, predictedUnclassified, undersample_ratio= [1, 1, 1, 1, 1], 
     for i in range(5):
         if tmpData[i]:
             tmpData[i] = sorted(tmpData[i], reverse=True)
-            print("relabeled len: ",len(tmpData[i]), ", [",i,"] score : ",max(tmpData[i])," ~ ", min(tmpData[i]))
+            print("classified len: ",len(tmpData[i]), ", [",i,"] score : ",max(tmpData[i])," ~ ", min(tmpData[i]))
             end_idx = int(len(tmpData[i])*undersample_ratio[i])
             tmpData[i] = tmpData[i][:end_idx]
             print("undersampled len: ", len(tmpData[i]), ", [", i, "] score : ", max(tmpData[i]), " ~ ", min(tmpData[i]))
@@ -134,10 +134,11 @@ def relabeled_df(df, predictedUnclassified, undersample_ratio= [1, 1, 1, 1, 1], 
                 for j in range(len_columns):
                     item.append(df[columns[j]][i])
                 item[4] = modefy_answer
-                reclassifiedData.append(item)
+                relabeledData.append(item)
             if i%10000 == 0:
                 logger.info(f'relabeled {i}/{len_df_answer}')
     else:
+        cuttedCross = [0, 0, 0, 0, 0]
         logger.info('disable data cross')
         for i in range(len_df_answer):
             label_idx = df['answer'][i]
@@ -145,26 +146,36 @@ def relabeled_df(df, predictedUnclassified, undersample_ratio= [1, 1, 1, 1, 1], 
                 item = []
                 for j in range(len_columns):
                     item.append(df[columns[j]][i])
-                reclassifiedData.append(item)
+                relabeledData.append(item)
+            else:
+                cuttedCross[label_idx] += 1
             if i%10000 == 0:
                 logger.info(f'relabeled {i}/{len_df_answer}')
+        print("cutted Cross data : ", cuttedCross)
+        print("total relabeled data: ",len(relabeledData))
 
-    reclassified_df = pd.DataFrame(reclassifiedData, columns=columns)
+    reclassified_df = pd.DataFrame(relabeledData, columns=columns)
     return reclassified_df
 
-def df_teacher(teacher_sess_name, undersample_ratio, data_cross, onehot):
+def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, onehot):
     # setting #######################
     batch_size =512
     num_workers = 16
     checkpoint ='best'
     sess_name = teacher_sess_name
+    transform = Transforms()
+
+    if teacher_model == 'efficientnet_b7' or teacher_model == 'efficientnet_b8':
+        transform.set_resolution(600,600)
+    elif teacher_model == 'efficientnet_b5':
+        transform.set_resolution(456,456)
     #################################
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     # Model
     logger.info('Build teacher Model')
-    model = select_model('teacher', pretrain=False, n_class=5, onehot=onehot)
+    model = select_model(teacher_model, pretrain=False, n_class=5, onehot=onehot)
     total_param = sum([p.numel() for p in model.parameters()])
     logger.info(f'Model size: {total_param} tensors')
     load_weight(model, 'model.pth')
@@ -175,13 +186,13 @@ def df_teacher(teacher_sess_name, undersample_ratio, data_cross, onehot):
     # Set the dataset
     logger.info('Set the dataset')
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
-
+    #df = df.iloc[:5000]
     #_, val_df = train_val_df(df, oversample_ratio=[1, 1, 1, 1, 1])# confi-score를 위한 val 데이터 구성
     # testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=test_transform)
     # test_loader = DataLoader(dataset=testset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     uc_df = unclassified_df(df, answer=[0,1,2,3,4]) #기존 라벨 데이터를 전부 prediction할 unclassified data로 전환
-    unclassifiedset = TagImageDataset(data_frame=uc_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=test_transform)
+    unclassifiedset = TagImageDataset(data_frame=uc_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=transform.test_transform())
     unclassified_loader = DataLoader(dataset=unclassifiedset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     #####get confidence score

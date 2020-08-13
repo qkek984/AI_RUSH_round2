@@ -97,9 +97,9 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
         else:
             train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=unfroze_optimizer,
                                         criterion=criterion, device=device, epoch=epoch+ args.num_epoch, total_epochs=args.num_epoch + args.num_unfroze_epoch)
-            end = time.time()
             model.eval()
             test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
+        end = time.time()
 
         report_dict = dict()
         report_dict["train__loss"] = train_loss
@@ -176,7 +176,6 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
     logger.info(f"origin class composition : {[len(l) for l in valData]} \t {[int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData]}")
 
     logger.info(f'orversampling ratio: {oversample_ratio} ')
-
     class_samples = [ random.sample(cls_data, max(420, int(len(cls_data) * cls_sample))) for cls_data in trainData]
     train_samples = [ pd.DataFrame(class_data_, columns=columns) for class_data_ in class_samples]
 
@@ -239,11 +238,12 @@ def main():
     parser.add_argument('--iterative', default=0 , type=int)
 
     args = parser.parse_args()
+    transform = Transforms()
 
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=False, onehot=args.onehot)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="resnext", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=False, onehot=args.onehot)
         logger.info('df by teacher')
 
 
@@ -256,13 +256,10 @@ def main():
     #load_weight(model, args.weight_file)
 
 
-    if args.model_name == 'efficientnet_b7':
-        train_transform = efficientnet_transform
-    elif args.model_name == 'efficientnet_b8':
-        train_transform = efficientnetb8_transform
-    else:
-        train_transform = base_transform
-
+    if args.model_name == 'efficientnet_b7' or args.model_name == 'efficientnet_b8':
+        transform.set_resolution(600,600)
+    elif args.model_name == 'efficientnet_b5':
+        transform.set_resolution(456,456)
 
     if args.cat_embed:
         logger.info("\n#############\nTrainable category embedding appended to model\n#############")
@@ -289,12 +286,12 @@ def main():
         logger.info('normal df')
     # df = df.iloc[:5000]
     
-    logger.info(f"Transformation on train dataset\n{train_transform}")
+    logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
     train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[2, 2, 32, 4, 0.9], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
-                               transform=train_transform, onehot2=args.onehot2)
+                               transform=transform.train_transform(), onehot2=args.onehot2)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
-                              transform=test_transform, onehot2=args.onehot2)
+                              transform=transform.test_transform(), onehot2=args.onehot2)
 
     train_loader = DataLoader(dataset=trainset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
     test_loader = DataLoader(dataset=testset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
@@ -303,7 +300,7 @@ def main():
         logger.info("Class Sample Sizes")
         logger.info(f"\t{' '.join([str(class_.shape[0]) for i, class_ in enumerate(class_samples)])}")
         class_samples = [TagImageDataset(data_frame=class_df, root_dir=f'{DATASET_PATH}/train/train_data', \
-                             transform=base_transform) for class_df in class_samples]
+                             transform=transform.train_transform(), onehot2=args.onehot2) for class_df in class_samples]
         class_samples = [DataLoader(class_dataset, batch_size=args.batch_size, num_workers=args.num_workers) \
                             for class_dataset in class_samples]
 
@@ -314,8 +311,6 @@ def main():
 
     if args.iterative:
         criterion = AlphaCrossEntropyLoss(loss_fcn=criterion)    
-
-
 
     logger.info(f"Loss function : {criterion}")
 

@@ -12,11 +12,11 @@ class Iterative_Model(nn.Module):
         self.starting_epoch = starting_epoch
         self.sample_size = sample_size
 
-    def forward(self, x, epoch, onehot=None):
+    def forward(self, x, epoch, onehot_feat=None):
         feats = self.model.feat_extract(x)
         
-        if self.model.use_oh:
-            feats_w_cat = torch.cat([feats,onehot], axis=1)
+        if self.model.onehot:
+            feats_w_cat = torch.cat([feats,onehot_feat], axis=1)
             out = self.model.fc(feats_w_cat)
         else:
             out = self.model.fc(feats)

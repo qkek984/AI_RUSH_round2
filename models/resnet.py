@@ -114,7 +114,7 @@ class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=5, zero_init_residual=False,
                  groups=1, width_per_group=64, replace_stride_with_dilation=None,
-                 norm_layer=None, name="ResNet", add_std=0, use_fc_=True, use_oh=0):
+                 norm_layer=None, name="ResNet", add_std=0, use_fc_=True, onehot=1, onehot2=0):
         super(ResNet, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
@@ -124,7 +124,9 @@ class ResNet(nn.Module):
         self.dilation = 1
         self.add_std = add_std
         self.use_fc_ = use_fc_
-        self.use_oh = use_oh
+        self.onehot = onehot
+        self.onehot2 = onehot2
+        
         if add_std:
             print("with extra feature std")
 
@@ -150,7 +152,7 @@ class ResNet(nn.Module):
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
                                        dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(512 * block.expansion + self.use_oh * 9 , num_classes)
+        self.fc = nn.Linear(512 * block.expansion + onehot * 9 + onehot2 * 118 , num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -220,7 +222,7 @@ class ResNet(nn.Module):
         x = self.feat_extract(x)
 
         if self.use_fc_:
-            if self.use_oh:
+            if self.onehot:
                 x = torch.cat([x, onehot], axis=1)
             x = self.fc(x)
             pred = torch.argmax(x, dim=-1)
@@ -232,8 +234,8 @@ class ResNet(nn.Module):
         return self._forward_impl(x, onehot)
 
 
-def _resnet(arch, block, layers, pretrained, progress, onehot, **kwargs):
-    model = ResNet(block, layers, use_oh=onehot, **kwargs)
+def _resnet(arch, block, layers, pretrained, progress, onehot, onehot2, **kwargs):
+    model = ResNet(block, layers, onehot=onehot, onehot2=onehot2, **kwargs)
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress)
@@ -245,22 +247,23 @@ def _resnet(arch, block, layers, pretrained, progress, onehot, **kwargs):
         if 'fc' not in name : # and 'layer4' not in name
             param.requires_grad = False
     
+
     print("ResNet50 Loaded!")
 
     return model
 
-def ResNet50(pretrained=True, progress=False, onehot=0, **kwargs):
+def ResNet50(pretrained=True, progress=False, onehot=1, onehot2=0, **kwargs):
     r"""ResNet-50 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress, onehot=onehot,
+    return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress, onehot=onehot, onehot2=onehot2,
                    **kwargs)
 
 
-def resnext50_32x4d(pretrained=True, progress=True, onehot=0, **kwargs):
+def resnext50_32x4d(pretrained=True, progress=True, onehot=1, onehot2=0, **kwargs):
     r"""ResNeXt-50 32x4d model from
     `"Aggregated Residual Transformation for Deep Neural Networks" <https://arxiv.org/pdf/1611.05431.pdf>`_
     Args:
@@ -270,7 +273,7 @@ def resnext50_32x4d(pretrained=True, progress=True, onehot=0, **kwargs):
     kwargs['groups'] = 32
     kwargs['width_per_group'] = 4
     return _resnet('resnext50_32x4d', Bottleneck, [3, 4, 6, 3],
-                   pretrained, progress, onehot=onehot, **kwargs)
+                   pretrained, progress, onehot=onehot, onehot2=onehot2, **kwargs)
 
 
 def wide_resnet50_2(pretrained=True, progress=True, **kwargs):

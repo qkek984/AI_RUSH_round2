@@ -8,7 +8,7 @@ from sklearn.metrics import f1_score, classification_report, confusion_matrix
 from torch import optim
 from torch.utils.data import DataLoader
 
-from configuration.config import logger, test_transform
+from configuration.config import logger, Transforms
 from data_loader import TagImageInferenceDataset
 from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
@@ -321,7 +321,7 @@ def inference(model, test_path: str) -> pd.DataFrame:
     pandas.DataFrame: columns should be include "image_name" and "y_pred".
     """
     testset = TagImageInferenceDataset(root_dir=f'{test_path}/test_data',
-                                       transform=test_transform)
+                                       transform=Transforms().test_transform(),onehot2=model.onehot2)
 
     test_loader = DataLoader(dataset=testset, batch_size=64, shuffle=False)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
