@@ -16,20 +16,8 @@ class Transforms():
         self.cropSize = (int(self.resolution[0]*0.875), int(self.resolution[1]*0.875))
         self.trainTransform = None
         self.testTransform = None
-        self.trainCompose = [
-            transforms.Resize(self.resolution),
-            #transforms.RandomRotation(5, expand=True),
-            #transforms.CenterCrop(self.cropSize),
-            transforms.ColorJitter(hue=.1, saturation=.1),
-            transforms.RandomHorizontalFlip(0.5),
-            transforms.ToTensor(),
-            transforms.Normalize(self.rgb_mean, self.rgb_std)
-        ]
-        self.testCompose = [
-            transforms.Resize(self.resolution),
-            transforms.ToTensor(),
-            transforms.Normalize(self.rgb_mean, self.rgb_std)
-        ]
+        self.trainCompose = []
+        self.testCompose = []
 
     def set_resolution(self,x,y):
         self.resolution = (x, y)
@@ -42,10 +30,22 @@ class Transforms():
 
     def train_transform(self):
         if self.trainTransform == None:
+            self.trainCompose += [transforms.Resize(self.resolution),
+                                  transforms.RandomRotation(5, expand=True),
+                                  transforms.CenterCrop(self.cropSize),
+                                  # transforms.ColorJitter(hue=.1, saturation=.1),
+                                  transforms.RandomHorizontalFlip(0.5),
+                                  transforms.ToTensor(),
+                                  #transforms.Normalize(self.rgb_mean, self.rgb_std)
+                                  ]
             self.trainTransform = transforms.Compose(self.trainCompose)
         return self.trainTransform
 
     def test_transform(self):
         if self.testTransform == None:
+            self.testCompose += [transforms.Resize(self.resolution),
+                                 transforms.ToTensor(),
+                                 #transforms.Normalize(self.rgb_mean, self.rgb_std)
+                                 ]
             self.testTransform = transforms.Compose(self.testCompose)
         return self.testTransform

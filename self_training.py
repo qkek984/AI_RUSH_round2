@@ -157,7 +157,7 @@ def relabeled_df(df, predictedUnclassified, undersample_ratio= [1, 1, 1, 1, 1], 
     reclassified_df = pd.DataFrame(relabeledData, columns=columns)
     return reclassified_df
 
-def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, onehot):
+def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, onehot, onehot2):
     # setting #######################
     batch_size =512
     num_workers = 16
@@ -175,7 +175,7 @@ def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, 
 
     # Model
     logger.info('Build teacher Model')
-    model = select_model(teacher_model, pretrain=False, n_class=5, onehot=onehot)
+    model = select_model(teacher_model, pretrain=False, n_class=5, onehot=onehot, onehot2=onehot2)
     total_param = sum([p.numel() for p in model.parameters()])
     logger.info(f'Model size: {total_param} tensors')
     load_weight(model, 'model.pth')
@@ -186,13 +186,13 @@ def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, 
     # Set the dataset
     logger.info('Set the dataset')
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
-    #df = df.iloc[:5000]
+    #df = df.iloc[:50000]
     #_, val_df = train_val_df(df, oversample_ratio=[1, 1, 1, 1, 1])# confi-score를 위한 val 데이터 구성
     # testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=test_transform)
     # test_loader = DataLoader(dataset=testset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     uc_df = unclassified_df(df, answer=[0,1,2,3,4]) #기존 라벨 데이터를 전부 prediction할 unclassified data로 전환
-    unclassifiedset = TagImageDataset(data_frame=uc_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=transform.test_transform())
+    unclassifiedset = TagImageDataset(data_frame=uc_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=transform.test_transform(), onehot2=onehot2)
     unclassified_loader = DataLoader(dataset=unclassifiedset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     #####get confidence score
