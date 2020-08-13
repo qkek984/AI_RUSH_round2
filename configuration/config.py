@@ -16,14 +16,6 @@ base_transform = transforms.Compose([
     transforms.Normalize(rgb_mean, rgb_std)
 ])
 
-efficientnetb5_transform = transforms.Compose([
-    transforms.Resize((456, 456)),
-    transforms.ColorJitter(hue=.1, saturation=.1),
-    transforms.RandomHorizontalFlip(0.5),
-    transforms.ToTensor(),
-    transforms.Normalize(rgb_mean, rgb_std)
-])
-
 efficientnet_transform = transforms.Compose([
     transforms.Resize((600, 600)),
     transforms.ColorJitter(hue=.1, saturation=.1),
@@ -40,18 +32,9 @@ efficientnetb8_transform = transforms.Compose([
     transforms.Lambda(lambda img: img * 2.0 - 1.0)
 ])
 
-base_test_transform = transforms.Compose([
+test_transform = transforms.Compose([
+    # transforms.Resize((600, 600)),
     transforms.Resize((256,256)),
-    transforms.ToTensor(),
-    transforms.Normalize(rgb_mean, rgb_std)
-])
-efficient_test_transform = transforms.Compose([
-    transforms.Resize((600, 600)),
-    transforms.ToTensor(),
-    transforms.Normalize(rgb_mean, rgb_std)
-])
-efficientb5_test_transform = transforms.Compose([
-    transforms.Resize((456, 456)),
     transforms.ToTensor(),
     transforms.Normalize(rgb_mean, rgb_std)
 ])

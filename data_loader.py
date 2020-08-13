@@ -4,26 +4,14 @@ import PIL
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
-
-POSSIBLE = [ [0,1,0,0,1], [1,0,0,0,1], [1,0,0,0,1], [0,0,0,1,1], [1,1,0,0,1], [1,1,1,0,1], [0,0,1,0,1], [0,1,0,0,1]] 
-ONEHOT = [[0] * 9] * 9
-for i in range(len(ONEHOT)):
-    ONEHOT[i][i] = 1 
-
-CLASS = ['착용샷', '설치 후 배치컷', '발색샷', '요리완성', '미분류']
-CATEGORY = ['가구/인테리어','패션의류','패션잡화','식품','생활/건강','출산/육아','화장품/미용','스포츠/레저']
-
-CLASS2LABEL = {class_ : label for class_, label in zip(CLASS,[0,1,2,3,4])}
-CAT2POS = { cat : pos for cat,pos in zip(CATEGORY, POSSIBLE)}
-CAT2ONEH = {cat : oneh for cat,oneh in zip(CATEGORY, ONEHOT)}
-CAT2NUM = { cat : num for cat,num in zip(CATEGORY, range(9))}
+from category import *
 
 class TagImageDataset(Dataset):
-    def __init__(self, data_frame: pd.DataFrame, root_dir: str, transform=None):
+    def __init__(self, data_frame: pd.DataFrame, root_dir: str, category2: int , transform=None):
         self.data_frame = data_frame
         self.root_dir = root_dir
         self.transform = transform
-
+        self.category2 = category2
     def __len__(self):
         return len(self.data_frame)
 
@@ -37,7 +25,7 @@ class TagImageDataset(Dataset):
         image = PIL.Image.open(img_path).convert('RGB')
 
         category = self.data_frame.iloc[idx]['category_1']
-        
+        category2 = self.data_frame.iloc[idx]['category_2']        
         if self.transform:
             image = self.transform(image)
 
@@ -48,7 +36,7 @@ class TagImageDataset(Dataset):
         
         sample['category_possible'] = torch.Tensor(CAT2POS[category])
         sample['category_onehot'] = torch.Tensor(CAT2ONEH[category])
-        sample['category'] = torch.Tensor([CAT2NUM[category]])
+        sample['category'] = torch.Tensor([ CAT2NUM[category] + (cat22oneh(category,category2) if self.category2 else [])])
         
         return sample
 

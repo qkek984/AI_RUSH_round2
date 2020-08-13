@@ -117,7 +117,7 @@ class Iterative_Model(nn.Module):
         mat_cp_without = mat_cp[mat_cp != 1]
         
         assert mat_cp.shape[0] - mat_cp_without.shape[0] == n
-        S_c, _ = torch.topk(mat_cp_without, int(n * (n -1) / 2 * 0.4))
+        S_c, _ = torch.topk(mat_cp_without, int(n * (n -1) / 2 * 0.6))
         S_c = S_c[-1]
         return mat, S_c
 

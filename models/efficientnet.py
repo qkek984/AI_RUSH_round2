@@ -160,14 +160,15 @@ class EfficientNet(nn.Module):
         >>> outputs = model(inputs)
     """
 
-    def __init__(self, blocks_args=None, global_params=None, name="EfficientNet", use_oh=0):
+    def __init__(self, blocks_args=None, global_params=None, name="EfficientNet", onehot=1, onehot2=0):
         super().__init__()
         assert isinstance(blocks_args, list), 'blocks_args should be a list'
         assert len(blocks_args) > 0, 'block args must be greater than 0'
         self._global_params = global_params
         self._blocks_args = blocks_args
         self.name = name
-        self.use_oh = use_oh
+        self.onehot = onehot
+        self.onehot2 = onehot2
         # Batch norm parameters
         bn_mom = 1 - self._global_params.batch_norm_momentum
         bn_eps = self._global_params.batch_norm_epsilon
@@ -213,7 +214,7 @@ class EfficientNet(nn.Module):
         # Final linear layer
         self._avg_pooling = nn.AdaptiveAvgPool2d(1)
         self._dropout = nn.Dropout(self._global_params.dropout_rate)
-        self.fc = nn.Linear(out_channels, self._global_params.num_classes)
+        self.fc = nn.Linear(out_channels + onehot * 9 + onehot2 * 118, self._global_params.num_classes)
         self._swish = MemoryEfficientSwish()
 
     def set_swish(self, memory_efficient=True):
@@ -310,17 +311,18 @@ class EfficientNet(nn.Module):
         """
         # Convolution layers
         x = self.feat_extract(inputs)
-        if self.use_oh:
-            x = torch.cat([x,onehot], axis=1)
 
         x = self._dropout(x)
+        if self.onehot:
+            x = torch.cat([x,onehot], axis=1)
+
         x = self.fc(x)
         pred = torch.argmax(x, dim=-1)
 
         return x, pred
 
     @classmethod
-    def from_name(cls, model_name, in_channels=3, onehot=0, **override_params):
+    def from_name(cls, model_name, in_channels=3, onehot=1, onehot2=0, **override_params):
         """create an efficientnet model according to name.
 
         Args:
@@ -341,13 +343,14 @@ class EfficientNet(nn.Module):
         cls._check_model_name_is_valid(model_name)
         blocks_args, global_params = get_model_params(model_name, override_params)
         model = cls(blocks_args, global_params)
-        model.use_oh = onehot
         model._change_in_channels(in_channels)
+        model.onehot = onehot
+        model.onehot2 = onehot2
         return model
 
     @classmethod
     def from_pretrained(cls, model_name, weights_path=None, advprop=False, 
-                        in_channels=3, num_classes=1000, onehot=0, **override_params):
+                        in_channels=3, num_classes=1000, onehot=1, onehot2=0, **override_params):
         """create an efficientnet model according to name.
 
         Args:
@@ -375,9 +378,11 @@ class EfficientNet(nn.Module):
             A pretrained efficientnet model.
         """
         model = cls.from_name(model_name, num_classes = num_classes, **override_params)
-        load_pretrained_weights(model, model_name, weights_path=weights_path, load_fc=False, advprop=advprop)
+        load_pretrained_weights(model, model_name, weights_path=weights_path, load_fc=(num_classes == 1000), advprop=advprop)
         model._change_in_channels(in_channels)
-        model.use_oh = onehot
+        model.onehot = onehot
+        model.onehot2 = onehot2
+
         return model
 
     @classmethod

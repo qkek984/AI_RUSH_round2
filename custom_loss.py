@@ -30,7 +30,6 @@ class LabelSmoothingLoss(nn.Module):
         weights = [self.confidence , self.smoothing * self.attention, self.smoothing]
         return "LabelSmoothingLoss(nn.Module)" +" with weight " + str([int(w/sum(weights) * 100) for w in weights]) 
 
-
 class AlphaCrossEntropyLoss(nn.Module):
     def __init__(self, alpha=0, loss_fcn= None):
         super(AlphaCrossEntropyLoss, self).__init__()
@@ -58,4 +57,5 @@ class AlphaCrossEntropyLoss(nn.Module):
             else:
                 og_loss = self.loss_fcn(pred, target, category_pos)                
                 return  og_loss 
+
 

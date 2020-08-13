@@ -586,7 +586,7 @@ url_map_advprop = {
 # TODO: add the petrained weights url map of 'efficientnet-l2'
 
 
-def load_pretrained_weights(model, model_name, weights_path=None, load_fc=False, advprop=False):
+def load_pretrained_weights(model, model_name, weights_path=None, load_fc=True, advprop=False):
     """Loads pretrained weights from weights path or download using url.
 
     Args:
