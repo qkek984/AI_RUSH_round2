@@ -42,9 +42,10 @@ class TagImageDataset(Dataset):
 
 
 class TagImageInferenceDataset(Dataset):
-    def __init__(self, root_dir: str, transform=None):
+    def __init__(self, root_dir: str, onehot2: int, transform=None):
         self.root_dir = root_dir
         self.transform = transform
+        self.onehot2 = onehot2
         self.data_list = [img for img in os.listdir(self.root_dir) if not img.startswith('.')]
         self.data_list.remove('test_input') 
         self.df = pd.read_csv(self.root_dir + "/test_input")
@@ -52,7 +53,7 @@ class TagImageInferenceDataset(Dataset):
     def get_metadata(self):
         meta_dic = {}
         for i, row in self.df.iterrows():
-            meta_dic[row['image_name']] = row['category_1']
+            meta_dic[row['image_name']] = [row['category_1'], row['category_2']]
         
         return meta_dic
     def __len__(self):
@@ -64,7 +65,7 @@ class TagImageInferenceDataset(Dataset):
             idx = idx.tolist()
 
         img_name = self.data_list[idx]
-        category =  self.metadata[img_name]
+        category, category2 =  self.metadata[img_name]
         
         img_path = os.path.join(self.root_dir, img_name)
         image = PIL.Image.open(img_path).convert('RGB')
@@ -76,6 +77,6 @@ class TagImageInferenceDataset(Dataset):
         sample['image_name'] = img_name
         sample['category_possible'] = torch.Tensor(CAT2POS[category])
         sample['category'] = torch.Tensor([CAT2NUM[category]])
-        sample['category_onehot'] = torch.Tensor(CAT2ONEH[category])
+        sample['category_onehot'] = torch.Tensor(CAT2ONEH[category] + (cat22oneh(category,category2) if self.onehot2 else []))
         
         return sample
