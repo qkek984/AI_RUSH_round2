@@ -342,10 +342,8 @@ class EfficientNet(nn.Module):
         """
         cls._check_model_name_is_valid(model_name)
         blocks_args, global_params = get_model_params(model_name, override_params)
-        model = cls(blocks_args, global_params)
+        model = cls(blocks_args, global_params, onehot=onehot, onehot2=onehot2)
         model._change_in_channels(in_channels)
-        model.onehot = onehot
-        model.onehot2 = onehot2
         return model
 
     @classmethod
@@ -377,11 +375,9 @@ class EfficientNet(nn.Module):
         Returns:
             A pretrained efficientnet model.
         """
-        model = cls.from_name(model_name, num_classes = num_classes, **override_params)
+        model = cls.from_name(model_name, num_classes = num_classes, onehot=onehot, onehot2=onehot2, **override_params)
         load_pretrained_weights(model, model_name, weights_path=weights_path, load_fc=(num_classes == 1000), advprop=advprop)
         model._change_in_channels(in_channels)
-        model.onehot = onehot
-        model.onehot2 = onehot2
 
         return model
 

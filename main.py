@@ -7,6 +7,7 @@ from nsml import DATASET_PATH
 from torch import nn
 from torch.utils.data import DataLoader
 import pandas as pd
+import subprocess
 
 import nsml_utils 
 from configuration.config import *
@@ -32,7 +33,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
         if isinstance(model, Iterative_Model):
             if epoch + 1 > model.starting_epoch:
                 criterion.alpha = 0.5
-                criterion.loss_fcn = nn.CrossEntropyLoss
+                # criterion.loss_fcn = nn.CrossEntropyLoss
                 model.prototype_update(class_samples, device)
 
             train_loss, train_acc = iterative_training(model=model, train_loader=train_loader, optimizer=optimizer,
@@ -87,7 +88,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
         if isinstance(model, Iterative_Model):
             if epoch + 1 > model.starting_epoch:
                 criterion.alpha = alpha
-                criterion.loss_fcn = nn.CrossEntropyLoss
+                # criterion.loss_fcn = nn.CrossEntropyLoss
                 model.prototype_update(class_samples, device)
 
             train_loss, train_acc = iterative_training(model=model, train_loader=train_loader, optimizer=unfroze_optimizer,
@@ -177,7 +178,7 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
     logger.info(f"origin class composition : {[len(l) for l in valData]} \t {[int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData]}")
 
     logger.info(f'orversampling ratio: {oversample_ratio} ')
-    class_samples = [ random.sample(cls_data, max(420, int(len(cls_data) * cls_sample))) for cls_data in trainData]
+    class_samples = [ random.sample(cls_data, max(10, int(len(cls_data) * cls_sample))) for cls_data in trainData]
     train_samples = [ pd.DataFrame(class_data_, columns=columns) for class_data_ in class_samples]
 
     # oversampling 구현
@@ -206,6 +207,11 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
     return train_df, val_df, train_samples
 
 def main():
+    # print("???????????????",torch.cuda.is_available(),os.environ)
+    # subprocess.call(['python3', './deform_conv/setup.py', 'build' ,'install'])
+    # from deform_conv.modules.deform_conv import DeformConv, _DeformConv, DeformConvPack
+    # from deform_conv.modules.modulated_deform_conv import ModulatedDeformConv, _ModulatedDeformConv, ModulatedDeformConvPack
+    # from deform_conv.modules.deform_psroi_pooling import DeformRoIPooling, _DeformRoIPooling, DeformRoIPoolingPack
     # Argument Settings
     parser = argparse.ArgumentParser(description='Image Tagging Classification from Naver Shopping Reviews')
     parser.add_argument('--sess_name', default='', type=str, help='Session name that is loaded')
@@ -285,10 +291,10 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    # df = df.iloc[:5000]
+    # df = df.iloc[:10000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
-    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[2, 2, 32, 4, 0.9], sed=42)
+    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[2, 2, 32, 4, 0.75], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=transform.train_transform(), onehot2=args.onehot2)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',

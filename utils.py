@@ -12,7 +12,7 @@ from configuration.config import logger, Transforms
 from data_loader import TagImageInferenceDataset
 from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
-from models.resnet import ResNet50, resnext50_32x4d
+from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d
 from models.densenet import DenseNet121
 from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
 from custom_loss import LabelSmoothingLoss
@@ -359,6 +359,10 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int, on
         model = ResNet50(onehot=onehot,onehot2=onehot2)
     elif model_name == "resnext":
         model = resnext50_32x4d(onehot=onehot,onehot2=onehot2)
+    elif model_name == "resnet101":
+        model = resnet101(onehot=onehot,onehot2=onehot2)
+    elif model_name == "resnext101":
+        model = resnext101_32x8d(onehot=onehot,onehot2=onehot2)
     elif model_name == 'teacher':
         model = resnext50_32x4d(onehot=onehot,onehot2=onehot2)
     elif model_name == 'densenet':

@@ -164,7 +164,9 @@ def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, 
     checkpoint ='best'
     sess_name = teacher_sess_name
     transform = Transforms()
-
+    
+    onehot2= 0
+    
     if teacher_model == 'efficientnet_b7' or teacher_model == 'efficientnet_b8':
         transform.set_resolution(600,600)
     elif teacher_model == 'efficientnet_b5':

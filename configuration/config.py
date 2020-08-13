@@ -3,7 +3,7 @@ import torchvision.transforms.functional as F
 import numpy as np
 from torchvision import transforms
 import numpy as np
-
+from .autoaugment import ImageNetPolicy
 logging.config.fileConfig('./configuration/logging.conf')
 logger = logging.getLogger('Tagging Classification')
 
@@ -24,7 +24,7 @@ class Transforms():
         self.rgb_mean = [0.485, 0.456, 0.406]
         self.rgb_std = [0.229, 0.224, 0.225]
         self.resolution = (256,256)
-        self.cropSize = (224, 224)
+        self.cropSize = (224,224)
         self.trainTransform = None
         self.testTransform = None
         self.trainCompose = []
@@ -44,12 +44,13 @@ class Transforms():
         if self.trainTransform == None:
             self.trainCompose += [SquarePad(),
                                   transforms.Resize(self.resolution),
-                                  transforms.RandomRotation(5, expand=True),
-                                  transforms.RandomCrop(self.cropSize),
-                                  # transforms.ColorJitter(hue=.1, saturation=.1),
-                                  transforms.RandomHorizontalFlip(0.5),
+                                  ImageNetPolicy(), 
+                                #   transforms.RandomRotation(5, expand=True),
+                                #   transforms.RandomCrop(self.cropSize),
+                                #   transforms.ColorJitter(hue=.1, saturation=.1),
+                                #   transforms.RandomHorizontalFlip(0.5),
                                   transforms.ToTensor(),
-                                  #transforms.Normalize(self.rgb_mean, self.rgb_std)
+                                  transforms.Normalize(self.rgb_mean, self.rgb_std)
                                   ]
             self.trainTransform = transforms.Compose(self.trainCompose)
         return self.trainTransform
@@ -59,7 +60,7 @@ class Transforms():
             self.testCompose += [SquarePad(),
                                  transforms.Resize(self.resolution),
                                  transforms.ToTensor(),
-                                 #transforms.Normalize(self.rgb_mean, self.rgb_std)
+                                 transforms.Normalize(self.rgb_mean, self.rgb_std)
                                  ]
             self.testTransform = transforms.Compose(self.testCompose)
         return self.testTransform

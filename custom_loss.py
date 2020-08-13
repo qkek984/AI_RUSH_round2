@@ -38,12 +38,14 @@ class AlphaCrossEntropyLoss(nn.Module):
             self.loss_fcn = loss_fcn
         else:
             self.loss_fcn = nn.CrossEntropyLoss(reduction='mean')
+
+        self.loss_fcn_2 = nn.CrossEntropyLoss(reduction='mean')
     
     def forward(self, pred, target, pseudo_target, category_pos=None):
         if isinstance(self.loss_fcn,nn.CrossEntropyLoss):
             if self.alpha:
-                og_loss = self.loss_fcn(pred, target) * (1 - self.alpha)
-                correct_loss = self.loss_fcn(pred, pseudo_target) * self.alpha
+                og_loss = self.loss_fcn_2(pred, target) * (1 - self.alpha)
+                correct_loss = self.loss_fcn_2(pred, pseudo_target) * self.alpha
                 return  og_loss + correct_loss 
             else:
                 og_loss = self.loss_fcn(pred, target) 

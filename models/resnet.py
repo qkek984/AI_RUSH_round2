@@ -11,7 +11,11 @@ __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
 
 model_urls = {
     'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth',
-    'resnext50_32x4d': 'https://download.pytorch.org/models/resnext50_32x4d-7cdf4587.pth'
+    'resnext50_32x4d': 'https://download.pytorch.org/models/resnext50_32x4d-7cdf4587.pth',
+    'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
+    'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
+    'resnext50_32x4d': 'https://download.pytorch.org/models/resnext50_32x4d-7cdf4587.pth',
+    'resnext101_32x8d': 'https://download.pytorch.org/models/resnext101_32x8d-8ba56ff5.pth'
     }
 
 
@@ -248,7 +252,6 @@ def _resnet(arch, block, layers, pretrained, progress, onehot, onehot2, **kwargs
             param.requires_grad = False
     
 
-    print("ResNet50 Loaded!")
 
     return model
 
@@ -259,6 +262,8 @@ def ResNet50(pretrained=True, progress=False, onehot=1, onehot2=0, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
+    print("ResNet50 Loaded!")
+
     return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress, onehot=onehot, onehot2=onehot2,
                    **kwargs)
 
@@ -272,6 +277,8 @@ def resnext50_32x4d(pretrained=True, progress=True, onehot=1, onehot2=0, **kwarg
     """
     kwargs['groups'] = 32
     kwargs['width_per_group'] = 4
+    print("ResNext50 Loaded!")
+
     return _resnet('resnext50_32x4d', Bottleneck, [3, 4, 6, 3],
                    pretrained, progress, onehot=onehot, onehot2=onehot2, **kwargs)
 
@@ -291,3 +298,27 @@ def wide_resnet50_2(pretrained=True, progress=True, **kwargs):
     return _resnet('wide_resnet50_2', Bottleneck, [3, 4, 6, 3],
                    pretrained, progress, **kwargs)
 
+
+def resnet101(pretrained=False, progress=True, onehot=1,onehot2=0, **kwargs):
+    """Constructs a ResNet-101 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+    """
+    print("ResNet101 Loaded!")
+
+    return _resnet('resnet101', Bottleneck, [3, 4, 23, 3], pretrained, progress,
+                   onehot=onehot, onehot2=onehot2, **kwargs)
+
+def resnext101_32x8d(pretrained=False, progress=True, onehot=1, onehot2=0, **kwargs):
+    """Constructs a ResNeXt-101 32x8d model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+    """
+    kwargs['groups'] = 32
+    kwargs['width_per_group'] = 8
+    print("ResNext101 Loaded!")
+
+    return _resnet('resnext101_32x8d', Bottleneck, [3, 4, 23, 3],
+                   pretrained, progress, onehot=onehot, onehot2=onehot2, **kwargs)
