@@ -24,7 +24,7 @@ class Transforms():
         self.rgb_mean = [0.485, 0.456, 0.406]
         self.rgb_std = [0.229, 0.224, 0.225]
         self.resolution = (256,256)
-        self.cropSize = (int(self.resolution[0]*0.875), int(self.resolution[1]*0.875))
+        self.cropSize = (224, 224)
         self.trainTransform = None
         self.testTransform = None
         self.trainCompose = []
@@ -32,6 +32,7 @@ class Transforms():
 
     def set_resolution(self,x,y):
         self.resolution = (x, y)
+        self.cropSize = (int(self.resolution[0] * 0.875), int(self.resolution[1] * 0.875))
 
     def add_trainCompose(self, item):
         self.trainCompose.insert(0,item)
