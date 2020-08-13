@@ -25,7 +25,7 @@ class TagImageDataset(Dataset):
         image = PIL.Image.open(img_path).convert('RGB')
 
         np_img = np.array(image) 
-        print(np_img.shape, np_img.shape[0]/np_img.shape[1])
+        #print(np_img.shape, np_img.shape[0]/np_img.shape[1])
 
         category = self.data_frame.iloc[idx]['category_1']
         category2 = self.data_frame.iloc[idx]['category_2']        
