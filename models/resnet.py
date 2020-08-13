@@ -193,7 +193,13 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def feat_extract(self,x):
+    def _forward_impl(self, x, onehot=None):
+        # See note [TorchScript super()]
+        if self.add_std:
+            std = x.clone()
+            std = std.reshape(x.shape[0],-1)
+            std = torch.std(std, axis=1).unsqueeze(1)
+
         x = self.conv1(x)
 
         x = self.bn1(x)
@@ -207,12 +213,6 @@ class ResNet(nn.Module):
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-        
-        return x
-
-    def _forward_impl(self, x, onehot=None):
-        # See note [TorchScript super()]
-        x = self.feat_extract(x)
 
         if self.use_fc_:
             if self.use_oh:

@@ -8,14 +8,14 @@ from sklearn.metrics import f1_score, classification_report, confusion_matrix
 from torch import optim
 from torch.utils.data import DataLoader
 
-from configuration.config import logger, base_test_transform, efficient_test_transform, efficientb5_test_transform
+from configuration.config import *
 from data_loader import TagImageInferenceDataset
+from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
 from models.resnet import ResNet50, resnext50_32x4d
 from models.densenet import DenseNet121
-from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
-from models.iterative_model import Iterative_Model
-from custom_loss import LabelSmoothingLoss, AlphaCrossEntropyLoss
+from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8
+from custom_loss import LabelSmoothingLoss
 
 import os
 
@@ -41,13 +41,12 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
         optimizer.zero_grad()  # step과 zero_grad는 쌍을 이루는 것이라고 생각하면 됨
 
         out = model(x,category_oneh)
-        logit, pred = out
 
+        logit, pred = out
         if isinstance(criterion, torch.nn.CrossEntropyLoss):
             loss = criterion(logit, xlabel)
         elif isinstance(criterion, LabelSmoothingLoss):
             loss = criterion(logit, xlabel, category_pos)
-
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
@@ -59,66 +58,14 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
         correct += torch.sum(pred == xlabel).item()
         num_data += xlabel.size(0)
         if i % 100 == 0:  # print every 100 mini-batches
-            logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch, total_epochs, i,
+            logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch+1, total_epochs, i,
                                                                                               len(train_loader),
                                                                                               running_loss / 2000,
                                                                                               time.time() - start))
             running_loss = 0.0
 
     logger.info(
-        '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch, total_epochs, total_loss / (i + 1), correct / num_data, category_correct / num_data))
-    del x, xlabel
-    torch.cuda.empty_cache()
-    return total_loss / (i + 1), correct / num_data
-
-def iterative_training(model, train_loader, optimizer, criterion, device, epoch, total_epochs,class_samples):
-    running_loss = 0.0
-    total_loss = 0.0
-    correct = 0.0
-    category_correct = 0.0
-    num_data = 0.0
-
-    for i, data in enumerate(train_loader):
-        start = time.time()
-        x = data['image']
-        xlabel = data['label']
-        category_pos = data['category_possible']
-        category_oneh = data['category_onehot']
-
-        x = x.to(device)
-        xlabel = xlabel.to(device)
-        category_pos = category_pos.to(device)
-        category_oneh = category_oneh.to(device)
-
-        optimizer.zero_grad()  # step과 zero_grad는 쌍을 이루는 것이라고 생각하면 됨
-
-        out = model(x, epoch,category_oneh)
-        logit, pred = out
-
-        if isinstance(criterion.loss_fcn, LabelSmoothingLoss):
-            loss = criterion(logit, xlabel, pred, category_pos)
-        else:
-            loss = criterion(logit, xlabel, pred)
-
-        loss.backward()
-        optimizer.step()
-        running_loss += loss.item()
-        total_loss += loss.item()
-
-        category_pred = torch.argmax(logit*category_pos, dim=-1)
-        category_correct += torch.sum(category_pred == xlabel).item()
-
-        correct += torch.sum(pred == xlabel).item()
-        num_data += xlabel.size(0)
-        if i % 100 == 0:  # print every 100 mini-batches
-            logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch, total_epochs, i,
-                                                                                              len(train_loader),
-                                                                                              running_loss / 2000,
-                                                                                              time.time() - start))
-            running_loss = 0.0
-
-    logger.info(
-        '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch, total_epochs, total_loss / (i + 1), correct / num_data, category_correct / num_data))
+        '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch+1, total_epochs, total_loss / (i + 1), correct / num_data, category_correct / num_data))
     del x, xlabel
     torch.cuda.empty_cache()
     return total_loss / (i + 1), correct / num_data
@@ -255,66 +202,6 @@ def evaluate(model, test_loader, device, criterion):
     return total_loss / (i + 1), correct / num_data, f1_mean
 
 
-def iterative_evaluate(model, test_loader, device, criterion, epoch):
-    correct = 0.0
-    category_correct = 0.0
-    num_data = 0.0
-    total_loss = 0.0
-
-    label = []
-    prediction = []
-
-    with torch.no_grad():
-        model.mode = 'evaluate'
-        for i, data in enumerate(test_loader):
-            x = data['image']
-            xlabel = data['label']
-            category_pos = data['category_possible']
-            category_oneh = data['category_onehot']
-
-            category_pos = category_pos.to(device)
-            category_oneh = category_oneh.to(device)
-            x = x.to(device)
-            xlabel = xlabel.to(device)
-            out = model(x, epoch, category_oneh)
-        
-            logit, pred = out
-            if epoch > model.starting_epoch:
-                pred = torch.argmax(logit, dim=-1)
-                
-            if isinstance(criterion.loss_fcn, LabelSmoothingLoss):
-                loss = criterion(logit, xlabel, pred, category_pos)
-            else:
-                loss = criterion(logit, xlabel, pred)
-            
-            category_pred = torch.argmax(logit*category_pos, dim=-1)
-            category_correct += torch.sum(category_pred == xlabel).item()
-            correct += torch.sum(pred == xlabel).item()
-
-            num_data += xlabel.size(0)
-            total_loss += loss.item()
-            label = label + xlabel.tolist()
-            prediction = prediction + pred.detach().cpu().tolist()
-
-        del x, xlabel
-        model.mode = 'train'
-
-    torch.cuda.empty_cache()
-
-    confusion = confusion_matrix(label,prediction)
-    confusion_norm = confusion_matrix(label,prediction, normalize='true')
-    logger.info(f'\n{confusion}')
-    logger.info(f'\n{confusion_norm}')
-    
-    f1_array = f1_score(label, prediction, average=None)
-    
-    logger.info(f"f1 score : {f1_array}")
-    f1_mean = gmean(f1_array)
-    logger.info('validation loss: {loss:.4f}\v validation acc: {acc:.4f} \t validation category acc: {cat_acc:.4f}\v validation F1: {f1:.4f}'
-                .format(loss=total_loss / (i + 1), acc=correct / num_data, f1=f1_mean, cat_acc=category_correct / num_data))
-    return total_loss / (i + 1), correct / num_data, f1_mean
-
-
 def inference(model, test_path: str) -> pd.DataFrame:
     """
     :param model: model
@@ -322,15 +209,8 @@ def inference(model, test_path: str) -> pd.DataFrame:
     :return:
     pandas.DataFrame: columns should be include "image_name" and "y_pred".
     """
-    if model.name == "EfficientNet_B7" or model.name =="EfficientNet_B8":
-        test_transform = efficient_test_transform
-    elif model.name == "EfficientNet_B5":
-        test_transform = efficientb5_test_transform
-    else:
-        test_transform = base_test_transform
-
     testset = TagImageInferenceDataset(root_dir=f'{test_path}/test_data',
-                                       transform=base_test_transform)
+                                       transform=Transforms().test_transform())
 
     test_loader = DataLoader(dataset=testset, batch_size=64, shuffle=False)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -370,14 +250,10 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int):
         model = resnext50_32x4d(onehot=onehot)
     elif model_name == 'densenet':
         model = DenseNet121()
-    elif model_name == "efficientnet_b5":
-        model = EfficientNet_B5(onehot=onehot)
     elif model_name == "efficientnet_b7":
-        model = EfficientNet_B7(onehot=onehot)
+        model = EfficientNet_B7()
     elif model_name == "efficientnet_b8":
-        model = EfficientNet_B8(onehot=onehot)
-    elif model_name == 'teacher':
-        model = resnext50_32x4d(onehot=onehot)
+        model = EfficientNet_B8()        
     else:
         raise NotImplementedError('Please select in [resnet50, densenet, efficientnet_b7, efficientnet_b8]')
     return model
@@ -385,14 +261,14 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int):
 
 def select_optimizer(param, opt_name: str, lr: float, weight_decay: float):
     if opt_name == 'SGD':
-        optimizer = torch.optim.SGD(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
+        optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
     elif opt_name == 'SGDP':
         optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
     elif opt_name == 'Adam':
         return torch.optim.Adam(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
     elif opt_name == 'AdamP':
         #optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay, nesterov=True)
-        optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
+        optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, nesterov=True)
     else:
         raise NotImplementedError('The optimizer should be in [SGD]')
     return optimizer

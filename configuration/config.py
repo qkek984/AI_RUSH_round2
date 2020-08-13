@@ -8,51 +8,44 @@ logger = logging.getLogger('Tagging Classification')
 rgb_mean = [0.485, 0.456, 0.406] 
 rgb_std = [0.229, 0.224, 0.225]
 
-base_transform = transforms.Compose([
-    transforms.Resize((256,256)),
-    transforms.ColorJitter(hue=.1, saturation=.1),
-    transforms.RandomHorizontalFlip(0.5),
-    transforms.ToTensor(),
-    transforms.Normalize(rgb_mean, rgb_std)
-])
+class Transforms():
+    def __init__(self):
+        self.rgb_mean = [0.485, 0.456, 0.406]
+        self.rgb_std = [0.229, 0.224, 0.225]
+        self.resolution = (256,256)
+        self.cropSize = (int(self.resolution[0]*0.875), int(self.resolution[1]*0.875))
+        self.trainTransform = None
+        self.testTransform = None
+        self.trainCompose = [
+            transforms.Resize(self.resolution),
+            #transforms.RandomRotation(5, expand=True),
+            #transforms.CenterCrop(self.cropSize),
+            transforms.ColorJitter(hue=.1, saturation=.1),
+            transforms.RandomHorizontalFlip(0.5),
+            transforms.ToTensor(),
+            transforms.Normalize(self.rgb_mean, self.rgb_std)
+        ]
+        self.testCompose = [
+            transforms.Resize(self.resolution),
+            transforms.ToTensor(),
+            transforms.Normalize(self.rgb_mean, self.rgb_std)
+        ]
 
-efficientnetb5_transform = transforms.Compose([
-    transforms.Resize((456, 456)),
-    transforms.ColorJitter(hue=.1, saturation=.1),
-    transforms.RandomHorizontalFlip(0.5),
-    transforms.ToTensor(),
-    transforms.Normalize(rgb_mean, rgb_std)
-])
+    def set_resolution(self,x,y):
+        self.resolution = (x, y)
 
-efficientnet_transform = transforms.Compose([
-    transforms.Resize((600, 600)),
-    transforms.ColorJitter(hue=.1, saturation=.1),
-    transforms.RandomHorizontalFlip(0.5),
-    transforms.ToTensor(),
-    transforms.Normalize(rgb_mean, rgb_std)
-])
+    def add_trainCompose(self, item):
+        self.trainCompose.insert(0,item)
 
-efficientnetb8_transform = transforms.Compose([
-    transforms.Resize((600, 600)),
-    transforms.ColorJitter(hue=.1, saturation=.1),
-    transforms.RandomHorizontalFlip(0.5),
-    transforms.ToTensor(),
-    transforms.Lambda(lambda img: img * 2.0 - 1.0)
-])
+    def add_testCompose(self,item):
+        self.testCompose.insert(0,item)
 
-base_test_transform = transforms.Compose([
-    transforms.Resize((256,256)),
-    transforms.ToTensor(),
-    transforms.Normalize(rgb_mean, rgb_std)
-])
-efficient_test_transform = transforms.Compose([
-    transforms.Resize((600, 600)),
-    transforms.ToTensor(),
-    transforms.Normalize(rgb_mean, rgb_std)
-])
-efficientb5_test_transform = transforms.Compose([
-    transforms.Resize((456, 456)),
-    transforms.ToTensor(),
-    transforms.Normalize(rgb_mean, rgb_std)
-])
+    def train_transform(self):
+        if self.trainTransform == None:
+            self.trainTransform = transforms.Compose(self.trainCompose)
+        return self.trainTransform
 
+    def test_transform(self):
+        if self.testTransform == None:
+            self.testTransform = transforms.Compose(self.testCompose)
+        return self.testTransform
