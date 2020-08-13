@@ -1,5 +1,6 @@
 import logging.config
-
+import torchvision.transforms.functional as F
+import numpy as np
 from torchvision import transforms
 
 logging.config.fileConfig('./configuration/logging.conf')
@@ -7,6 +8,15 @@ logger = logging.getLogger('Tagging Classification')
 
 rgb_mean = [0.485, 0.456, 0.406] 
 rgb_std = [0.229, 0.224, 0.225]
+
+class SquarePad():
+	def __call__(self, image):
+		w, h = image.size
+		max_wh = np.max([w, h])
+		hp = int((max_wh - w) / 2)
+		vp = int((max_wh - h) / 2)
+		padding = (hp, vp, hp, vp)
+		return F.pad(image, padding, 0, 'constant')
 
 class Transforms():
     def __init__(self):
@@ -30,7 +40,8 @@ class Transforms():
 
     def train_transform(self):
         if self.trainTransform == None:
-            self.trainCompose += [transforms.Resize(self.resolution),
+            self.trainCompose += [SquarePad(),
+                                  transforms.Resize(self.resolution),
                                   transforms.RandomRotation(5, expand=True),
                                   transforms.CenterCrop(self.cropSize),
                                   # transforms.ColorJitter(hue=.1, saturation=.1),
@@ -43,7 +54,8 @@ class Transforms():
 
     def test_transform(self):
         if self.testTransform == None:
-            self.testCompose += [transforms.Resize(self.resolution),
+            self.testCompose += [SquarePad(),
+                                 transforms.Resize(self.resolution),
                                  transforms.ToTensor(),
                                  #transforms.Normalize(self.rgb_mean, self.rgb_std)
                                  ]
