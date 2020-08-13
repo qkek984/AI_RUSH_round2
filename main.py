@@ -30,7 +30,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
         start = time.time()
         if isinstance(model, Iterative_Model):
             if epoch + 1 > model.starting_epoch:
-                criterion.alpha = alpha
+                criterion.alpha = 0.5
                 criterion.loss_fcn = nn.CrossEntropyLoss
                 model.prototype_update(class_samples, device)
 

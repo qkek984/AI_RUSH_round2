@@ -1,6 +1,7 @@
 import logging.config
 import torchvision.transforms.functional as F
 from torchvision import transforms
+import numpy as np
 
 logging.config.fileConfig('./configuration/logging.conf')
 logger = logging.getLogger('Tagging Classification')
