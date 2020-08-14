@@ -68,13 +68,12 @@ class DenseNet(nn.Module):
     """
 
     def __init__(self, growth_rate=32, block_config=(6, 12, 24, 16),
-                 num_init_features=64, bn_size=4, drop_rate=0, num_classes=5, name="DenseNet", add_std=0):
+                 num_init_features=64, bn_size=4, drop_rate=0, num_classes=5, name="DenseNet",onehot=1, onehot2=0):
 
         super(DenseNet, self).__init__()
         self.name = name
-        self.add_std = add_std
-        if add_std:
-            print("with extra feature std")
+        self.onehot = onehot
+        self.onehot2 = onehot2
 
         # First convolution
         self.features = nn.Sequential(OrderedDict([
@@ -100,7 +99,7 @@ class DenseNet(nn.Module):
         self.features.add_module('norm5', nn.BatchNorm2d(num_features))
 
         # Linear layer
-        self.classifier = nn.Linear(num_features + self.add_std, num_classes)
+        self.fc = nn.Linear(num_features + 9 * onehot + 118 * onehot2, num_classes)
 
         # Official init from torch repo.
         for m in self.modules():
@@ -112,31 +111,30 @@ class DenseNet(nn.Module):
             elif isinstance(m, nn.Linear):
                 nn.init.constant_(m.bias, 0)
 
-    def forward(self, x, onehot=None):
+    def feat_extract(self, x):
         x = F.interpolate(x,(224,224))
-        if self.add_std:
-            std = x.clone()
-            std = std.reshape(x.shape[0],-1)
-            std = torch.std(std, axis=1).unsqueeze(1)
-
         features = self.features(x)
         out = F.relu(features, inplace=True)
         out = F.avg_pool2d(out, kernel_size=7, stride=1).view(features.size(0), -1)
-        if self.add_std:
-            out = torch.cat([out, std], axis=1)
-        out = self.classifier(out)
+        return out
+
+    def forward(self, x, onehot=None):
+        out = self.feat_extract(x)
+        if self.onehot or self.onehot2:
+            out = torch.cat([out, onehot], axis=1)
+        out = self.fc(out)
         pred = torch.argmax(out, dim=-1)
 
         return out, pred
 
 
-def DenseNet121(pretrained=True, **kwargs):
+def DenseNet121(pretrained=True, onehot=1, onehot2=0, **kwargs):
     r"""Densenet-121 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = DenseNet(num_init_features=64, growth_rate=32, block_config=(6, 12, 24, 16),
+    model = DenseNet(num_init_features=64, growth_rate=32, block_config=(6, 12, 24, 16), onehot=onehot, onehot2=onehot2,
                      **kwargs)
     if pretrained:
         # '.'s are no longer allowed in module names, but pervious _DenseLayer

@@ -22,6 +22,7 @@ class LabelSmoothingLoss(nn.Module):
             category[category == 1] =  self.attention
             category[category == 0] =  1
             true_dist = true_dist * category
+            true_dist[:,4] = true_dist[:,4] * 1.1
             true_dist.scatter_(1, target.data.unsqueeze(1), self.confidence)
 
         return torch.mean(torch.sum(-true_dist * pred, dim=self.dim))

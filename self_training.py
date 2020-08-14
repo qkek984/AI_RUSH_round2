@@ -8,10 +8,10 @@ from nsml import DATASET_PATH
 from torch.utils.data import DataLoader
 import pandas as pd
 
-import nsml_utils as nu
+import utilities.nsml_utils as nu
 from configuration.config import *
 from data_loader import TagImageDataset
-from utils import select_model, get_confidence_score, unclassified_predict
+from utilities.utils import select_model, get_confidence_score, unclassified_predict
 import random
 
 

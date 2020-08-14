@@ -44,7 +44,7 @@ class Transforms():
         if self.trainTransform == None:
             self.trainCompose += [SquarePad(),
                                   transforms.Resize(self.resolution),
-                                  ImageNetPolicy(), 
+                                #   ImageNetPolicy(), 
                                 #   transforms.RandomRotation(5, expand=True),
                                 #   transforms.RandomCrop(self.cropSize),
                                 #   transforms.ColorJitter(hue=.1, saturation=.1),
@@ -59,6 +59,7 @@ class Transforms():
         if self.testTransform == None:
             self.testCompose += [SquarePad(),
                                  transforms.Resize(self.resolution),
+                                 transforms.RandomCrop(self.cropSize),
                                  transforms.ToTensor(),
                                  transforms.Normalize(self.rgb_mean, self.rgb_std)
                                  ]

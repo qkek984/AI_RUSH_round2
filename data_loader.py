@@ -7,10 +7,11 @@ from torch.utils.data import Dataset
 from category import *
 import numpy as np
 class TagImageDataset(Dataset):
-    def __init__(self, data_frame: pd.DataFrame, root_dir: str, onehot2=0 , transform=None):
+    def __init__(self, data_frame: pd.DataFrame, root_dir: str, onehot=1, onehot2=0 , transform=None):
         self.data_frame = data_frame
         self.root_dir = root_dir
         self.transform = transform
+        self.onehot = onehot
         self.onehot2 = onehot2
     def __len__(self):
         return len(self.data_frame)
@@ -24,12 +25,11 @@ class TagImageDataset(Dataset):
         img_path = os.path.join(self.root_dir, img_name)
         image = PIL.Image.open(img_path).convert('RGB')
 
-        np_img = np.array(image) 
-
         category = self.data_frame.iloc[idx]['category_1']
         category2 = self.data_frame.iloc[idx]['category_2']        
         if self.transform:
             image = self.transform(image)
+        np_img = np.array(image) 
 
         sample['image'] = image
         tag_name = self.data_frame.iloc[idx]['answer']
@@ -37,16 +37,17 @@ class TagImageDataset(Dataset):
         sample['image_name'] = img_name
         
         sample['category_possible'] = torch.Tensor(CAT2POS[category])
-        sample['category_onehot'] = torch.Tensor(CAT2ONEH[category] + (cat22oneh(category,category2) if self.onehot2 else []))
+        sample['category_onehot'] = torch.Tensor((CAT2ONEH[category] if self.onehot else []) + (cat22oneh(category,category2) if self.onehot2 else []))
         sample['category'] = torch.Tensor([ CAT2NUM[category] ])
         
         return sample
 
 
 class TagImageInferenceDataset(Dataset):
-    def __init__(self, root_dir: str, onehot2 =0 , transform=None):
+    def __init__(self, root_dir: str, onehot= 1, onehot2 =0 , transform=None):
         self.root_dir = root_dir
         self.transform = transform
+        self.onehot= onehot
         self.onehot2 = onehot2
         self.data_list = [img for img in os.listdir(self.root_dir) if not img.startswith('.')]
         self.data_list.remove('test_input') 
@@ -79,6 +80,6 @@ class TagImageInferenceDataset(Dataset):
         sample['image_name'] = img_name
         sample['category_possible'] = torch.Tensor(CAT2POS[category])
         sample['category'] = torch.Tensor([CAT2NUM[category]])
-        sample['category_onehot'] = torch.Tensor(CAT2ONEH[category] + (cat22oneh(category,category2) if self.onehot2 else []))
+        sample['category_onehot'] = torch.Tensor((CAT2ONEH[category] if self.onehot else []) + (cat22oneh(category,category2) if self.onehot2 else []))
         
         return sample

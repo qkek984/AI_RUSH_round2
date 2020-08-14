@@ -12,13 +12,13 @@ import pickle
 import random 
 
 class Ensemble_model(nn.Module):
-    def __init__(self, mode='soft', weight=None, pretrained=None,std=[0,0,0]):
+    def __init__(self, mode='soft', weight=None, pretrained=None):
         super(Ensemble_model, self).__init__()
         self.name = "Ensemble_model"
-        self.vgg = VGG16(pretrained=False, add_std=std[0])
-        self.resnet = ResNet50(pretrained=False, add_std=std[1])
+        self.vgg = VGG16(pretrained=False)
+        self.resnet = ResNet50(pretrained=False)
         self.efficientnet = EfficientNet_B3(pretrained=False)
-        self.densenet = DenseNet121(pretrained=False, add_std=std[2])
+        self.densenet = DenseNet121(pretrained=False)
 
         self.mode = mode
         self.weight = weight

@@ -3,7 +3,7 @@ import os
 import nsml
 import torch
 
-from utils import inference
+from utilities.utils import inference
 
 
 def bind_model(model):

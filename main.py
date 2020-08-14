@@ -1,24 +1,31 @@
 import argparse
 import os
+import random
+import time
+import subprocess
 
-import nsml
 import torch
-from nsml import DATASET_PATH
 from torch import nn
 from torch.utils.data import DataLoader
 import pandas as pd
-import subprocess
 
-import nsml_utils 
 from configuration.config import *
 from data_loader import TagImageDataset
-from utils import select_optimizer, select_model, evaluate, train, iterative_training, iterative_evaluate
-import random
-import time
-from self_training import df_teacher
-from custom_loss import LabelSmoothingLoss, AlphaCrossEntropyLoss
+
+from utilities.utils import select_optimizer, select_model, evaluate, train
+from utilities import nsml_utils
+from utilities.iterative_utils import *
+from utilities.binary_utils import * 
+from utilities.trainable_embed_utils import *
+import nsml
+from nsml import DATASET_PATH
+
 from models.trainable_embedding import Trainable_Embedding
 from models.iterative_model import Iterative_Model
+from models.binary_model import Binary_Model
+from self_training import df_teacher
+
+from custom_loss import LabelSmoothingLoss, AlphaCrossEntropyLoss
 
 def train_process(args, model, train_loader, test_loader, optimizer, unfroze_optimizer, criterion, device, threshold=3, class_samples=None):
     best_acc = 0.0
@@ -40,6 +47,18 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
                                         criterion=criterion, device=device, epoch=epoch + 1, total_epochs=args.num_epoch + args.num_unfroze_epoch, class_samples=class_samples)
             model.eval()
             test_loss, test_acc, test_f1 = iterative_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion, epoch=epoch)
+
+        elif isinstance(model, Binary_Model):
+            train_loss, train_acc = binary_train(model=model, train_loader=train_loader, optimizer=optimizer,
+                                        device=device, epoch=epoch + 1, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+            model.eval()
+            test_loss, test_acc, test_f1 = binary_evaluate(model=model, test_loader=test_loader, device=device)
+
+        elif isinstance(model, Trainable_Embedding):
+            train_loss, train_acc = embedding_training(model=model, train_loader=train_loader, optimizer=optimizer,
+                                        criterion=criterion,device=device, epoch=epoch + 1, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+            model.eval()
+            test_loss, test_acc, test_f1 = embedding_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
 
         else:
             train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=optimizer,
@@ -137,7 +156,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
 def unfreeze(model):
     len_ = len(list(model.named_parameters()))
     for i, (name, params) in enumerate(model.named_parameters()):
-        if 'bn' not in name and  i > len_ - 20:
+        if 'bn' not in name : #and  i > len_ - 20 
             params.requires_grad = True
         
 def load_weight(model, weight_file):
@@ -243,6 +262,7 @@ def main():
     parser.add_argument('--onehot', default=1, type=int)
     parser.add_argument('--onehot2', default=0 , type=int)
     parser.add_argument('--iterative', default=0 , type=int)
+    parser.add_argument('--binary', default=0 , type=int)
 
     args = parser.parse_args()
     transform = Transforms()
@@ -270,11 +290,14 @@ def main():
 
     if args.cat_embed:
         logger.info("\n#############\nTrainable category embedding appended to model\n#############")
-        model.use_fc_ = False
+        args.onehot = 0
         model = Trainable_Embedding(model, embed_dim=args.embed_dim)
     elif args.iterative:
         logger.info("\n#############\nIterative appended to model\n#############")
         model = Iterative_Model(model)
+    elif args.binary:
+        logger.info("\n#############\nBinary appended to model\n#############")
+        model = Binary_Model(model)
 
     logger.info(f'Model size: {total_param} tensors')
     model = model.to(device)
@@ -282,23 +305,23 @@ def main():
 
     if args.pause:
         nsml.paused(scope=locals())
-    if args.num_epoch == 0:
-        nsml.save('best')
-        return
+    # if args.num_epoch == 0:
+    #     nsml.save('best')
+    #     return
 
     # Set the dataset
     logger.info('Set the dataset')
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    # df = df.iloc[:10000]
+    # df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
     train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[2, 2, 32, 4, 0.75], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
-                               transform=transform.train_transform(), onehot2=args.onehot2)
+                               transform=transform.train_transform(), onehot=args.onehot, onehot2=args.onehot2)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
-                              transform=transform.test_transform(), onehot2=args.onehot2)
+                              transform=transform.test_transform(), onehot=args.onehot,onehot2=args.onehot2)
 
     train_loader = DataLoader(dataset=trainset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
     test_loader = DataLoader(dataset=testset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
@@ -307,7 +330,7 @@ def main():
         logger.info("Class Sample Sizes")
         logger.info(f"\t{' '.join([str(class_.shape[0]) for i, class_ in enumerate(class_samples)])}")
         class_samples = [TagImageDataset(data_frame=class_df, root_dir=f'{DATASET_PATH}/train/train_data', \
-                             transform=transform.train_transform(), onehot2=args.onehot2) for class_df in class_samples]
+                             transform=transform.train_transform(), onehot=args.onehot,onehot2=args.onehot2) for class_df in class_samples]
         class_samples = [DataLoader(class_dataset, batch_size=args.batch_size, num_workers=args.num_workers) \
                             for class_dataset in class_samples]
 

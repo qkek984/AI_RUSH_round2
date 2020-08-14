@@ -313,7 +313,7 @@ class EfficientNet(nn.Module):
         x = self.feat_extract(inputs)
 
         x = self._dropout(x)
-        if self.onehot:
+        if self.onehot or self.onehot2:
             x = torch.cat([x,onehot], axis=1)
 
         x = self.fc(x)
