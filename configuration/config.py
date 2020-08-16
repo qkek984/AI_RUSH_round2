@@ -42,16 +42,16 @@ class Transforms():
 
     def train_transform(self):
         if self.trainTransform == None:
-            self.trainCompose += [SquarePad(),
-                                  transforms.Resize(self.resolution),
-                                #   ImageNetPolicy(), 
-                                #   transforms.RandomRotation(5, expand=True),
-                                #   transforms.RandomCrop(self.cropSize),
-                                #   transforms.ColorJitter(hue=.1, saturation=.1),
-                                #   transforms.RandomHorizontalFlip(0.5),
-                                  transforms.ToTensor(),
-                                  transforms.Normalize(self.rgb_mean, self.rgb_std)
-                                  ]
+            self.trainCompose += [
+                SquarePad(),
+                #ImageNetPolicy(),
+                transforms.Resize(self.resolution),
+                transforms.ColorJitter(hue=.1, saturation=.1),
+                transforms.RandomHorizontalFlip(0.5),
+                transforms.ToTensor(),
+                transforms.Normalize(self.rgb_mean, self.rgb_std)
+            ]
+
             self.trainTransform = transforms.Compose(self.trainCompose)
         return self.trainTransform
 

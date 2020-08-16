@@ -70,58 +70,8 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
     torch.cuda.empty_cache()
     return total_loss / (i + 1), correct / num_data
 
-def get_confidence_score(model, test_loader, device, defaltThresh=0, n_class=5):
-    errorProb = [[] for _ in range(n_class)]
-    confid_score = [0 for _ in range(n_class)]
-    avg_score = [0 for _ in range(n_class)]
-    lentl = len(test_loader)
-    with torch.no_grad():
-        for i, data in enumerate(test_loader):
-            img_name = data['image_name']
-            x = data['image']
-            img_label = data['label']
-            category_pos = data['category_possible']
-            category_oneh = data['category_onehot']
-
-            category_pos = category_pos.to(device)
-            category_oneh = category_oneh.to(device)
-            x = x.to(device)
-
-            out = model(x, category_oneh)
-            logit, pred = out
-
-            category_pred = torch.argmax(logit * category_pos, dim=-1)
-
-            for item in zip(img_name, img_label, category_pred, logit):
-                fname = item[0]
-                label = int(item[1])
-                predict = int(item[2])
-                prob = float(item[3][predict])
-                if label != predict:
-                    errorProb[predict].append(prob)
-
-            if i % 50 == 0:#작업 경과 출력
-                logger.info(f'confidence score {i} / {lentl}')
-        del x, img_label, img_name
-
-    #weight=[0.1, 0.25, 0.25, 0.25, 0.01]
-
-    for i in range(n_class):
-        ep = sorted(errorProb[i],reverse=True)
-        if ep:
-            #confid_score[i] = max(ep) # max
-            #confid_score[i] = sum(ep) / len(ep) # avg
-            confid_score[i] = sum(ep[:10]) / len(ep[:10])  # avg
-            #confid_score[i] = ep[int(len(ep) * 0.25)] # 0.25
-            #confid_score[i] = ep[int(len(ep) * weight[i])] # weight
-        else:
-            confid_score[i] = defaltThresh
-        logger.info(f'Top 5 error score [{i}] label: {ep[:5]}')
-    logger.info(f'condidence score: {confid_score}')
-    return confid_score
-
-def unclassified_predict(model, unclassified_loader, device, confidence_score, n_class=5):
-    predictedUnclassified = [[],[],[]]
+def unclassified_predict(model, unclassified_loader, device, n_class=5):
+    predictedData = [[] for i in range(n_class)]
     lenul = len(unclassified_loader)
     with torch.no_grad():
         for i, data in enumerate(unclassified_loader):
@@ -135,18 +85,12 @@ def unclassified_predict(model, unclassified_loader, device, confidence_score, n
             logit, pred = out
 
             for item in zip(img_name, pred, logit):
-                fname = item[0]
-                predict = int(item[1])
-                prob = float(item[2][predict])
-
-                if prob > confidence_score[predict]:
-                    predictedUnclassified[0].append(fname)
-                    predictedUnclassified[1].append(predict)
-                    predictedUnclassified[2].append(prob)
+                predict= int(item[1])
+                predictedData[predict].append((float(item[2][predict]), item[0], predict))# prob, fname, predict
 
             if i % 100 == 0:#작업 경과 출력
                 logger.info(f'predict unclassied data {i} / {lenul}')
-    return predictedUnclassified
+    return predictedData
 
 def evaluate(model, test_loader, device, criterion):
     correct = 0.0
@@ -252,8 +196,6 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int, on
         model = resnet101(onehot=onehot,onehot2=onehot2)
     elif model_name == "resnext101":
         model = resnext101_32x8d(onehot=onehot,onehot2=onehot2)
-    elif model_name == 'teacher':
-        model = resnext50_32x4d(onehot=onehot,onehot2=onehot2)
     elif model_name == 'densenet':
         model = DenseNet121(onehot=onehot,onehot2=onehot2)
     elif model_name == "efficientnet_b5":
