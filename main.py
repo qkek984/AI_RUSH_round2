@@ -317,7 +317,7 @@ def main():
     # df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
-    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[2, 2, 32, 4, 0.75], sed=42)
+    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[2, 2, 32, 4, 0.9], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=transform.train_transform(), onehot=args.onehot, onehot2=args.onehot2)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',

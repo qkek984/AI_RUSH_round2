@@ -59,7 +59,6 @@ class Transforms():
         if self.testTransform == None:
             self.testCompose += [SquarePad(),
                                  transforms.Resize(self.resolution),
-                                 transforms.RandomCrop(self.cropSize),
                                  transforms.ToTensor(),
                                  transforms.Normalize(self.rgb_mean, self.rgb_std)
                                  ]
