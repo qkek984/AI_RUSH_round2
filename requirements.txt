@@ -3,3 +3,4 @@ openpyxl
 adamp
 efficientnet_pytorch
 scikit-learn==0.23.1
+xgboost

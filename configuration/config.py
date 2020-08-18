@@ -3,6 +3,7 @@ import torchvision.transforms.functional as F
 import numpy as np
 from torchvision import transforms
 import numpy as np
+# from RandAugment import RandAugment
 from .autoaugment import ImageNetPolicy
 logging.config.fileConfig('./configuration/logging.conf')
 logger = logging.getLogger('Tagging Classification')
@@ -44,7 +45,7 @@ class Transforms():
         if self.trainTransform == None:
             self.trainCompose += [SquarePad(),
                                   transforms.Resize(self.resolution),
-                                #   ImageNetPolicy(), 
+                                  ImageNetPolicy(), 
                                 #   transforms.RandomRotation(5, expand=True),
                                 #   transforms.RandomCrop(self.cropSize),
                                 #   transforms.ColorJitter(hue=.1, saturation=.1),
@@ -57,11 +58,25 @@ class Transforms():
 
     def test_transform(self):
         if self.testTransform == None:
-            self.testCompose += [SquarePad(),
+            self.testCompose += [
+                                 SquarePad(),
                                  transforms.Resize(self.resolution),
-                                 transforms.RandomCrop(self.cropSize),
+                                 transforms.CenterCrop(self.cropSize),
                                  transforms.ToTensor(),
                                  transforms.Normalize(self.rgb_mean, self.rgb_std)
                                  ]
             self.testTransform = transforms.Compose(self.testCompose)
+        return self.testTransform
+
+    def teacher_test_transform(self):
+        if self.testTransform == None:
+            self.testCompose += [ 
+                                  SquarePad(),
+                                  transforms.Resize(self.resolution),
+                                  transforms.CenterCrop(self.cropSize),
+                                  transforms.ToTensor(),
+                                  transforms.Normalize(self.rgb_mean, self.rgb_std)
+                                ]
+            self.testTransform = transforms.Compose(self.testCompose)
+
         return self.testTransform

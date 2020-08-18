@@ -210,7 +210,7 @@ def inference(model, test_path: str) -> pd.DataFrame:
     pandas.DataFrame: columns should be include "image_name" and "y_pred".
     """
     testset = TagImageInferenceDataset(root_dir=f'{test_path}/test_data',
-                                       transform=Transforms().test_transform(),onehot2=model.onehot2)
+                                       transform=Transforms().test_transform(), onehot2=model.onehot2)
 
     test_loader = DataLoader(dataset=testset, batch_size=64, shuffle=False)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')

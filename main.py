@@ -23,8 +23,9 @@ from nsml import DATASET_PATH
 from models.trainable_embedding import Trainable_Embedding
 from models.iterative_model import Iterative_Model
 from models.binary_model import Binary_Model
-from self_training import df_teacher
+from models.ensemble_model import Ensemble_Model
 
+from self_training import df_teacher
 from custom_loss import LabelSmoothingLoss, AlphaCrossEntropyLoss
 
 def train_process(args, model, train_loader, test_loader, optimizer, unfroze_optimizer, criterion, device, threshold=3, class_samples=None):
@@ -115,6 +116,18 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
             model.eval()
             test_loss, test_acc, test_f1 = iterative_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion, epoch=epoch)
 
+        elif isinstance(model, Binary_Model):
+            train_loss, train_acc = binary_train(model=model, train_loader=train_loader, optimizer=unfroze_optimizer,
+                                        device=device, epoch=epoch + args.num_epoch, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+            model.eval()
+            test_loss, test_acc, test_f1 = binary_evaluate(model=model, test_loader=test_loader, device=device)
+
+        elif isinstance(model, Trainable_Embedding):
+            train_loss, train_acc = embedding_training(model=model, train_loader=train_loader, optimizer=unfroze_optimizer,
+                                        criterion=criterion,device=device, epoch=epoch + args.num_epoch, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+            model.eval()
+            test_loss, test_acc, test_f1 = embedding_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
+
         else:
             train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=unfroze_optimizer,
                                         criterion=criterion, device=device, epoch=epoch+ args.num_epoch, total_epochs=args.num_epoch + args.num_unfroze_epoch)
@@ -156,7 +169,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
 def unfreeze(model):
     len_ = len(list(model.named_parameters()))
     for i, (name, params) in enumerate(model.named_parameters()):
-        if 'bn' not in name : #and  i > len_ - 20 
+        if 'bn' not in name and  i > len_ - 25: # 
             params.requires_grad = True
         
 def load_weight(model, weight_file):
@@ -232,6 +245,7 @@ def main():
     # from deform_conv.modules.modulated_deform_conv import ModulatedDeformConv, _ModulatedDeformConv, ModulatedDeformConvPack
     # from deform_conv.modules.deform_psroi_pooling import DeformRoIPooling, _DeformRoIPooling, DeformRoIPoolingPack
     # Argument Settings
+
     parser = argparse.ArgumentParser(description='Image Tagging Classification from Naver Shopping Reviews')
     parser.add_argument('--sess_name', default='', type=str, help='Session name that is loaded')
     parser.add_argument('--checkpoint', default='best', type=str, help='Checkpoint')
@@ -258,11 +272,16 @@ def main():
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
     parser.add_argument('--cat_embed', default=False, type=bool)
-    parser.add_argument('--embed_dim', default=90, type=int)
+    parser.add_argument('--embed_dim', default=18, type=int)
     parser.add_argument('--onehot', default=1, type=int)
     parser.add_argument('--onehot2', default=0 , type=int)
     parser.add_argument('--iterative', default=0 , type=int)
     parser.add_argument('--binary', default=0 , type=int)
+    parser.add_argument('--ensemble', default=None, type=str)
+    parser.add_argument('--densenet', default=None, type=str)
+    parser.add_argument('--resnet', default=None, type=str)
+    parser.add_argument('--efficientnet_b5', default=None, type=str)
+    parser.add_argument('--efficientnet_b7', default=None, type=str)
 
     args = parser.parse_args()
     transform = Transforms()
@@ -288,20 +307,25 @@ def main():
     elif args.model_name == 'efficientnet_b5':
         transform.set_resolution(456,456)
 
-    if args.cat_embed:
+    if args.binary:
+        logger.info("\n#############\nBinary appended to model\n#############")
+        if args.cat_embed:
+            args.onehot = 0
+        model = Binary_Model(model, cat_embed=args.cat_embed, embed_dim=args.embed_dim)
+    elif args.cat_embed:
         logger.info("\n#############\nTrainable category embedding appended to model\n#############")
         args.onehot = 0
         model = Trainable_Embedding(model, embed_dim=args.embed_dim)
     elif args.iterative:
         logger.info("\n#############\nIterative appended to model\n#############")
         model = Iterative_Model(model)
-    elif args.binary:
-        logger.info("\n#############\nBinary appended to model\n#############")
-        model = Binary_Model(model)
 
+    if args.ensemble:
+        model = Ensemble_Model(args)
+    else:
+        nsml_utils.bind_model(model)
     logger.info(f'Model size: {total_param} tensors')
     model = model.to(device)
-    nsml_utils.bind_model(model)
 
     if args.pause:
         nsml.paused(scope=locals())
@@ -317,7 +341,7 @@ def main():
     # df = df.iloc[:5000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
-    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[2, 2, 32, 4, 0.75], sed=42)
+    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[2, 2, 32, 4, 0.8], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=transform.train_transform(), onehot=args.onehot, onehot2=args.onehot2)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
@@ -361,7 +385,10 @@ def main():
 
         model.eval()
         logger.info('Start to test!')
-        test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device,
+        if isinstance(model, Binary_Model):
+            test_loss, test_acc, test_f1 = binary_evaluate(model=model, test_loader=test_loader, device=device)
+        else:
+            test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device,
                                                 criterion=criterion)
         logger.info(f"loss = {test_loss}, accuracy = {test_acc}, F1-score = {test_f1}")
         nsml.save("best")

@@ -24,19 +24,21 @@ def binary_train(model, train_loader, optimizer, device, epoch, total_epochs):
 
         category_pos = data['category_possible']
         category_oneh = data['category_onehot']
+        category = data['category']
 
         x = x.to(device)
         xlabel = xlabel.to(device)
+        category = category.to(device)
         category_pos = category_pos.to(device)
         category_oneh = category_oneh.to(device)
 
         optimizer.zero_grad()  # step과 zero_grad는 쌍을 이루는 것이라고 생각하면 됨
 
-        out = model(x,category_oneh)
+        out = model(x,category_oneh, category if model.cat_embed else None)
         b_out, class_out, unclass_idx, class_idx = out
         
         if class_idx.shape[0] > 0:
-            pred[class_idx] = torch.argmax(class_out, dim=-1)
+            pred[class_idx] = torch.argmax(class_out[class_idx], dim=-1)
         pred[unclass_idx] = 4
 
         binary_label = (xlabel[unclass_idx] == 4).float()
@@ -97,16 +99,19 @@ def binary_evaluate(model, test_loader, device):
 
             category_pos = data['category_possible']
             category_oneh = data['category_onehot']
+            category = data['category']
 
+            category = category.to(device)
             category_pos = category_pos.to(device)
             category_oneh = category_oneh.to(device)
             x = x.to(device)
             xlabel = xlabel.to(device)
 
-            out = model(x,category_oneh)
+            out = model(x,category_oneh, category if model.cat_embed else None)
             b_out, class_out, unclass_idx, class_idx = out
             
-            pred[class_idx] = torch.argmax(class_out, dim=-1)
+            if class_idx.shape[0] > 0:
+                pred[class_idx] = torch.argmax(class_out[class_idx], dim=-1)
             pred[unclass_idx] = 4
 
             binary_label = (xlabel[unclass_idx] == 4).float()
@@ -157,7 +162,7 @@ def binary_inference(model, test_path: str) -> pd.DataFrame:
     pandas.DataFrame: columns should be include "image_name" and "y_pred".
     """
     testset = TagImageInferenceDataset(root_dir=f'{test_path}/test_data',
-                                       transform=Transforms().test_transform(),onehot2=model.onehot2)
+                                       transform=Transforms().test_transform(), onehot=model.onehot, onehot2=model.model.onehot2)
 
     test_loader = DataLoader(dataset=testset, batch_size=64, shuffle=False)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -169,21 +174,22 @@ def binary_inference(model, test_path: str) -> pd.DataFrame:
     with torch.no_grad():
         for i, data in enumerate(test_loader):
             x = data['image']
-            pred = torch.zeros(xlabel.shape[0]).long()
+            pred = torch.zeros(x.shape[0]).long().cuda()
 
             category_pos = data['category_possible']
             category_oneh = data['category_onehot']
+            category = data['category']
 
             x = x.to(device)
             category_pos = category_pos.to(device)
             category_oneh = category_oneh.to(device)
+            category = category.to(device)
 
-            out = model(x,category_oneh)
+            out = model(x,category_oneh, category if model.cat_embed else None)
             sig_b_out, class_out, unclass_idx, class_idx = out
 
             pred[class_idx] = torch.argmax(class_out, dim=-1)
             pred[unclass_idx] = 4
-
 
             filename_list += data['image_name']
             # These predictions are yet to be used

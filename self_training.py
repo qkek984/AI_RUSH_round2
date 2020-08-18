@@ -194,7 +194,7 @@ def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, 
     # test_loader = DataLoader(dataset=testset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     uc_df = unclassified_df(df, answer=[0,1,2,3,4]) #기존 라벨 데이터를 전부 prediction할 unclassified data로 전환
-    unclassifiedset = TagImageDataset(data_frame=uc_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=transform.test_transform(), onehot2=onehot2)
+    unclassifiedset = TagImageDataset(data_frame=uc_df, root_dir=f'{DATASET_PATH}/train/train_data', transform=transform.teacher_test_transform(), onehot2=onehot2)
     unclassified_loader = DataLoader(dataset=unclassifiedset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     #####get confidence score

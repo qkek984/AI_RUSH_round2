@@ -316,7 +316,7 @@ class EfficientNet(nn.Module):
         if self.onehot or self.onehot2:
             x = torch.cat([x,onehot], axis=1)
 
-        x = self.fc(x)
+        x = F.softmax(self.fc(x))
         pred = torch.argmax(x, dim=-1)
 
         return x, pred
