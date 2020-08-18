@@ -44,8 +44,8 @@ class Transforms():
     def train_transform(self):
         if self.trainTransform == None:
             self.trainCompose += [
-                SquarePad(),
                 #ImageNetPolicy(),
+                SquarePad(),
                 transforms.Resize(self.resolution),
                 transforms.ColorJitter(hue=.1, saturation=.1),
                 transforms.RandomHorizontalFlip(0.5),

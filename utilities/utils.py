@@ -24,6 +24,7 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
     total_loss = 0.0
     correct = 0.0
     category_correct = 0.0
+    cat2correct = 0.0 
     num_data = 0.0
 
     for i, data in enumerate(train_loader):
@@ -58,7 +59,7 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
         # category_correct += torch.sum(category_pred == xlabel).item()
 
         cat2pred = torch.argmax(logit*cat2possible, dim=-1)
-        cat2correct += torch.sum(category_pred == xlabel).item()
+        cat2correct += torch.sum(cat2pred == xlabel).item()
 
         correct += torch.sum(pred == xlabel).item()
         num_data += xlabel.size(0)
@@ -103,7 +104,7 @@ def evaluate(model, test_loader, device, criterion):
     category_correct = 0.0
     num_data = 0.0
     total_loss = 0.0
-
+    cat2correct = 0.0
     label = []
     prediction = []
     cat_prediction = []
@@ -136,7 +137,7 @@ def evaluate(model, test_loader, device, criterion):
             # category_correct += torch.sum(category_pred == xlabel).item()
 
             cat2pred = torch.argmax(logit*cat2possible, dim=-1)
-            cat2correct += torch.sum(category_pred == xlabel).item()
+            cat2correct += torch.sum(cat2pred == xlabel).item()
 
             num_data += xlabel.size(0)
             total_loss += loss.item()
