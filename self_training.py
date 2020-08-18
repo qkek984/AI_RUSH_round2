@@ -160,7 +160,7 @@ def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, 
     # Set the dataset
     logger.info('Set the dataset')
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
-    df = df.iloc[:3000]
+    # df = df.iloc[:3000]
 
     unclassifiedset = TagImageDataset(data_frame=df, root_dir=f'{DATASET_PATH}/train/train_data', transform=transform.test_transform(), onehot2=onehot2)
     unclassified_loader = DataLoader(dataset=unclassifiedset, batch_size=batch_size, shuffle=False, num_workers=num_workers)

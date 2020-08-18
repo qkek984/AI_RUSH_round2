@@ -2,6 +2,7 @@ import torch
 from torch import nn
 import time
 import pandas as pd
+import numpy as np
 
 from configuration.config import logger, Transforms
 from data_loader import TagImageInferenceDataset
@@ -18,6 +19,8 @@ def ensemble_training(model, train_loader, optimizer, criterion, device, epoch, 
     num_data = 0.0
     cat2correct = 0.0 
 
+    ytrues = []
+    ypreds = []
     for i, data in enumerate(train_loader):
         start = time.time()
         x = data['image']
@@ -38,37 +41,57 @@ def ensemble_training(model, train_loader, optimizer, criterion, device, epoch, 
 
         out = model(x,category_oneh, category)
         logit, pred = out
-
-        if isinstance(criterion, torch.nn.CrossEntropyLoss):
-            loss = criterion(logit, xlabel)
-        elif isinstance(criterion, LabelSmoothingLoss):
-            loss = criterion(logit, xlabel, category_pos)
-        loss.backward()
-        optimizer.step()
-        running_loss += loss.item()
-        total_loss += loss.item()
-
-        # category_pred = torch.argmax(logit*category_pos, dim=-1)
-        # category_correct += torch.sum(category_pred == xlabel).item()
-
-        cat2pred = torch.argmax(logit*cat2possible, dim=-1)
-        cat2correct += torch.sum(cat2pred == xlabel).item()
-
-        correct += torch.sum(pred == xlabel).item()
         num_data += xlabel.size(0)
 
-        if i % 100 == 0:  # print every 100 mini-batches
-            logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch+1, total_epochs, i,
-                                                                                              len(train_loader),
-                                                                                              running_loss / 2000,
-                                                                                              time.time() - start))
-            running_loss = 0.0
+        if model.mode == "xgb":
+            ytrues.append(xlabel)
+            #TODO: try logit*cat2possible
+            ypreds.append(logit)
+        else:            
+            if isinstance(criterion, torch.nn.CrossEntropyLoss):
+                loss = criterion(logit, xlabel)
+            elif isinstance(criterion, LabelSmoothingLoss):
+                loss = criterion(logit, xlabel, category_pos)
+            loss.backward()
+            optimizer.step()
+            running_loss += loss.item()
+            total_loss += loss.item()
 
+            # category_pred = torch.argmax(logit*category_pos, dim=-1)
+            # category_correct += torch.sum(category_pred == xlabel).item()
+
+            cat2pred = torch.argmax(logit*cat2possible, dim=-1)
+            cat2correct += torch.sum(cat2pred == xlabel).item()
+
+            correct += torch.sum(pred == xlabel).item()
+            
+            if i % 100 == 0:  # print every 100 mini-batches
+                logger.info("epoch: {}/{} | step: {}/{} | loss: {:.4f} | time: {:.4f} sec".format(epoch+1, total_epochs, i,
+                                                                                                len(train_loader),
+                                                                                                running_loss / 2000,
+                                                                                                time.time() - start))
+                running_loss = 0.0
+
+
+    if model.mode == "xgb":
+        ypreds = torch.cat(ypreds, axis=0)
+        ytrues = torch.cat(ytrues, axis=0)
+
+        ypreds = ypreds.detach().cpu().numpy()
+        ytrues = ytrues.detach().cpu().numpy()
+
+        model.xgb_classifier.fit(ypreds, ytrues)
+        ypreds = model.xgb_classifier.predict(ypreds)
+        
+        cat2correct = np.sum((ytrues == ypreds).astype(int))
+    elif model.mode == "hard":
+        logger.info(f"\n###############\nEnsemble {model.num_model} number of models weight = {model.w} \n##############")         
+    
     logger.info(
         '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch+1, total_epochs, total_loss / (i + 1), correct / num_data, cat2correct / num_data))
     del x, xlabel
     torch.cuda.empty_cache()
-    return total_loss / (i + 1), correct / num_data
+    return total_loss / (i + 1), cat2correct / num_data
 
 
 def ensemble_evaluate(model, test_loader, device, criterion):
@@ -83,6 +106,8 @@ def ensemble_evaluate(model, test_loader, device, criterion):
     cat_prediction = []
     cat2_prediction = []
 
+    ytrues = []
+    ypreds = []
     with torch.no_grad():
         for i, data in enumerate(test_loader):
             x = data['image']
@@ -100,26 +125,43 @@ def ensemble_evaluate(model, test_loader, device, criterion):
             xlabel = xlabel.to(device)
 
             out = model(x, category_oneh, category)
+            num_data += xlabel.size(0)
 
             logit, pred = out
-            correct += torch.sum(pred == xlabel).item()
-            prediction = prediction + pred.detach().cpu().tolist()
+            if model.mode == "xgb":
+                ytrues.append(xlabel)
+                #TODO: try logit*cat2possible
+                ypreds.append(logit)
+            else:            
+                correct += torch.sum(pred == xlabel).item()
+                prediction = prediction + pred.detach().cpu().tolist()
 
-            if isinstance(criterion, torch.nn.CrossEntropyLoss):
-                loss = criterion(logit, xlabel)
-            elif isinstance(criterion, LabelSmoothingLoss):
-                loss = criterion(logit, xlabel, category_pos)
+                if isinstance(criterion, torch.nn.CrossEntropyLoss):
+                    loss = criterion(logit, xlabel)
+                elif isinstance(criterion, LabelSmoothingLoss):
+                    loss = criterion(logit, xlabel, category_pos)
 
-            # category_pred = torch.argmax(logit*category_pos, dim=-1)
-            # category_correct += torch.sum(category_pred == xlabel).item()
+                # category_pred = torch.argmax(logit*category_pos, dim=-1)
+                # category_correct += torch.sum(category_pred == xlabel).item()
 
-            cat2pred = torch.argmax(logit*cat2possible, dim=-1)
-            cat2correct += torch.sum(cat2pred == xlabel).item()
-            cat2_prediction = cat2_prediction + cat2pred.cpu().tolist() 
+                cat2pred = torch.argmax(logit*cat2possible, dim=-1)
+                cat2correct += torch.sum(cat2pred == xlabel).item()
+                cat2_prediction = cat2_prediction + cat2pred.cpu().tolist() 
 
-            num_data += xlabel.size(0)
-            total_loss += loss.item()
-            label = label + xlabel.tolist()
+                total_loss += loss.item()
+                label = label + xlabel.tolist()
+
+        if model.mode == "xgb":
+            ypreds = torch.cat(ypreds, axis=0)
+            ytrues = torch.cat(ytrues, axis=0)
+
+            ypreds = ypreds.detach().cpu().numpy()
+            ytrues = ytrues.detach().cpu().numpy()
+            label = ytrues
+            # model.xgb_classifier.fit(ypreds, ytrues)
+            cat2_prediction = model.xgb_classifier.predict(ypreds)
+            
+            cat2correct = np.sum((ytrues == cat2_prediction).astype(int))         
 
         del x, xlabel
 
@@ -154,6 +196,7 @@ def ensemble_inference(model, test_path: str) -> pd.DataFrame:
     y_cat_pred = []
     y_category_pred=[]
     filename_list = []
+    ypreds = []
 
     with torch.no_grad():
         for i, data in enumerate(test_loader):
@@ -171,12 +214,19 @@ def ensemble_inference(model, test_path: str) -> pd.DataFrame:
             category = category.to(device)
 
             logit, pred = model(x,category_oneh, category)
+            if model.mode == "xgb":
+                #TODO: try logit*cat2possible
+                ypreds.append(logit)
+            else:            
+                cat2pred = torch.argmax(logit*cat2possible, dim=-1)
+                y_category_pred += cat2pred.type(torch.IntTensor).detach().cpu().tolist()
 
-            cat2pred = torch.argmax(logit*cat2possible, dim=-1)
-            y_category_pred += cat2pred.type(torch.IntTensor).detach().cpu().tolist()
+                filename_list += data['image_name']
+                y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
 
-            filename_list += data['image_name']
-            y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
+        if model.mode == "xgb":
+            y_category_pred = model.xgb_classifier.predict(ypreds)
+
 
     # ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_pred})
     ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_category_pred})

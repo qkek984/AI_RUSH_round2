@@ -6,6 +6,8 @@ class Trainable_Embedding(nn.Module):
         super(Trainable_Embedding, self).__init__()
         self.name = "Trainable Embedding"
         self.model = model
+        self.onehot = 0
+        self.onehot2= model.onehot2
         self.embed_dim = embed_dim
         self.cat_embedding = nn.Parameter(torch.randn(9, embed_dim), requires_grad=True)
         self.fc = nn.Linear(self.model.fc.in_features + embed_dim - self.model.onehot * 9, 5)

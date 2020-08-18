@@ -136,6 +136,12 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
             model.eval()
             test_loss, test_acc, test_f1 = embedding_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
 
+        elif isinstance(model, Ensemble_Model):
+            train_loss, train_acc = ensemble_training(model=model, train_loader=train_loader, optimizer=optimizer,
+                                        criterion=criterion,device=device, epoch=epoch + 1, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+            model.eval()
+            test_loss, test_acc, test_f1 = ensemble_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)            
+
         else:
             train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=unfroze_optimizer,
                                         criterion=criterion, device=device, epoch=epoch+ args.num_epoch, total_epochs=args.num_epoch + args.num_unfroze_epoch)
@@ -291,6 +297,12 @@ def main():
     parser.add_argument('--resnet101', default=None, type=str)
     parser.add_argument('--efficientnet_b5', default=None, type=str)
     parser.add_argument('--efficientnet_b7', default=None, type=str)
+    parser.add_argument('--ensemble_mode', default='soft', type=str)
+    parser.add_argument('--eta', default=0.1, type=float)
+    parser.add_argument('--min_child_w', default=2, type=float)
+    parser.add_argument('--max_depth', default=4, type=int)
+    parser.add_argument('--gamma', default=0.2, type=int)
+
     # SESSION BINARY(0,1) CAT_EMBED(0,1) EMBED_DIM
     #  
     args = parser.parse_args()
@@ -299,7 +311,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="ensemble", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=False, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="resnext", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=False, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
 
@@ -330,8 +342,8 @@ def main():
         logger.info("\n#############\nIterative appended to model\n#############")
         model = Iterative_Model(model)
 
-    if args.ensemble and not args.self_training == "ensemble":
-        model = Ensemble_Model(args)
+    if args.ensemble : # and not args.self_training == "ensemble"
+        model = Ensemble_Model(args, mode=args.ensemble_mode,eta=args.eta, min_child_weight=args.min_child_w, max_depth=args.max_depth, gamma=args.gamma)
     else:
         nsml_utils.bind_model(model)
     logger.info(f'Model size: {total_param} tensors')
@@ -347,7 +359,7 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    # df = df.iloc[:5000]
+    # df = df.iloc[:3000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
     train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[2, 2, 32, 4, 0.9], sed=42)
