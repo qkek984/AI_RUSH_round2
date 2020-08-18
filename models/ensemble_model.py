@@ -19,8 +19,8 @@ class Ensemble_Model(nn.Module):
     def __init__(self, args, mode='soft', weight=None):
         super(Ensemble_Model, self).__init__()
         self.name = "Ensemble_model"
-        self.models = [0] * 3
-        self.session = [0] * 3
+        self.models = [0] * 4
+        self.session = [0] * 4
         
         if args.densenet:
             densenet = DenseNet121(pretrained=False)
@@ -56,12 +56,12 @@ class Ensemble_Model(nn.Module):
             self.session[2] = args.resnet[0]
 
         if args.resnet101:
-            resnet = resnext101_32x8d(pretrained=False)
+            resnet101 = resnext101_32x8d(pretrained=False)
             args.resnet101 = args.resnet101.split(' ')
             if int(args.resnet101[1]):
                 resnet101 = Binary_Model(resnet, cat_embed=int(args.resnet101[2]), embed_dim=int(args.resnet101[3]))
-            self.models[2] = resnet101
-            self.session[2] = args.resnet101[0]
+            self.models[3] = resnet101
+            self.session[3] = args.resnet101[0]
 
 
         self.mode = mode

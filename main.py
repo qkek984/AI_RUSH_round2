@@ -291,14 +291,15 @@ def main():
     parser.add_argument('--resnet101', default=None, type=str)
     parser.add_argument('--efficientnet_b5', default=None, type=str)
     parser.add_argument('--efficientnet_b7', default=None, type=str)
-
+    # SESSION BINARY(0,1) CAT_EMBED(0,1) EMBED_DIM
+    #  
     args = parser.parse_args()
     transform = Transforms()
 
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="resnext", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=False, onehot=args.onehot, onehot2=args.onehot2)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="ensemble", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=False, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
 
@@ -329,7 +330,7 @@ def main():
         logger.info("\n#############\nIterative appended to model\n#############")
         model = Iterative_Model(model)
 
-    if args.ensemble:
+    if args.ensemble and not args.self_training == "ensemble":
         model = Ensemble_Model(args)
     else:
         nsml_utils.bind_model(model)

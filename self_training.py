@@ -9,6 +9,7 @@ import pandas as pd
 
 import utilities.nsml_utils as nu
 from configuration.config import *
+from models.ensemble_model import Ensemble_Model
 from data_loader import TagImageDataset
 from utilities.utils import select_model, unclassified_predict
 import random
@@ -122,7 +123,7 @@ def relabeled_df(df, predictedData, undersample_ratio= [1, 1, 1, 1, 1], data_cro
     return reclassified_df
 
 
-def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, onehot, onehot2):
+def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, onehot, onehot2, args):
     # setting #######################
     batch_size =256
     num_workers = 16
@@ -142,25 +143,28 @@ def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, 
 
     # Model
     logger.info('Build teacher Model')
-    model = select_model(teacher_model, pretrain=False, n_class=5, onehot=onehot, onehot2=onehot2)
+    if teacher_model == "ensemble":
+        model = Ensemble_Model(args)
+    else:
+        model = select_model(teacher_model, pretrain=False, n_class=5, onehot=onehot, onehot2=onehot2)
+        load_weight(model, 'model.pth')
+        nu.bind_model(model)
+        nsml.load(checkpoint, session=sess_name)
+        logger.info('[NSML] Model loaded from {}'.format(checkpoint))
+
+    model = model.to(device)
     total_param = sum([p.numel() for p in model.parameters()])
     logger.info(f'Model size: {total_param} tensors')
-    load_weight(model, 'model.pth')
-    model = model.to(device)
-
-    nu.bind_model(model)
+    model.eval()
 
     # Set the dataset
     logger.info('Set the dataset')
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
-    #df = df.iloc[:3000]
+    df = df.iloc[:3000]
 
     unclassifiedset = TagImageDataset(data_frame=df, root_dir=f'{DATASET_PATH}/train/train_data', transform=transform.test_transform(), onehot2=onehot2)
     unclassified_loader = DataLoader(dataset=unclassifiedset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
-
-    nsml.load(checkpoint, session=sess_name)
-    logger.info('[NSML] Model loaded from {}'.format(checkpoint))
-    model.eval()
+    
 
     #unclassified class predict
     logger.info('[ST 1] predict Unclassifiedset----------')
