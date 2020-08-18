@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0ca8c313-1b59-476e-bed1-968ec128362b" name="Default Changelist" comment="" />
+    <list default="true" id="0ca8c313-1b59-476e-bed1-968ec128362b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,6 +17,9 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1g1kdh7fh32OtQJpv1KZ26beQHc" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -22,8 +28,9 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/t0019_rush2-2_303" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="terminal" />
   </component>
   <component name="RunManager">
@@ -60,12 +67,13 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="01150c9c-98db-4923-8f3e-fc60d0a07621" name="Default Changelist" comment="" />
+      <changelist id="0ca8c313-1b59-476e-bed1-968ec128362b" name="Default Changelist" comment="" />
       <created>1597289575048</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1597289575048</updated>
       <workItem from="1597289582472" duration="2080000" />
+      <workItem from="1597554488523" duration="3851000" />
     </task>
     <servers />
   </component>
@@ -73,9 +81,10 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="-2275" y="4" key="FileChooserDialogImpl" timestamp="1597301331694">
-      <screen x="-2560" y="-208" width="2560" height="1400" />
+    <state x="171" y="125" key="FileChooserDialogImpl" timestamp="1597559929192">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
+    <state x="171" y="125" key="FileChooserDialogImpl/0.0.1536.824/-1680.29.1680.1010@0.0.1536.824" timestamp="1597559929192" />
     <state x="-2275" y="4" key="FileChooserDialogImpl/0.0.1536.824/-2560.-208.2560.1400@-2560.-208.2560.1400" timestamp="1597301331694" />
     <state width="2561" height="276" key="GridCell.Tab.0.bottom" timestamp="1597301404811">
       <screen x="-2560" y="-208" width="2560" height="1400" />
