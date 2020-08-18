@@ -29,6 +29,7 @@ class Binary_Model(nn.Module):
         
         if self.model.onehot or self.model.onehot2:
             x = torch.cat([x, oneh], axis=-1)
+        class_feats = x.clone()
         
         b_out = self.model.fc(x)
         b_out = b_out.squeeze(1)
@@ -37,7 +38,6 @@ class Binary_Model(nn.Module):
         class_idx = (b_out < 0.5).nonzero().squeeze(1)
         unclass_idx = (b_out >= 0.5).nonzero().squeeze(1)
 
-        class_feats = x
-        class_out = F.softmax(self.model.fc2(class_feats))
+        class_out = F.softmax(self.model.fc2(class_feats), dim=-1)
 
         return b_out, class_out, unclass_idx, class_idx

@@ -7,6 +7,7 @@ from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, Eff
 from models.binary_model import Binary_Model
 from utilities.nsml_utils import bind_model
 from utilities.utils import inference
+from utilities.ensemble_utils import ensemble_inference, ensemble_evaluate
 from torch.nn import functional as F
 
 import xgboost as xgb
@@ -20,6 +21,7 @@ class Ensemble_Model(nn.Module):
         self.name = "Ensemble_model"
         self.models = [0] * 3
         self.session = [0] * 3
+        
         if args.densenet:
             densenet = DenseNet121(pretrained=False)
             args.densenet = args.densenet.split(' ')
@@ -28,10 +30,11 @@ class Ensemble_Model(nn.Module):
                 densenet = Binary_Model(densenet, cat_embed=int(args.densenet[2]), embed_dim=int(args.densenet[3]))
             self.models[0] = densenet
             self.session[0] = args.densenet[0]
+
         if args.efficientnet_b5:            
             efficientnet = EfficientNet_B5(pretrained=False)
             args.efficientnet_b5 = args.efficientnet_b5.split(' ')
-            if int(args.efficientnet[1]):
+            if int(args.efficientnet_b5[1]):
                 efficientnet = Binary_Model(efficientnet, cat_embed=int(args.efficientnet_b5[2]), embed_dim=int(args.efficientnet_b5[3]))
             self.models[1] = efficientnet 
             self.session[1] = args.efficientnet_b5[0]
@@ -39,7 +42,7 @@ class Ensemble_Model(nn.Module):
         if args.efficientnet_b7:            
             efficientnet = EfficientNet_B7(pretrained=False)
             args.efficientnet_b7 = args.efficientnet_b7.split(' ')
-            if int(args.efficientnet[1]):
+            if int(args.efficientnet_b7[1]):
                 efficientnet = Binary_Model(efficientnet, cat_embed=int(args.efficientnet_b7[2]), embed_dim=int(efficientnet_b7[3]))
             self.models[1] = efficientnet 
             self.session[1] = args.efficientnet_b7[0]
@@ -48,9 +51,18 @@ class Ensemble_Model(nn.Module):
             resnet = resnext50_32x4d(pretrained=False)
             args.resnet = args.resnet.split(' ')
             if int(args.resnet[1]):
-                self.resnet = Binary_Model(resnet, cat_embed=int(args.resnet[2]), embed_dim=int(args.resnet[3]))
+                resnet = Binary_Model(resnet, cat_embed=int(args.resnet[2]), embed_dim=int(args.resnet[3]))
             self.models[2] = resnet
             self.session[2] = args.resnet[0]
+
+        if args.resnet101:
+            resnet = resnext101_32x8d(pretrained=False)
+            args.resnet101 = args.resnet101.split(' ')
+            if int(args.resnet101[1]):
+                resnet101 = Binary_Model(resnet, cat_embed=int(args.resnet101[2]), embed_dim=int(args.resnet101[3]))
+            self.models[2] = resnet101
+            self.session[2] = args.resnet101[0]
+
 
         self.mode = mode
         self.weight = weight
@@ -99,7 +111,7 @@ class Ensemble_Model(nn.Module):
                 w1, w2, w3, w4 = self.weight
                 y = (y1 * w1 + y2* w2 + y3* w3 + y4 * w4)/ sum(self.weight)
 
-            return y
+            return y, torch.argmax(y, dim=-1)
 
         elif self.mode == 'stacked':
             ypred = torch.cat([y1, y2, y3, y4], axis=1)
@@ -141,6 +153,7 @@ class Ensemble_Model(nn.Module):
             if model:
                 bind_model(model)
                 nsml.load(checkpoint='best', session=sess_)
+                model = model.cuda()
 
         if self.mode == 'xgb':
             for model in self.models:
@@ -167,6 +180,6 @@ def bind_ensemble_model(model):
         torch.save(model.state_dict(), f'{dirname}/model_{model.name}')
 
     def infer(test_dir, **kwargs):
-        return inference(model, test_dir)
+        return ensemble_inference(model, test_dir)
 
     nsml.bind(load=load, save=save, infer=infer)

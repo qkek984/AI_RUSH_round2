@@ -17,6 +17,8 @@ from utilities import nsml_utils
 from utilities.iterative_utils import *
 from utilities.binary_utils import * 
 from utilities.trainable_embed_utils import *
+from utilities.ensemble_utils import *
+
 import nsml
 from nsml import DATASET_PATH
 
@@ -60,6 +62,12 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
                                         criterion=criterion,device=device, epoch=epoch + 1, total_epochs=args.num_epoch + args.num_unfroze_epoch)
             model.eval()
             test_loss, test_acc, test_f1 = embedding_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
+
+        elif isinstance(model, Ensemble_Model):
+            train_loss, train_acc = ensemble_training(model=model, train_loader=train_loader, optimizer=optimizer,
+                                        criterion=criterion,device=device, epoch=epoch + 1, total_epochs=args.num_epoch + args.num_unfroze_epoch)
+            model.eval()
+            test_loss, test_acc, test_f1 = ensemble_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)            
 
         else:
             train_loss, train_acc = train(model=model, train_loader=train_loader, optimizer=optimizer,
@@ -167,12 +175,17 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
                 epoch=epoch + args.num_epoch, lr=unfroze_optimizer.param_groups[0]['lr']))
 
 def unfreeze(model):
-    len_ = len(list(model.named_parameters()))
-    for i, (name, params) in enumerate(model.named_parameters()):
-        print(name, 'bn' not in name)
-        if 'bn' not in name and  i > len_ - 25: # 
+    lst = list(model.named_parameters())
+    lst.reverse()
+    len_ = len(lst)
+    j = 0
+    for i, (name, params) in enumerate(lst):
+        if 'bn' not in name: #
+            j += 1 
             params.requires_grad = True
-        
+            if j > 20:
+                break
+            
 def load_weight(model, weight_file):
     """Load trained weight.
     You should put your weight file on the root directory with the name of `weight_file`.
@@ -240,13 +253,7 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
     return train_df, val_df, train_samples
 
 def main():
-    # print("???????????????",torch.cuda.is_available(),os.environ)
-    # subprocess.call(['python3', './deform_conv/setup.py', 'build' ,'install'])
-    # from deform_conv.modules.deform_conv import DeformConv, _DeformConv, DeformConvPack
-    # from deform_conv.modules.modulated_deform_conv import ModulatedDeformConv, _ModulatedDeformConv, ModulatedDeformConvPack
-    # from deform_conv.modules.deform_psroi_pooling import DeformRoIPooling, _DeformRoIPooling, DeformRoIPoolingPack
     # Argument Settings
-
     parser = argparse.ArgumentParser(description='Image Tagging Classification from Naver Shopping Reviews')
     parser.add_argument('--sess_name', default='', type=str, help='Session name that is loaded')
     parser.add_argument('--checkpoint', default='best', type=str, help='Checkpoint')
@@ -281,6 +288,7 @@ def main():
     parser.add_argument('--ensemble', default=None, type=str)
     parser.add_argument('--densenet', default=None, type=str)
     parser.add_argument('--resnet', default=None, type=str)
+    parser.add_argument('--resnet101', default=None, type=str)
     parser.add_argument('--efficientnet_b5', default=None, type=str)
     parser.add_argument('--efficientnet_b7', default=None, type=str)
 
@@ -327,7 +335,6 @@ def main():
         nsml_utils.bind_model(model)
     logger.info(f'Model size: {total_param} tensors')
     model = model.to(device)
-
     if args.pause:
         nsml.paused(scope=locals())
     # if args.num_epoch == 0:
@@ -381,13 +388,18 @@ def main():
                       optimizer=optimizer, unfroze_optimizer=unfroze_optimizer, criterion=criterion, device=device, class_samples=class_samples)
 
     elif args.mode == 'test':
-        nsml.load(args.checkpoint, session=args.sess_name)
-        logger.info('[NSML] Model loaded from {}'.format(args.checkpoint))
+        if isinstance(model, Ensemble_Model):
+            pass
+        else:
+            nsml.load(args.checkpoint, session=args.sess_name)
+            logger.info('[NSML] Model loaded from {}'.format(args.checkpoint))
 
         model.eval()
         logger.info('Start to test!')
         if isinstance(model, Binary_Model):
             test_loss, test_acc, test_f1 = binary_evaluate(model=model, test_loader=test_loader, device=device)
+        elif isinstance(model, Ensemble_Model):
+            test_loss, test_acc, test_f1 = ensemble_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)            
         else:
             test_loss, test_acc, test_f1 = evaluate(model=model, test_loader=test_loader, device=device,
                                                 criterion=criterion)

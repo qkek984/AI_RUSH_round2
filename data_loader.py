@@ -6,6 +6,7 @@ import torch
 from torch.utils.data import Dataset
 from category import *
 import numpy as np
+
 class TagImageDataset(Dataset):
     def __init__(self, data_frame: pd.DataFrame, root_dir: str, onehot=1, onehot2=0 , transform=None):
         self.data_frame = data_frame
@@ -36,6 +37,7 @@ class TagImageDataset(Dataset):
         sample['label'] = tag_name
         sample['image_name'] = img_name
         
+        sample['cat2possible'] = torch.Tensor(CAT22ONEH[category][category2])
         sample['category_possible'] = torch.Tensor(CAT2POS[category])
         sample['category_onehot'] = torch.Tensor((CAT2ONEH[category] if self.onehot else []) + (cat22oneh(category,category2) if self.onehot2 else []))
         sample['category'] = torch.Tensor([ CAT2NUM[category] ])
@@ -78,6 +80,7 @@ class TagImageInferenceDataset(Dataset):
 
         sample['image'] = image
         sample['image_name'] = img_name
+        sample['cat2possible'] = torch.Tensor(CAT22ONEH[category][category2])
         sample['category_possible'] = torch.Tensor(CAT2POS[category])
         sample['category'] = torch.Tensor([CAT2NUM[category]])
         sample['category_onehot'] = torch.Tensor((CAT2ONEH[category] if self.onehot else []) + (cat22oneh(category,category2) if self.onehot2 else []))

@@ -316,7 +316,7 @@ class EfficientNet(nn.Module):
         if self.onehot or self.onehot2:
             x = torch.cat([x,onehot], axis=1)
 
-        x = F.softmax(self.fc(x))
+        x = F.softmax(self.fc(x), dim=-1)
         pred = torch.argmax(x, dim=-1)
 
         return x, pred
@@ -341,6 +341,7 @@ class EfficientNet(nn.Module):
             An efficientnet model.
         """
         cls._check_model_name_is_valid(model_name)
+        override_params['num_classes'] = 5
         blocks_args, global_params = get_model_params(model_name, override_params)
         model = cls(blocks_args, global_params, onehot=onehot, onehot2=onehot2)
         model._change_in_channels(in_channels)

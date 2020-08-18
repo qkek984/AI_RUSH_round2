@@ -9,7 +9,7 @@ def EfficientNet_B5(pretrained=True, num_class= 5, advprop=False, onehot=1, oneh
             if 'fc' not in name :# and 'blocks.24' not in name and 'blocks.25' not in name
                 param.requires_grad = False
     else:
-        model = EfficientNet.from_name('efficientnet-b5', advprop=advprop, onehot=onehot, onehot2=onehot2)
+        model = EfficientNet.from_name('efficientnet-b5', onehot=onehot, onehot2=onehot2)
 
     model.name = "EfficientNet_B5"    
     print("EfficientNet B5 Loaded!")
@@ -23,7 +23,7 @@ def EfficientNet_B7(pretrained=True, num_class=5, advprop=False, onehot=1, oneho
             if 'fc' not in name :# and 'blocks.24' not in name and 'blocks.25' not in name
                 param.requires_grad = False
     else:
-        model = EfficientNet.from_name('efficientnet-b7', advprop=advprop, onehot=onehot, onehot2=onehot2)
+        model = EfficientNet.from_name('efficientnet-b7', onehot=onehot, onehot2=onehot2)
     
     model.name = "EfficientNet_B7"    
     print("EfficientNet B7 Loaded!")
@@ -37,7 +37,7 @@ def EfficientNet_B8(pretrained=True, num_class=5, onehot=1, onehot2=0):
             if 'fc' not in name:
                 param.requires_grad = False
     else:
-        model = EfficientNet.from_name('efficientnet-b8', advprop=True, onehot=onehot, onehot2=onehot2)
+        model = EfficientNet.from_name('efficientnet-b8', onehot=onehot, onehot2=onehot2)
     model.name = "EfficientNet_B8"    
     print("EfficientNet B7 Loaded!")
 

@@ -223,7 +223,7 @@ class ResNet(nn.Module):
 
         if self.onehot or self.onehot2:
             x = torch.cat([x, onehot], axis=1)
-        x = F.softmax(self.fc(x))
+        x = F.softmax(self.fc(x), dim=-1)
         pred = torch.argmax(x, dim=-1)
         return x, pred
 
