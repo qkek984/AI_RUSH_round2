@@ -122,7 +122,7 @@ class DenseNet(nn.Module):
         out = self.feat_extract(x)
         if self.onehot or self.onehot2:
             out = torch.cat([out, onehot], axis=1)
-        out = F.softmax(self.fc(out), dim=-1)
+        out = self.fc(out)  # F.softmax(, dim=-1)
         pred = torch.argmax(out, dim=-1)
 
         return out, pred

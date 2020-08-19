@@ -299,7 +299,7 @@ def main():
     parser.add_argument('--gamma', default=0.2, type=int)
 
     # 같은 구조의 모델들을  
-    #  1번_SESSION, 1번_BINARY(0,1), 1번_CAT_EMBED(0,1), 1번_EMBED_DIM, 2번_SESSION, 2번_BINARY(0,1), 2번_CAT_EMBED(0,1), 2번_EMBED_DIM, 
+    #  1번_SESSION, 1번_BINARY(0,1), 1번_CAT_EMBED(0,1), 1번_EMBED_DIM, 2번_SESSION, 2번_BINARY(0,1), 2번_CAT_EMBED(0,1), 2번_EMBED_DIM 
     #  예) 't0019/rush2-2/943 0 0 0 t0019/rush2-2/922 0 1 18'
     args = parser.parse_args()
     transform = Transforms()
@@ -342,7 +342,7 @@ def main():
         model = Ensemble_Model(args, mode=args.ensemble_mode,eta=args.eta, min_child_weight=args.min_child_w, max_depth=args.max_depth, gamma=args.gamma)
     else:
         nsml_utils.bind_model(model)
-    logger.info(f'Model size: {total_param} tensors')
+    logger.info(f'Model size: {total_param} tensors , Learning rate ={args.lr}')
     model = model.to(device)
     if args.pause:
         nsml.paused(scope=locals())

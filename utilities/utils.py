@@ -55,6 +55,7 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
             loss = criterion(logit, xlabel)
         elif isinstance(criterion, LabelSmoothingLoss):
             loss = criterion(logit, xlabel, category_pos)
+
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
