@@ -280,7 +280,7 @@ def main():
     parser.add_argument('--smooth', default=False, type=bool)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
-    parser.add_argument('--cat_embed', default=False, type=bool)
+    parser.add_argument('--cat_embed', default=0, type=int)
     parser.add_argument('--embed_dim', default=18, type=int)
     parser.add_argument('--onehot', default=1, type=int)
     parser.add_argument('--onehot2', default=0 , type=int)
@@ -295,18 +295,19 @@ def main():
     parser.add_argument('--ensemble_mode', default='soft', type=str)
     parser.add_argument('--eta', default=0.1, type=float)
     parser.add_argument('--min_child_w', default=2, type=float)
-    parser.add_argument('--max_depth', default=4, type=int)
+    parser.add_argument('--max_depth', default=3, type=int)
     parser.add_argument('--gamma', default=0.2, type=int)
 
-    # SESSION BINARY(0,1) CAT_EMBED(0,1) EMBED_DIM
-    #  
+    # 같은 구조의 모델들을  
+    #  1번_SESSION, 1번_BINARY(0,1), 1번_CAT_EMBED(0,1), 1번_EMBED_DIM, 2번_SESSION, 2번_BINARY(0,1), 2번_CAT_EMBED(0,1), 2번_EMBED_DIM, 
+    #  예) 't0019/rush2-2/943 0 0 0 t0019/rush2-2/922 0 1 18'
     args = parser.parse_args()
     transform = Transforms()
 
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="ensemble", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="resnext", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
 
@@ -354,7 +355,7 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    df = df.iloc[:3000]
+    # df = df.iloc[:3000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
     train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 1], sed=42)

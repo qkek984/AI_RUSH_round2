@@ -214,6 +214,8 @@ def ensemble_inference(model, test_path: str) -> pd.DataFrame:
             category = category.to(device)
 
             logit, pred = model(x,category_oneh, category)
+            filename_list += data['image_name']
+
             if model.mode == "xgb":
                 #TODO: try logit*cat2possible
                 ypreds.append(logit)
@@ -221,10 +223,11 @@ def ensemble_inference(model, test_path: str) -> pd.DataFrame:
                 cat2pred = torch.argmax(logit*cat2possible, dim=-1)
                 y_category_pred += cat2pred.type(torch.IntTensor).detach().cpu().tolist()
 
-                filename_list += data['image_name']
                 y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
 
         if model.mode == "xgb":
+            ypreds = torch.cat(ypreds, axis=0)
+            ypreds = ypreds.detach().cpu().numpy()
             y_category_pred = model.xgb_classifier.predict(ypreds)
 
 

@@ -232,8 +232,8 @@ class ResNet(nn.Module):
         return self._forward_impl(x, onehot)
 
 
-def _resnet(arch, block, layers, pretrained, progress, onehot, onehot2, **kwargs):
-    model = ResNet(block, layers, onehot=onehot, onehot2=onehot2, **kwargs)
+def _resnet(arch, block, layers, pretrained, progress, onehot, onehot2, name, **kwargs):
+    model = ResNet(block, layers, onehot=onehot, onehot2=onehot2, name=name, **kwargs)
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress)
@@ -258,7 +258,7 @@ def ResNet50(pretrained=True, progress=False, onehot=1, onehot2=0, **kwargs):
     """
     print("ResNet50 Loaded!")
 
-    return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress, onehot=onehot, onehot2=onehot2,
+    return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress, onehot=onehot, onehot2=onehot2, name="resnet50",
                    **kwargs)
 
 
@@ -274,7 +274,7 @@ def resnext50_32x4d(pretrained=True, progress=True, onehot=1, onehot2=0, **kwarg
     print("ResNext50 Loaded!")
 
     return _resnet('resnext50_32x4d', Bottleneck, [3, 4, 6, 3],
-                   pretrained, progress, onehot=onehot, onehot2=onehot2, **kwargs)
+                   pretrained, progress, onehot=onehot, onehot2=onehot2, name="resnext50", **kwargs)
 
 
 def wide_resnet50_2(pretrained=True, progress=True, **kwargs):
@@ -315,7 +315,7 @@ def resnext101_32x8d(pretrained=False, progress=True, onehot=1, onehot2=0, **kwa
     print("ResNext101 Loaded!")
 
     return _resnet('resnext101_32x8d', Bottleneck, [3, 4, 23, 3],
-                   pretrained, progress, onehot=onehot, onehot2=onehot2, **kwargs)
+                   pretrained, progress, onehot=onehot, onehot2=onehot2, name="resnext101", **kwargs)
 
 def resnext101_32x16d(pretrained=True, progress=True, onehot=1, onehot2=0, **kwargs):
     """Constructs a ResNeXt-101 32x16d model.
@@ -328,4 +328,4 @@ def resnext101_32x16d(pretrained=True, progress=True, onehot=1, onehot2=0, **kwa
     print("ResNext101_32x16d Loaded!")
 
     return _resnet('resnext101_32x16d', Bottleneck, [3, 4, 23, 3],
-                   pretrained, progress, onehot=onehot, onehot2=onehot2, **kwargs)
+                   pretrained, progress, onehot=onehot, onehot2=onehot2, name="resnext101_16d", **kwargs)

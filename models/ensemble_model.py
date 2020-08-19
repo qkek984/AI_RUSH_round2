@@ -5,6 +5,7 @@ from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d
 from models.densenet import DenseNet121
 from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
 from models.binary_model import Binary_Model
+from models.trainable_embedding import Trainable_Embedding
 from utilities.nsml_utils import bind_model
 from utilities.utils import inference
 from utilities.ensemble_utils import ensemble_inference, ensemble_evaluate
@@ -28,51 +29,74 @@ class Ensemble_Model(nn.Module):
         '''
         super(Ensemble_Model, self).__init__()
         self.name = "Ensemble_model"
-        self.models = [0] * 4
-        self.session = [0] * 4
-        
+        self.models = []
+        self.session = []
+        idx = 0        
         if args.densenet:
-            densenet = DenseNet121(pretrained=False)
             args.densenet = args.densenet.split(' ')
-            
-            if int(args.densenet[1]):
-                densenet = Binary_Model(densenet, cat_embed=int(args.densenet[2]), embed_dim=int(args.densenet[3]))
-            self.models[0] = densenet
-            self.session[0] = args.densenet[0]
+            for i in range(len(args.densenet)//4):
+                densenet = DenseNet121(pretrained=False)
+
+                if int(args.densenet[1 + i*4]):
+                    densenet = Binary_Model(densenet, cat_embed=int(args.densenet[2 + i*4]), embed_dim=int(args.densenet[3 + i*4]))
+                elif int(args.densenet[2 + i*4]):
+                    densenet = Trainable_Embedding(densenet, embed_dim=int(args.densenet[3 + i*4]))
+                self.models.append(densenet)
+                self.session.append(args.densenet[0 + i*4])
 
         if args.efficientnet_b5:            
-            efficientnet = EfficientNet_B5(pretrained=False)
             args.efficientnet_b5 = args.efficientnet_b5.split(' ')
-            if int(args.efficientnet_b5[1]):
-                efficientnet = Binary_Model(efficientnet, cat_embed=int(args.efficientnet_b5[2]), embed_dim=int(args.efficientnet_b5[3]))
-            self.models[1] = efficientnet 
-            self.session[1] = args.efficientnet_b5[0]
+            for i in range(len(args.efficientnet_b5)//4):
+                efficientnet = EfficientNet_B5(pretrained=False)
+
+                if int(args.efficientnet_b5[1+ i*4]):
+                    efficientnet = Binary_Model(efficientnet, cat_embed=int(args.efficientnet_b5[2 + i*4]), embed_dim=int(args.efficientnet_b5[3 + i*4]))
+                elif int(args.efficientnet_b5[2 + i*4]):
+                    efficientnet = Trainable_Embedding(efficientnet, embed_dim=int(args.efficientnet_b5[3 + i*4]))
+
+                self.models.append(efficientnet) 
+                self.session.append(args.efficientnet_b5[0 + i*4])
 
         if args.resnet:
-            resnet = resnext50_32x4d(pretrained=False)
             args.resnet = args.resnet.split(' ')
-            if int(args.resnet[1]):
-                resnet = Binary_Model(resnet, cat_embed=int(args.resnet[2]), embed_dim=int(args.resnet[3]))
-            self.models[1] = resnet
-            self.session[1] = args.resnet[0]
+            for i in range(len(args.resnet)//4):
+                resnet = resnext50_32x4d(pretrained=False)
+
+                if int(args.resnet[1 + i*4]):
+                    resnet = Binary_Model(resnet, cat_embed=int(args.resnet[2 + i*4 ]), embed_dim=int(args.resnet[3 + i*4]))
+                elif int(args.resnet[2 + i*4]):
+                    resnet = Trainable_Embedding(resnet, embed_dim=int(args.resnet[3 + i*4]))
+
+                self.models.append(resnet)
+                self.session.append(args.resnet[0 + i*4])
 
         if args.resnet101:
-            resnet101 = resnext101_32x8d(pretrained=False)
             args.resnet101 = args.resnet101.split(' ')
-            if int(args.resnet101[1]):
-                resnet101 = Binary_Model(resnet, cat_embed=int(args.resnet101[2]), embed_dim=int(args.resnet101[3]))
-            self.models[2] = resnet101
-            self.session[2] = args.resnet101[0]
+            for i in range(len(args.resnet101)//4):
+                resnet101 = resnext101_32x8d(pretrained=False)
+
+                if int(args.resnet101[1 + i*4]):
+                    resnet101 = Binary_Model(resnet, cat_embed=int(args.resnet101[2 + i*4]), embed_dim=int(args.resnet101[3 + i*4]))
+                elif int(args.resnet101[2 + i*4]):
+                    resnet101 = Trainable_Embedding(resnet101, embed_dim=int(args.resnet101[3 + i*4]))
+
+                self.models.append(resnet101)
+                self.session.append(args.resnet101[0 + i*4])
 
         if args.resnet101_32x16d:
-            resnet101_32x16d = resnext101_32x16d(pretrained=False)
             args.resnet101_32x16d = args.resnet101_32x16d.split(' ')
-            if int(args.resnet101_32x16d[1]):
-                resnet101_32x16d = Binary_Model(resnet, cat_embed=int(args.resnet101_32x16d[2]), embed_dim=int(args.resnet101_32x16d[3]))
-            self.models[3] = resnet101_32x16d
-            self.session[3] = args.resnet101_32x16d[0]
+            for i in range(len(args.resnet101_32x16d)//4):
+                resnet101_32x16d = resnext101_32x16d(pretrained=False)
 
-        self.num_model = len([mod for mod in self.models if mod is not 0])
+                if int(args.resnet101_32x16d[1 + i*4]):
+                    resnet101_32x16d = Binary_Model(resnet, cat_embed=int(args.resnet101_32x16d[2 + i*4]), embed_dim=int(args.resnet101_32x16d[3 + i*4]))
+                elif int(args.resnet101_32x16d[2 + i*4]):
+                    resnet101_32x16d = Trainable_Embedding(resnet101_32x16d, embed_dim=int(args.resnet101_32x16d[3 + i*4]))
+
+                self.models.append(resnet101_32x16d)
+                self.session.append(args.resnet101_32x16d[0 + i*4])
+
+        self.num_model = len(self.models)
         self.mode = mode
         self.weight = weight
         if weight is not None:
@@ -100,16 +124,18 @@ class Ensemble_Model(nn.Module):
     def forward(self, x, oneh=None, category=None):
         ys = []
         for model in self.models:
-            if model:
-                if isinstance(model,Binary_Model):
-                    y_binary = torch.zeros(x.shape[0], 5).cuda()
-                    b_out, class_out, unclass_idx, class_idx = model(x.clone(),oneh,category)
-                    y_binary[:,4] = b_out
-                    y_binary[:,:4] = class_out
-                    ys.append(y_binary)
-                else:
-                    out, pred = model(x.clone(),oneh)
-                    ys.append(out)
+            if isinstance(model,Binary_Model):
+                y_binary = torch.zeros(x.shape[0], 5).cuda()
+                b_out, class_out, unclass_idx, class_idx = model(x.clone(),oneh,category)
+                y_binary[:,4] = b_out
+                y_binary[:,:4] = class_out
+                ys.append(y_binary)
+            elif isinstance(model,Trainable_Embedding):
+                out, pred = model(x.clone(),category,oneh)
+                ys.append(out)
+            else:
+                out, pred = model(x.clone(),oneh)
+                ys.append(out)
                 
             
         if self.mode == 'soft':
@@ -173,12 +199,11 @@ class Ensemble_Model(nn.Module):
                         param.requires_grad = False
         else:
             for model in self.models:
-                if model:
-                    for name, param in model.named_parameters():
-                        if 'fc' in name:
-                            param.requires_grad = True
-                        else:
-                            param.requires_grad = False
+                for name, param in model.named_parameters():
+                    if 'fc' in name:
+                        param.requires_grad = True
+                    else:
+                        param.requires_grad = False
 
         print("Pretrained weight loaded! ")
         bind_ensemble_model(self)

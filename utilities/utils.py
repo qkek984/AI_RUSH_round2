@@ -12,7 +12,7 @@ from configuration.config import logger, Transforms
 from data_loader import TagImageInferenceDataset
 from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
-from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d
+from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
 from models.densenet import DenseNet121
 from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
 from custom_loss import LabelSmoothingLoss
@@ -26,7 +26,8 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
     category_correct = 0.0
     cat2correct = 0.0 
     num_data = 0.0
-
+    # stds = []
+    # means = []
     for i, data in enumerate(train_loader):
         start = time.time()
         x = data['image']
@@ -45,6 +46,10 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
 
         out = model(x,category_oneh)
         logit, pred = out
+
+        # x = x.reshape(x.shape[0], x.shape[1], -1)
+        # stds.append(torch.std(x, axis=2))
+        # means.append(torch.mean(x, axis=2))
 
         if isinstance(criterion, torch.nn.CrossEntropyLoss):
             loss = criterion(logit, xlabel)
@@ -74,6 +79,9 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
         '[{}/{}]\tloss: {:.4f}\tacc: {:.4f} \tcategory_acc : {:.4f}'.format(epoch+1, total_epochs, total_loss / (i + 1), correct / num_data, cat2correct / num_data))
     del x, xlabel
     torch.cuda.empty_cache()
+    # means = torch.cat(means, axis=0)
+    # stds = torch.cat(stds, axis=0)
+
     return total_loss / (i + 1), correct / num_data
 
 def unclassified_predict(model, unclassified_loader, device, n_class=5):
@@ -219,6 +227,8 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int, on
         model = resnet101(onehot=onehot,onehot2=onehot2)
     elif model_name == "resnext101":
         model = resnext101_32x8d(onehot=onehot,onehot2=onehot2)
+    elif model_name == "resnet101_32x16d":
+        model = resnext101_32x16d(onehot=onehot, onehot2=onehot2)
     elif model_name == 'densenet':
         model = DenseNet121(onehot=onehot,onehot2=onehot2)
     elif model_name == "efficientnet_b5":

@@ -11,6 +11,9 @@ logger = logging.getLogger('Tagging Classification')
 rgb_mean = [0.485, 0.456, 0.406] 
 rgb_std = [0.229, 0.224, 0.225]
 
+# rgb_mean = [0.5489, 0.5092, 0.4724]
+# rgb_std = [0.2131, 0.2149, 0.2209] 
+
 class SquarePad():
 	def __call__(self, image):
 		w, h = image.size
