@@ -181,17 +181,12 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
                 epoch=epoch + args.num_epoch, lr=unfroze_optimizer.param_groups[0]['lr']))
 
 def unfreeze(model):
-    lst = list(model.named_parameters())
-    lst.reverse()
-    len_ = len(lst)
-    j = 0
-    for i, (name, params) in enumerate(lst):
-        if 'bn' not in name: #
-            j += 1 
+    unf_idx = len(list(model.named_parameters()))-20
+    for i, (name, params) in enumerate(model.named_parameters()):
+        if i >= unf_idx:
             params.requires_grad = True
-            if j > 20:
-                break
-            
+
+
 def load_weight(model, weight_file):
     """Load trained weight.
     You should put your weight file on the root directory with the name of `weight_file`.
@@ -311,7 +306,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="resnext", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=False, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="ensemble", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
 
@@ -359,10 +354,10 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    # df = df.iloc[:3000]
+    df = df.iloc[:3000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
-    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[2, 2, 32, 4, 0.9], sed=42)
+    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 1], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=transform.train_transform(), onehot=args.onehot, onehot2=args.onehot2)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
@@ -411,6 +406,8 @@ def main():
         logger.info('Start to test!')
         if isinstance(model, Binary_Model):
             test_loss, test_acc, test_f1 = binary_evaluate(model=model, test_loader=test_loader, device=device)
+        elif isinstance(model, Trainable_Embedding):
+            test_loss, test_acc, test_f1 = embedding_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)
         elif isinstance(model, Ensemble_Model):
             test_loss, test_acc, test_f1 = ensemble_evaluate(model=model, test_loader=test_loader, device=device, criterion=criterion)            
         else:

@@ -122,3 +122,49 @@ def embedding_evaluate(model, test_loader, device, criterion):
     logger.info('validation loss: {loss:.4f}\v validation acc: {acc:.4f} \t validation category acc: {cat_acc:.4f}\v validation F1: {f1:.4f}'
                 .format(loss=total_loss / (i + 1), acc=correct / num_data, f1=f1_mean, cat_acc=category_correct / num_data))
     return total_loss / (i + 1), correct / num_data, f1_mean
+
+def trainable_inference(model, test_path: str) -> pd.DataFrame:
+    """
+    :param model: model
+    :param test_path: test path
+    :return:
+    pandas.DataFrame: columns should be include "image_name" and "y_pred".
+    """
+    testset = TagImageInferenceDataset(root_dir=f'{test_path}/test_data',
+                                       transform=Transforms().test_transform(), onehot=model.onehot, onehot2=model.onehot2)
+
+    test_loader = DataLoader(dataset=testset, batch_size=64, shuffle=False)
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    y_pred = []
+    y_cat_pred = []
+    y_category_pred=[]
+    filename_list = []
+
+    with torch.no_grad():
+        for i, data in enumerate(test_loader):
+            x = data['image']
+            category_pos = data['category_possible']
+            category_oneh = data['category_onehot']
+            category = data['category']
+            cat2possible = data['cat2possible']
+
+            cat2possible = cat2possible.to(device)
+            category = category.to(device)
+            x = x.to(device)
+            category_pos = category_pos.to(device)
+            category_oneh = category_oneh.to(device)
+
+            logit, pred = model(x, category, category_oneh) # ,
+            #y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
+
+            filename_list += data['image_name']
+            # category_pred = torch.argmax(logit * category_pos, dim=-1)
+            # y_category_pred += category_pred.type(torch.IntTensor).detach().cpu().tolist()
+
+            cat2pred = torch.argmax(logit*cat2possible, dim=-1)
+            y_category_pred += cat2pred.type(torch.IntTensor).detach().cpu().tolist()
+
+    # ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_pred})
+    ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_category_pred})
+
+    return ret

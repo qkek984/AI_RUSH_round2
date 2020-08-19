@@ -5,7 +5,9 @@ import torch
 
 from utilities.utils import inference
 from models.binary_model import Binary_Model
+from models.trainable_embedding import Trainable_Embedding
 from utilities.binary_utils import binary_inference
+from utilities.trainable_embed_utils import trainable_inference
 
 def bind_model(model):
     def load(save_folder, **kwargs):
@@ -22,6 +24,8 @@ def bind_model(model):
     def infer(data_path, **kwargs):
         if isinstance(model,Binary_Model):
             return binary_inference(model, data_path)
+        elif isinstance(model,Trainable_Embedding):        
+            return trainable_inference(model, data_path) 
         else:
             return inference(model, data_path)
 
