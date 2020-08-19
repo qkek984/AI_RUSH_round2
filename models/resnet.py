@@ -5,7 +5,7 @@ from collections import OrderedDict
 import torch.nn.functional as F
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
-           'resnet152', 'resnext50_32x4d', 'resnext101_32x8d',
+           'resnet152', 'resnext50_32x4d', 'resnext101_32x8d', 'resnext101_32x16d',
            'wide_resnet50_2', 'wide_resnet101_2']
 
 
@@ -15,7 +15,8 @@ model_urls = {
     'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
     'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
     'resnext50_32x4d': 'https://download.pytorch.org/models/resnext50_32x4d-7cdf4587.pth',
-    'resnext101_32x8d': 'https://download.pytorch.org/models/resnext101_32x8d-8ba56ff5.pth'
+    'resnext101_32x8d': 'https://download.pytorch.org/models/resnext101_32x8d-8ba56ff5.pth',
+    'resnext101_32x16d': 'https://download.pytorch.org/models/ig_resnext101_32x16-c6f796b0.pth'
     }
 
 
@@ -314,4 +315,17 @@ def resnext101_32x8d(pretrained=False, progress=True, onehot=1, onehot2=0, **kwa
     print("ResNext101 Loaded!")
 
     return _resnet('resnext101_32x8d', Bottleneck, [3, 4, 23, 3],
+                   pretrained, progress, onehot=onehot, onehot2=onehot2, **kwargs)
+
+def resnext101_32x16d(pretrained=True, progress=True, onehot=1, onehot2=0, **kwargs):
+    """Constructs a ResNeXt-101 32x16d model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+    """
+    kwargs['groups'] = 32
+    kwargs['width_per_group'] = 16
+    print("ResNext101_32x16d Loaded!")
+
+    return _resnet('resnext101_32x16d', Bottleneck, [3, 4, 23, 3],
                    pretrained, progress, onehot=onehot, onehot2=onehot2, **kwargs)

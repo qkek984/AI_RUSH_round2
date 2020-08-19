@@ -3,7 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="0ca8c313-1b59-476e-bed1-968ec128362b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configuration/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deform_conv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ensemble_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/ensemble_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/resnet.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/resnet.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,6 +78,7 @@
       <updated>1597289575048</updated>
       <workItem from="1597289582472" duration="2080000" />
       <workItem from="1597554488523" duration="3851000" />
+      <workItem from="1597805563478" duration="562000" />
     </task>
     <servers />
   </component>
