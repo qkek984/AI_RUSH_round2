@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d
+from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
 from models.densenet import DenseNet121
 from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
 from models.binary_model import Binary_Model
@@ -48,29 +48,29 @@ class Ensemble_Model(nn.Module):
             self.models[1] = efficientnet 
             self.session[1] = args.efficientnet_b5[0]
 
-        if args.efficientnet_b7:            
-            efficientnet = EfficientNet_B7(pretrained=False)
-            args.efficientnet_b7 = args.efficientnet_b7.split(' ')
-            if int(args.efficientnet_b7[1]):
-                efficientnet = Binary_Model(efficientnet, cat_embed=int(args.efficientnet_b7[2]), embed_dim=int(efficientnet_b7[3]))
-            self.models[1] = efficientnet 
-            self.session[1] = args.efficientnet_b7[0]
-
         if args.resnet:
             resnet = resnext50_32x4d(pretrained=False)
             args.resnet = args.resnet.split(' ')
             if int(args.resnet[1]):
                 resnet = Binary_Model(resnet, cat_embed=int(args.resnet[2]), embed_dim=int(args.resnet[3]))
-            self.models[2] = resnet
-            self.session[2] = args.resnet[0]
+            self.models[1] = resnet
+            self.session[1] = args.resnet[0]
 
         if args.resnet101:
             resnet101 = resnext101_32x8d(pretrained=False)
             args.resnet101 = args.resnet101.split(' ')
             if int(args.resnet101[1]):
                 resnet101 = Binary_Model(resnet, cat_embed=int(args.resnet101[2]), embed_dim=int(args.resnet101[3]))
-            self.models[3] = resnet101
-            self.session[3] = args.resnet101[0]
+            self.models[2] = resnet101
+            self.session[2] = args.resnet101[0]
+
+        if args.resnet101_32x16d:
+            resnet101_32x16d = resnext101_32x16d(pretrained=False)
+            args.resnet101_32x16d = args.resnet101_32x16d.split(' ')
+            if int(args.resnet101_32x16d[1]):
+                resnet101_32x16d = Binary_Model(resnet, cat_embed=int(args.resnet101_32x16d[2]), embed_dim=int(args.resnet101_32x16d[3]))
+            self.models[3] = resnet101_32x16d
+            self.session[3] = args.resnet101_32x16d[0]
 
         self.num_model = len([mod for mod in self.models if mod is not 0])
         self.mode = mode

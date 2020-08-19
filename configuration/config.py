@@ -44,7 +44,6 @@ class Transforms():
     def train_transform(self):
         if self.trainTransform == None:
             self.trainCompose += [
-                #ImageNetPolicy(),
                 SquarePad(),
                 transforms.Resize(self.resolution),
                 transforms.ColorJitter(hue=.1, saturation=.1),
@@ -59,23 +58,22 @@ class Transforms():
     def test_transform(self):
         if self.testTransform == None:
             self.testCompose += [
-                                 SquarePad(),
-                                 transforms.Resize(self.resolution),
-                                 transforms.ToTensor(),
-                                 transforms.Normalize(self.rgb_mean, self.rgb_std)
-                                 ]
+                SquarePad(),
+                transforms.Resize(self.resolution),
+                transforms.ToTensor(),
+                transforms.Normalize(self.rgb_mean, self.rgb_std)
+            ]
             self.testTransform = transforms.Compose(self.testCompose)
         return self.testTransform
 
     def teacher_test_transform(self):
         if self.testTransform == None:
-            self.testCompose += [ 
-                                  SquarePad(),
-                                  transforms.Resize(self.resolution),
-                                #   transforms.CenterCrop(self.cropSize),
-                                  transforms.ToTensor(),
-                                  transforms.Normalize(self.rgb_mean, self.rgb_std)
-                                ]
+            self.testCompose += [
+                SquarePad(),
+                transforms.Resize(self.resolution),
+                transforms.ToTensor(),
+                transforms.Normalize(self.rgb_mean, self.rgb_std)
+            ]
             self.testTransform = transforms.Compose(self.testCompose)
 
         return self.testTransform
