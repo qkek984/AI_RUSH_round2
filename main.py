@@ -225,7 +225,7 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
     logger.info(f"origin class composition : {[len(l) for l in valData]} \t {[int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData]}")
 
     logger.info(f'orversampling ratio: {oversample_ratio} ')
-    class_samples = [ random.sample(cls_data, max(10, int(len(cls_data) * cls_sample))) for cls_data in trainData]
+    class_samples = [ random.sample(cls_data, max(0, int(len(cls_data) * cls_sample))) for cls_data in trainData]
     train_samples = [ pd.DataFrame(class_data_, columns=columns) for class_data_ in class_samples]
 
     # oversampling 구현
@@ -288,9 +288,9 @@ def main():
     parser.add_argument('--binary', default=0 , type=int)
     parser.add_argument('--ensemble', default=None, type=str)
     parser.add_argument('--densenet', default=None, type=str)
-    parser.add_argument('--resnet', default=None, type=str)
-    parser.add_argument('--resnet101', default=None, type=str)
-    parser.add_argument('--resnet101_32x16d', default=None, type=str)
+    parser.add_argument('--resnext', default=None, type=str)
+    parser.add_argument('--resnext101', default=None, type=str)
+    parser.add_argument('--resnext101_32x16d', default=None, type=str)
     parser.add_argument('--efficientnet_b5', default=None, type=str)
     parser.add_argument('--ensemble_mode', default='soft', type=str)
     parser.add_argument('--eta', default=0.1, type=float)
@@ -307,9 +307,8 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="resnext", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="ensemble", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
-
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -318,7 +317,6 @@ def main():
     model = select_model(args.model_name, pretrain=args.pretrain, n_class=5, onehot=args.onehot, onehot2=args.onehot2)
     total_param = sum([p.numel() for p in model.parameters()])
     #load_weight(model, args.weight_file)
-
 
     if args.model_name == 'efficientnet_b7' or args.model_name == 'efficientnet_b8':
         transform.set_resolution(600,600)

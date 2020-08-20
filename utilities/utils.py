@@ -93,11 +93,13 @@ def unclassified_predict(model, unclassified_loader, device, n_class=5):
             img_name = data['image_name']
             x = data['image']
             category_oneh = data['category_onehot']
+            category = data['category']
 
+            category = category.to(device)
             category_oneh = category_oneh.to(device)
             x = x.to(device)
 
-            out = model(x, category_oneh)
+            out = model(x, category_oneh, category)
             logit, pred = out
 
             for item in zip(img_name, pred, logit):
@@ -228,7 +230,7 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int, on
         model = resnet101(onehot=onehot,onehot2=onehot2)
     elif model_name == "resnext101":
         model = resnext101_32x8d(onehot=onehot,onehot2=onehot2)
-    elif model_name == "resnet101_32x16d":
+    elif model_name == "resnext101_32x16d":
         model = resnext101_32x16d(onehot=onehot, onehot2=onehot2)
     elif model_name == 'densenet':
         model = DenseNet121(onehot=onehot,onehot2=onehot2)

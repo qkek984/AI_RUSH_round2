@@ -57,44 +57,44 @@ class Ensemble_Model(nn.Module):
                 self.models.append(efficientnet) 
                 self.session.append(args.efficientnet_b5[0 + i*4])
 
-        if args.resnet:
-            args.resnet = args.resnet.split(' ')
-            for i in range(len(args.resnet)//4):
+        if args.resnext:
+            args.resnext = args.resnext.split(' ')
+            for i in range(len(args.resnext) // 4):
                 resnet = resnext50_32x4d(pretrained=False)
 
-                if int(args.resnet[1 + i*4]):
-                    resnet = Binary_Model(resnet, cat_embed=int(args.resnet[2 + i*4 ]), embed_dim=int(args.resnet[3 + i*4]))
-                elif int(args.resnet[2 + i*4]):
-                    resnet = Trainable_Embedding(resnet, embed_dim=int(args.resnet[3 + i*4]))
+                if int(args.resnext[1 + i * 4]):
+                    resnet = Binary_Model(resnet, cat_embed=int(args.resnext[2 + i * 4]), embed_dim=int(args.resnext[3 + i * 4]))
+                elif int(args.resnext[2 + i * 4]):
+                    resnet = Trainable_Embedding(resnet, embed_dim=int(args.resnext[3 + i * 4]))
 
                 self.models.append(resnet)
-                self.session.append(args.resnet[0 + i*4])
+                self.session.append(args.resnext[0 + i * 4])
 
-        if args.resnet101:
-            args.resnet101 = args.resnet101.split(' ')
-            for i in range(len(args.resnet101)//4):
+        if args.resnext101:
+            args.resnext101 = args.resnext101.split(' ')
+            for i in range(len(args.resnext101) // 4):
                 resnet101 = resnext101_32x8d(pretrained=False)
 
-                if int(args.resnet101[1 + i*4]):
-                    resnet101 = Binary_Model(resnet, cat_embed=int(args.resnet101[2 + i*4]), embed_dim=int(args.resnet101[3 + i*4]))
-                elif int(args.resnet101[2 + i*4]):
-                    resnet101 = Trainable_Embedding(resnet101, embed_dim=int(args.resnet101[3 + i*4]))
+                if int(args.resnext101[1 + i * 4]):
+                    resnet101 = Binary_Model(resnet, cat_embed=int(args.resnext101[2 + i * 4]), embed_dim=int(args.resnext101[3 + i * 4]))
+                elif int(args.resnext101[2 + i * 4]):
+                    resnet101 = Trainable_Embedding(resnet101, embed_dim=int(args.resnext101[3 + i * 4]))
 
                 self.models.append(resnet101)
-                self.session.append(args.resnet101[0 + i*4])
+                self.session.append(args.resnext101[0 + i * 4])
 
-        if args.resnet101_32x16d:
-            args.resnet101_32x16d = args.resnet101_32x16d.split(' ')
-            for i in range(len(args.resnet101_32x16d)//4):
+        if args.resnext101_32x16d:
+            args.resnext101_32x16d = args.resnext101_32x16d.split(' ')
+            for i in range(len(args.resnext101_32x16d) // 4):
                 resnet101_32x16d = resnext101_32x16d(pretrained=False)
 
-                if int(args.resnet101_32x16d[1 + i*4]):
-                    resnet101_32x16d = Binary_Model(resnet, cat_embed=int(args.resnet101_32x16d[2 + i*4]), embed_dim=int(args.resnet101_32x16d[3 + i*4]))
-                elif int(args.resnet101_32x16d[2 + i*4]):
-                    resnet101_32x16d = Trainable_Embedding(resnet101_32x16d, embed_dim=int(args.resnet101_32x16d[3 + i*4]))
+                if int(args.resnext101_32x16d[1 + i * 4]):
+                    resnet101_32x16d = Binary_Model(resnet, cat_embed=int(args.resnext101_32x16d[2 + i * 4]), embed_dim=int(args.resnext101_32x16d[3 + i * 4]))
+                elif int(args.resnext101_32x16d[2 + i * 4]):
+                    resnet101_32x16d = Trainable_Embedding(resnet101_32x16d, embed_dim=int(args.resnext101_32x16d[3 + i * 4]))
 
                 self.models.append(resnet101_32x16d)
-                self.session.append(args.resnet101_32x16d[0 + i*4])
+                self.session.append(args.resnext101_32x16d[0 + i * 4])
 
         self.num_model = len(self.models)
         self.mode = mode
