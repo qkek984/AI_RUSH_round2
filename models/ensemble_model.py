@@ -132,9 +132,12 @@ class Ensemble_Model(nn.Module):
                 ys.append(y_binary)
             elif isinstance(model,Trainable_Embedding):
                 out, pred = model(x.clone(),category,oneh)
+                out = F.softmax(out,dim=-1)
                 ys.append(out)
             else:
                 out, pred = model(x.clone(),oneh)
+                out = F.softmax(out,dim=-1)
+                # print("!!!!!!!!",model.name, torch.max(out), torch.min(out), torch.max(F.softmax(out,dim=-1)), torch.min(F.softmax(out,dim=-1)))
                 ys.append(out)
                 
             

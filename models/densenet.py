@@ -154,7 +154,7 @@ def DenseNet121(pretrained=True, onehot=1, onehot2=0, **kwargs):
         model.load_state_dict(state_dict,strict=False)
 
     for i,(name, param) in enumerate(model.named_parameters()):
-        if 'classifier' not in name:
+        if 'fc' not in name:
             param.requires_grad = False
     print("DenseNet121 Loaded!")
 
@@ -187,7 +187,7 @@ def densenet169(pretrained=False, **kwargs):
     return model
 
 
-def densenet201(pretrained=False, **kwargs):
+def densenet201(pretrained=True, onehot=1, onehot2=0, **kwargs):
     r"""Densenet-201 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
     Args:
@@ -209,7 +209,11 @@ def densenet201(pretrained=False, **kwargs):
                 new_key = res.group(1) + res.group(2)
                 state_dict[new_key] = state_dict[key]
                 del state_dict[key]
-        model.load_state_dict(state_dict)
+        state_dict = OrderedDict([(param, state_dict[param]) for param in state_dict if 'classifier' not in param])
+        model.load_state_dict(state_dict,strict=False)
+        for i, (name, param) in enumerate(model.named_parameters()):
+            if 'fc' not in name:
+                param.requires_grad = False
     return model
 
 

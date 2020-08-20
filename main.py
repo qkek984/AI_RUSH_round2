@@ -277,6 +277,7 @@ def main():
     parser.add_argument('--iteration', default=0, type=str)
     parser.add_argument('--weight_file', default='model.pth', type=str)
     parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/660')
+    parser.add_argument('--teacher_model', default='resnext101', type=str)
     parser.add_argument('--smooth', default=False, type=bool)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
@@ -295,8 +296,10 @@ def main():
     parser.add_argument('--ensemble_mode', default='soft', type=str)
     parser.add_argument('--eta', default=0.1, type=float)
     parser.add_argument('--min_child_w', default=2, type=float)
-    parser.add_argument('--max_depth', default=3, type=int)
+    parser.add_argument('--max_depth', default=4, type=int)
     parser.add_argument('--gamma', default=0.2, type=int)
+
+    
 
     # 같은 구조의 모델들을  
     #  1번_SESSION, 1번_BINARY(0,1), 1번_CAT_EMBED(0,1), 1번_EMBED_DIM, 2번_SESSION, 2번_BINARY(0,1), 2번_CAT_EMBED(0,1), 2번_EMBED_DIM 
@@ -307,7 +310,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="ensemble", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, undersample_ratio=[0.8, 0.8, 0.8, 0.8, 0.8], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -353,7 +356,7 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    # df = df.iloc[:3000]
+    df = df.iloc[:3000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
     train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 1], sed=42)

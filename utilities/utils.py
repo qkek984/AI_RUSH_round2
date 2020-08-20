@@ -13,7 +13,7 @@ from data_loader import TagImageInferenceDataset
 from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
 from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
-from models.densenet import DenseNet121
+from models.densenet import DenseNet121, densenet201
 from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
 from custom_loss import LabelSmoothingLoss
 
@@ -99,7 +99,11 @@ def unclassified_predict(model, unclassified_loader, device, n_class=5):
             category_oneh = category_oneh.to(device)
             x = x.to(device)
 
-            out = model(x, category_oneh, category)
+
+            if 'Ensemble' in model.name:
+                out = model(x, category_oneh, category)
+            else:
+                out = model(x, category_oneh)
             logit, pred = out
 
             for item in zip(img_name, pred, logit):
@@ -127,6 +131,7 @@ def evaluate(model, test_loader, device, criterion):
             category_pos = data['category_possible']
             category_oneh = data['category_onehot']
             cat2possible = data['cat2possible']
+
 
             cat2possible = cat2possible.to(device)
             category_pos = category_pos.to(device)
@@ -234,6 +239,8 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int, on
         model = resnext101_32x16d(onehot=onehot, onehot2=onehot2)
     elif model_name == 'densenet':
         model = DenseNet121(onehot=onehot,onehot2=onehot2)
+    elif model_name == 'densenet201':
+        model = densenet201(onehot=onehot,onehot2=onehot2)
     elif model_name == "efficientnet_b5":
         model = EfficientNet_B5(onehot=onehot,onehot2=onehot2)
     elif model_name == "efficientnet_b7":
