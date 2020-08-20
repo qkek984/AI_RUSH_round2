@@ -295,8 +295,10 @@ def main():
     parser.add_argument('--ensemble_mode', default='soft', type=str)
     parser.add_argument('--eta', default=0.1, type=float)
     parser.add_argument('--min_child_w', default=2, type=float)
-    parser.add_argument('--max_depth', default=3, type=int)
+    parser.add_argument('--max_depth', default=4, type=int)
     parser.add_argument('--gamma', default=0.2, type=int)
+    parser.add_argument('--teacher_model', default='resnext101', type=str)
+    
 
     # 같은 구조의 모델들을  
     #  1번_SESSION, 1번_BINARY(0,1), 1번_CAT_EMBED(0,1), 1번_EMBED_DIM, 2번_SESSION, 2번_BINARY(0,1), 2번_CAT_EMBED(0,1), 2번_EMBED_DIM 
@@ -307,7 +309,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model="resnext", undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, undersample_ratio=[0.8, 0.8, 0.8, 0.8, 0.8], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
 

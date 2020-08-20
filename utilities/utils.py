@@ -93,11 +93,16 @@ def unclassified_predict(model, unclassified_loader, device, n_class=5):
             img_name = data['image_name']
             x = data['image']
             category_oneh = data['category_onehot']
+            category = data['category']
 
+            category = category.to(device)
             category_oneh = category_oneh.to(device)
             x = x.to(device)
 
-            out = model(x, category_oneh)
+            if 'Ensemble' in model.name:
+                out = model(x, category_oneh, category)
+            else:
+                out = model(x, category_oneh)
             logit, pred = out
 
             for item in zip(img_name, pred, logit):
@@ -125,6 +130,7 @@ def evaluate(model, test_loader, device, criterion):
             category_pos = data['category_possible']
             category_oneh = data['category_onehot']
             cat2possible = data['cat2possible']
+
 
             cat2possible = cat2possible.to(device)
             category_pos = category_pos.to(device)
