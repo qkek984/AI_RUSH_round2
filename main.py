@@ -356,7 +356,7 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    df = df.iloc[:3000]
+    #df = df.iloc[:3000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
     train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 1], sed=42)
