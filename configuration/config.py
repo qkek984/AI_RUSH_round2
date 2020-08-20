@@ -21,8 +21,8 @@ class Transforms():
     def __init__(self):
         self.rgb_mean = [0.485, 0.456, 0.406]
         self.rgb_std = [0.229, 0.224, 0.225]
-        # self.rgb_mean = [0.5489, 0.5092, 0.4724]
-        # self.rgb_std = [0.2131, 0.2149, 0.2209]
+        #self.rgb_mean = [0.5489, 0.5092, 0.4724]
+        #self.rgb_std = [0.2131, 0.2149, 0.2209]
         self.resolution = (256,256)
         self.cropSize = (224,224)
         self.trainTransform = None

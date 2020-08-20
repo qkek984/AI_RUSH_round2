@@ -262,7 +262,7 @@ def main():
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
     parser.add_argument('--num_epoch', default=5, type=int, help='The number of epochs')
     parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
-    parser.add_argument('--model_name', default='resnext', type=str, help='[resnet50, resnext, dnet1244, dnet1222]')
+    parser.add_argument('--model_name', default='resnext', type=str, help='[resnext101, resnext101_32x16d, nest269, densenet201]')#nest264-batch 32
     parser.add_argument('--optimizer', default='Adam', type=str)
     parser.add_argument('--unfroze_optimizer', default='Adam', type=str)
     parser.add_argument('--lr', default=1e-2, type=float)
@@ -310,7 +310,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, undersample_ratio=[0.8, 0.8, 0.8, 0.8, 0.8], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
