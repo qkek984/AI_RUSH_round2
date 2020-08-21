@@ -33,7 +33,7 @@ def embedding_training(model, train_loader, optimizer, criterion, device, epoch,
 
         optimizer.zero_grad()  # step과 zero_grad는 쌍을 이루는 것이라고 생각하면 됨
 
-        out = model(x, category, category_oneh)
+        out = model(x, category_oneh,category)
         logit, pred = out
 
         if isinstance(criterion, torch.nn.CrossEntropyLoss):
@@ -88,7 +88,7 @@ def embedding_evaluate(model, test_loader, device, criterion):
             category = category.to(device)
             x = x.to(device)
             xlabel = xlabel.to(device)
-            out = model(x, category, category_oneh)
+            out = model(x, category_oneh,category)
         
             logit, pred = out
             if isinstance(criterion, torch.nn.CrossEntropyLoss):

@@ -131,7 +131,7 @@ class Ensemble_Model(nn.Module):
                 y_binary[:,:4] = class_out
                 ys.append(y_binary)
             elif isinstance(model,Trainable_Embedding):
-                out, pred = model(x.clone(),category,oneh)
+                out, pred = model(x.clone(),oneh,category)
                 out = F.softmax(out,dim=-1)
                 ys.append(out)
             else:
