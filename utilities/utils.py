@@ -13,8 +13,9 @@ from data_loader import TagImageInferenceDataset
 from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
 from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
-from models.densenet import DenseNet121
+from models.densenet import DenseNet121, densenet201
 from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
+from models.nest import resnest269
 from custom_loss import LabelSmoothingLoss
 
 import os
@@ -98,6 +99,7 @@ def unclassified_predict(model, unclassified_loader, device, n_class=5):
             category = category.to(device)
             category_oneh = category_oneh.to(device)
             x = x.to(device)
+
 
             if 'Ensemble' in model.name:
                 out = model(x, category_oneh, category)
@@ -234,16 +236,20 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int, on
         model = resnet101(onehot=onehot,onehot2=onehot2)
     elif model_name == "resnext101":
         model = resnext101_32x8d(onehot=onehot,onehot2=onehot2)
-    elif model_name == "resnet101_32x16d":
+    elif model_name == "resnext101_32x16d":
         model = resnext101_32x16d(onehot=onehot, onehot2=onehot2)
     elif model_name == 'densenet':
         model = DenseNet121(onehot=onehot,onehot2=onehot2)
+    elif model_name == 'densenet201':
+        model = densenet201(onehot=onehot,onehot2=onehot2)
     elif model_name == "efficientnet_b5":
         model = EfficientNet_B5(onehot=onehot,onehot2=onehot2)
     elif model_name == "efficientnet_b7":
         model = EfficientNet_B7(onehot=onehot,onehot2=onehot2)
     elif model_name == "efficientnet_b8":
-        model = EfficientNet_B8(onehot=onehot,onehot2=onehot2)        
+        model = EfficientNet_B8(onehot=onehot,onehot2=onehot2)
+    elif model_name == "nest269":
+        model = resnest269(onehot=onehot,onehot2=onehot2)
     else:
         raise NotImplementedError('Please select in [resnet50, densenet, efficientnet_b7, efficientnet_b8]')
     return model

@@ -225,7 +225,7 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
     logger.info(f"origin class composition : {[len(l) for l in valData]} \t {[int(len(class_)/sum([len(l) for l in valData])* 100) for class_ in valData]}")
 
     logger.info(f'orversampling ratio: {oversample_ratio} ')
-    class_samples = [ random.sample(cls_data, max(10, int(len(cls_data) * cls_sample))) for cls_data in trainData]
+    class_samples = [ random.sample(cls_data, max(0, int(len(cls_data) * cls_sample))) for cls_data in trainData]
     train_samples = [ pd.DataFrame(class_data_, columns=columns) for class_data_ in class_samples]
 
     # oversampling 구현
@@ -262,7 +262,7 @@ def main():
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
     parser.add_argument('--num_epoch', default=5, type=int, help='The number of epochs')
     parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
-    parser.add_argument('--model_name', default='resnext', type=str, help='[resnet50, resnext, dnet1244, dnet1222]')
+    parser.add_argument('--model_name', default='resnext', type=str, help='[resnext101, resnext101_32x16d, nest269, densenet201]')#nest264-batch 32
     parser.add_argument('--optimizer', default='Adam', type=str)
     parser.add_argument('--unfroze_optimizer', default='Adam', type=str)
     parser.add_argument('--lr', default=1e-2, type=float)
@@ -277,6 +277,7 @@ def main():
     parser.add_argument('--iteration', default=0, type=str)
     parser.add_argument('--weight_file', default='model.pth', type=str)
     parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/660')
+    parser.add_argument('--teacher_model', default='resnext101', type=str)
     parser.add_argument('--smooth', default=False, type=bool)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
@@ -288,16 +289,16 @@ def main():
     parser.add_argument('--binary', default=0 , type=int)
     parser.add_argument('--ensemble', default=None, type=str)
     parser.add_argument('--densenet', default=None, type=str)
-    parser.add_argument('--resnet', default=None, type=str)
-    parser.add_argument('--resnet101', default=None, type=str)
-    parser.add_argument('--resnet101_32x16d', default=None, type=str)
+    parser.add_argument('--resnext', default=None, type=str)
+    parser.add_argument('--resnext101', default=None, type=str)
+    parser.add_argument('--resnext101_32x16d', default=None, type=str)
     parser.add_argument('--efficientnet_b5', default=None, type=str)
     parser.add_argument('--ensemble_mode', default='soft', type=str)
     parser.add_argument('--eta', default=0.1, type=float)
     parser.add_argument('--min_child_w', default=2, type=float)
     parser.add_argument('--max_depth', default=3, type=int)
     parser.add_argument('--gamma', default=0.2, type=int)
-    parser.add_argument('--teacher_model', default='resnext101', type=str)
+
     
 
     # 같은 구조의 모델들을  
@@ -309,9 +310,8 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, undersample_ratio=[0.9, 0.9, 0.9, 0.9, 0.9], data_cross=False, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
-
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -320,7 +320,6 @@ def main():
     model = select_model(args.model_name, pretrain=args.pretrain, n_class=5, onehot=args.onehot, onehot2=args.onehot2)
     total_param = sum([p.numel() for p in model.parameters()])
     #load_weight(model, args.weight_file)
-
 
     if args.model_name == 'efficientnet_b7' or args.model_name == 'efficientnet_b8':
         transform.set_resolution(600,600)
@@ -357,7 +356,7 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    # df = df.iloc[:3000]
+    #df = df.iloc[:3000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
     train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 1, 1, 1], sed=42)
