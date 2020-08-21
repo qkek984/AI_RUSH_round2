@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
-from models.densenet import DenseNet121
-from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
+from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d, resnext101_32x32d
+from models.densenet import densenet201
+from models.nest import resnest269
 from models.binary_model import Binary_Model
 from models.trainable_embedding import Trainable_Embedding
 from utilities.nsml_utils import bind_model
@@ -35,7 +35,7 @@ class Ensemble_Model(nn.Module):
         if args.densenet:
             args.densenet = args.densenet.split(' ')
             for i in range(len(args.densenet)//4):
-                densenet = DenseNet121(pretrained=False)
+                densenet = densenet201(pretrained=False)
 
                 if int(args.densenet[1 + i*4]):
                     densenet = Binary_Model(densenet, cat_embed=int(args.densenet[2 + i*4]), embed_dim=int(args.densenet[3 + i*4]))
@@ -44,18 +44,18 @@ class Ensemble_Model(nn.Module):
                 self.models.append(densenet)
                 self.session.append(args.densenet[0 + i*4])
 
-        if args.efficientnet_b5:            
-            args.efficientnet_b5 = args.efficientnet_b5.split(' ')
-            for i in range(len(args.efficientnet_b5)//4):
-                efficientnet = EfficientNet_B5(pretrained=False)
+        if args.nest269:
+            args.nest269 = args.nest269.split(' ')
+            for i in range(len(args.nest269) // 4):
+                nest = resnest269(pretrained=False)
 
-                if int(args.efficientnet_b5[1+ i*4]):
-                    efficientnet = Binary_Model(efficientnet, cat_embed=int(args.efficientnet_b5[2 + i*4]), embed_dim=int(args.efficientnet_b5[3 + i*4]))
-                elif int(args.efficientnet_b5[2 + i*4]):
-                    efficientnet = Trainable_Embedding(efficientnet, embed_dim=int(args.efficientnet_b5[3 + i*4]))
+                if int(args.nest269[1 + i * 4]):
+                    nest = Binary_Model(nest, cat_embed=int(args.nest269[2 + i * 4]), embed_dim=int(args.nest269[3 + i * 4]))
+                elif int(args.nest269[2 + i * 4]):
+                    nest = Trainable_Embedding(nest, embed_dim=int(args.nest269[3 + i * 4]))
 
-                self.models.append(efficientnet) 
-                self.session.append(args.efficientnet_b5[0 + i*4])
+                self.models.append(nest)
+                self.session.append(args.nest269[0 + i * 4])
 
         if args.resnext:
             args.resnext = args.resnext.split(' ')
@@ -89,11 +89,26 @@ class Ensemble_Model(nn.Module):
                 resnet101_32x16d = resnext101_32x16d(pretrained=False)
 
                 if int(args.resnext101_32x16d[1 + i * 4]):
-                    resnet101_32x16d = Binary_Model(resnet, cat_embed=int(args.resnext101_32x16d[2 + i * 4]), embed_dim=int(args.resnext101_32x16d[3 + i * 4]))
+                    resnet101_32x16d = Binary_Model(resnet, cat_embed=int(args.resnext101_32x16d[2 + i * 4]),
+                                                    embed_dim=int(args.resnext101_32x16d[3 + i * 4]))
                 elif int(args.resnext101_32x16d[2 + i * 4]):
-                    resnet101_32x16d = Trainable_Embedding(resnet101_32x16d, embed_dim=int(args.resnext101_32x16d[3 + i * 4]))
+                    resnet101_32x16d = Trainable_Embedding(resnet101_32x16d,
+                                                           embed_dim=int(args.resnext101_32x16d[3 + i * 4]))
 
                 self.models.append(resnet101_32x16d)
+                self.session.append(args.resnext101_32x16d[0 + i * 4])
+
+        if args.resnext101_32x32d:
+            args.resnext101_32x32d = args.resnext101_32x32d.split(' ')
+            for i in range(len(args.resnext101_32x32d) // 4):
+                resnet101_32x32d = resnext101_32x32d(pretrained=False)
+
+                if int(args.resnext101_32x32d[1 + i * 4]):
+                    resnet101_32x32d = Binary_Model(resnet, cat_embed=int(args.resnext101_32x32d[2 + i * 4]), embed_dim=int(args.resnext101_32x32d[3 + i * 4]))
+                elif int(args.resnext101_32x16d[2 + i * 4]):
+                    resnet101_32x32d = Trainable_Embedding(resnet101_32x32d, embed_dim=int(args.resnext101_32x16d[3 + i * 4]))
+
+                self.models.append(resnet101_32x32d)
                 self.session.append(args.resnext101_32x16d[0 + i * 4])
 
         self.num_model = len(self.models)

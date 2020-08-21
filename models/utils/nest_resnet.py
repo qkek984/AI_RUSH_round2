@@ -288,7 +288,7 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self, x, onehot=None):
+    def feat_extract(self,x):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -300,17 +300,20 @@ class ResNet(nn.Module):
         x = self.layer4(x)
 
         x = self.avgpool(x)
-        #x = x.view(x.size(0), -1)
         x = torch.flatten(x, 1)
-        ###
-        if self.onehot or self.onehot2:
-            x = torch.cat([x, onehot], axis=1)
-        pred = torch.argmax(x, dim=-1)
-        ###
-
-
         if self.drop:
             x = self.drop(x)
-        x = self.fc(x)
 
+        return x
+    def _forward_impl(self, x, onehot=None):
+        # See note [TorchScript super()]
+        x = self.feat_extract(x)
+
+        if self.onehot or self.onehot2:
+            x = torch.cat([x, onehot], axis=1)
+        x = self.fc(x) # F.softmax(, dim=-1)
+        pred = torch.argmax(x, dim=-1)
         return x, pred
+
+    def forward(self, x, onehot=None):
+        return self._forward_impl(x, onehot)

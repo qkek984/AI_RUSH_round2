@@ -29,6 +29,7 @@ from models.ensemble_model import Ensemble_Model
 
 from self_training import df_teacher
 from custom_loss import LabelSmoothingLoss, AlphaCrossEntropyLoss
+from torchsampler import ImbalancedDatasetSampler
 
 def train_process(args, model, train_loader, test_loader, optimizer, unfroze_optimizer, criterion, device, threshold=3, class_samples=None):
     best_acc = 0.0
@@ -87,7 +88,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
 
         logger.info(f"Time taken for epoch : {end-start}")
         if best_f1 < test_f1:
-            checkpoint = 'best_'+str(epoch)
+            checkpoint = 'best'
             logger.info(f'[{epoch}] Find the best model! Change the best model.')
             nsml.save(checkpoint)
             best_f1 = test_f1
@@ -281,7 +282,7 @@ def main():
     parser.add_argument('--smooth', default=False, type=bool)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
-    parser.add_argument('--cat_embed', default=0, type=int)
+    parser.add_argument('--cat_embed', default=1, type=int)
     parser.add_argument('--embed_dim', default=18, type=int)
     parser.add_argument('--onehot', default=1, type=int)
     parser.add_argument('--onehot2', default=0 , type=int)
@@ -292,7 +293,8 @@ def main():
     parser.add_argument('--resnext', default=None, type=str)
     parser.add_argument('--resnext101', default=None, type=str)
     parser.add_argument('--resnext101_32x16d', default=None, type=str)
-    parser.add_argument('--efficientnet_b5', default=None, type=str)
+    parser.add_argument('--resnext101_32x32d', default=None, type=str)
+    parser.add_argument('--nest269', default=None, type=str)
     parser.add_argument('--ensemble_mode', default='soft', type=str)
     parser.add_argument('--eta', default=0.1, type=float)
     parser.add_argument('--min_child_w', default=2, type=float)
@@ -321,11 +323,6 @@ def main():
     total_param = sum([p.numel() for p in model.parameters()])
     #load_weight(model, args.weight_file)
 
-    if args.model_name == 'efficientnet_b7' or args.model_name == 'efficientnet_b8':
-        transform.set_resolution(600,600)
-    elif args.model_name == 'efficientnet_b5':
-        transform.set_resolution(456,456)
-
     if args.binary:
         logger.info("\n#############\nBinary appended to model\n#############")
         if args.cat_embed:
@@ -339,7 +336,7 @@ def main():
         logger.info("\n#############\nIterative appended to model\n#############")
         model = Iterative_Model(model)
 
-    if args.ensemble : # and not args.self_training == "ensemble"
+    if args.ensemble: # and not args.self_training == "ensemble"
         model = Ensemble_Model(args, mode=args.ensemble_mode,eta=args.eta, min_child_weight=args.min_child_w, max_depth=args.max_depth, gamma=args.gamma)
     else:
         nsml_utils.bind_model(model)
@@ -347,9 +344,10 @@ def main():
     model = model.to(device)
     if args.pause:
         nsml.paused(scope=locals())
-    # if args.num_epoch == 0:
-    #     nsml.save('best')
-    #     return
+    if args.num_epoch == 0:
+        nsml.load("best", session="t0019/rush2-3/218")
+        nsml.save('This_is_me')
+        return
 
     # Set the dataset
     logger.info('Set the dataset')
@@ -364,7 +362,7 @@ def main():
                                transform=transform.train_transform(), onehot=args.onehot, onehot2=args.onehot2)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
                               transform=transform.test_transform(), onehot=args.onehot,onehot2=args.onehot2)
-
+    #train_loader = DataLoader(dataset=trainset, sampler=ImbalancedDatasetSampler(train_df), batch_size=args.batch_size, num_workers=args.num_workers)
     train_loader = DataLoader(dataset=trainset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
     test_loader = DataLoader(dataset=testset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 

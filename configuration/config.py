@@ -19,10 +19,8 @@ class SquarePad():
 
 class Transforms():
     def __init__(self):
-        self.rgb_mean = [0.485, 0.456, 0.406]
-        self.rgb_std = [0.229, 0.224, 0.225]
-        #self.rgb_mean = [0.5489, 0.5092, 0.4724]
-        #self.rgb_std = [0.2131, 0.2149, 0.2209]
+        self.rgb_mean = [0.5489, 0.5092, 0.4724]
+        self.rgb_std = [0.2131, 0.2149, 0.2209]
         self.resolution = (256,256)
         self.cropSize = (224,224)
         self.trainTransform = None
@@ -45,7 +43,7 @@ class Transforms():
             self.trainCompose += [
                 SquarePad(),
                 transforms.Resize(self.resolution),
-                #transforms.ColorJitter(hue=.1, saturation=.1),
+                #transforms.CenterCrop(self.cropSize),
                 transforms.RandomHorizontalFlip(0.5),
                 ImageNetPolicy(),
                 transforms.ToTensor(),
@@ -60,6 +58,7 @@ class Transforms():
             self.testCompose += [
                 SquarePad(),
                 transforms.Resize(self.resolution),
+                #transforms.CenterCrop(self.cropSize),
                 transforms.ToTensor(),
                 transforms.Normalize(self.rgb_mean, self.rgb_std)
             ]
