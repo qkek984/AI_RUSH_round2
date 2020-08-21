@@ -101,7 +101,7 @@ def unclassified_predict(model, unclassified_loader, device, n_class=5):
             x = x.to(device)
 
 
-            if 'Ensemble' in model.name:
+            if 'Ensemble' in model.name or 'Trainable' in model.name:
                 out = model(x, category_oneh, category)
             else:
                 out = model(x, category_oneh)

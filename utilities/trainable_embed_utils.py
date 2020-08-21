@@ -154,7 +154,7 @@ def trainable_inference(model, test_path: str) -> pd.DataFrame:
             category_pos = category_pos.to(device)
             category_oneh = category_oneh.to(device)
 
-            logit, pred = model(x, category, category_oneh) # ,
+            logit, pred = model(x, category_oneh, category ) # ,
             #y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
 
             filename_list += data['image_name']

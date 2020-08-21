@@ -9,6 +9,7 @@ import pandas as pd
 
 import utilities.nsml_utils as nu
 from configuration.config import *
+from models.trainable_embedding import Trainable_Embedding
 from models.ensemble_model import Ensemble_Model
 from data_loader import TagImageDataset
 from utilities.utils import select_model, unclassified_predict
@@ -123,7 +124,7 @@ def relabeled_df(df, predictedData, undersample_ratio= [1, 1, 1, 1, 1], data_cro
     return reclassified_df
 
 
-def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, onehot, onehot2, args):
+def df_teacher(teacher_sess_name, teacher_model, teacher_cat_embed, undersample_ratio, data_cross, onehot, onehot2, args):
     # setting #######################
     batch_size =256
     num_workers = 16
@@ -147,6 +148,8 @@ def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, 
         model = Ensemble_Model(args)
     else:
         model = select_model(teacher_model, pretrain=False, n_class=5, onehot=onehot, onehot2=onehot2)
+        if teacher_cat_embed:
+            model = Trainable_Embedding(model)
         load_weight(model, 'model.pth')
         nu.bind_model(model)
         nsml.load(checkpoint, session=sess_name)
@@ -161,7 +164,7 @@ def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, 
     logger.info('Set the dataset')
     df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
 
-    #df = df.iloc[:3000]
+    df = df.iloc[:5000]
 
     unclassifiedset = TagImageDataset(data_frame=df, root_dir=f'{DATASET_PATH}/train/train_data', transform=transform.test_transform(), onehot2=onehot2)
     unclassified_loader = DataLoader(dataset=unclassifiedset, batch_size=batch_size, shuffle=False, num_workers=num_workers)

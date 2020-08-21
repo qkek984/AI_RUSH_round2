@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
-from models.densenet import DenseNet121
+from models.densenet import DenseNet121, densenet201
 from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
 from models.binary_model import Binary_Model
 from models.trainable_embedding import Trainable_Embedding
@@ -35,7 +35,7 @@ class Ensemble_Model(nn.Module):
         if args.densenet:
             args.densenet = args.densenet.split(' ')
             for i in range(len(args.densenet)//4):
-                densenet = DenseNet121(pretrained=False)
+                densenet = densenet201(pretrained=False)
 
                 if int(args.densenet[1 + i*4]):
                     densenet = Binary_Model(densenet, cat_embed=int(args.densenet[2 + i*4]), embed_dim=int(args.densenet[3 + i*4]))
