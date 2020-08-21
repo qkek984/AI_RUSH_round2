@@ -49,8 +49,9 @@ class Transforms():
             self.trainCompose += [
                 SquarePad(),
                 transforms.Resize(self.resolution),
-                transforms.ColorJitter(hue=.1, saturation=.1),
                 transforms.RandomHorizontalFlip(0.5),
+                ImageNetPolicy(),
+                # transforms.ColorJitter(hue=.1, saturation=.1),
                 transforms.ToTensor(),
                 transforms.Normalize(self.rgb_mean, self.rgb_std)
             ]

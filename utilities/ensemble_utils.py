@@ -108,6 +108,7 @@ def ensemble_evaluate(model, test_loader, device, criterion):
 
     ytrues = []
     ypreds = []
+
     with torch.no_grad():
         for i, data in enumerate(test_loader):
             x = data['image']
@@ -171,6 +172,12 @@ def ensemble_evaluate(model, test_loader, device, criterion):
     confusion_norm = confusion_matrix(label,cat2_prediction, normalize='true')
     logger.info(f'\n{confusion}')
     logger.info(f'\n{confusion_norm}')
+
+    # logger.info(f'\nConfusion without CAT22POSSIBLE')
+    # confusion_2 = confusion_matrix(label,prediction)
+    # confusion_norm_2 = confusion_matrix(label,prediction, normalize='true')
+    # logger.info(f'\n{confusion_2}')
+    # logger.info(f'\n{confusion_norm_2}')
     
     f1_array = f1_score(label, cat2_prediction, average=None)
     
@@ -197,7 +204,6 @@ def ensemble_inference(model, test_path: str) -> pd.DataFrame:
     y_category_pred=[]
     filename_list = []
     ypreds = []
-
     with torch.no_grad():
         for i, data in enumerate(test_loader):
             x = data['image']
@@ -222,7 +228,7 @@ def ensemble_inference(model, test_path: str) -> pd.DataFrame:
                 logit = logit.detach().cpu().numpy()
                 y_category_pred += list(model.xgb_classifier.predict(logit))
             else:            
-                cat2pred = torch.argmax(logit*cat2possible, dim=-1)
+                cat2pred = torch.argmax(logit *cat2possible, dim=-1) # 
                 y_category_pred += cat2pred.type(torch.IntTensor).detach().cpu().tolist()
 
                 y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()

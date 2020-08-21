@@ -171,21 +171,21 @@ class Ensemble_Model(nn.Module):
         elif self.mode == 'stacked':
             torch.save(self.stacked_fc.state_dict(), f'{dirname}/model_stacked_fc')    
         # torch.save(self.densenet.state_dict(), f'{dirname}/model_{self.densenet.name}')
-        for model in self.models:
+        for i,model in enumerate(self.models):
             if model:
-                torch.save(model.state_dict(), f'{dirname}/model_{model.name}')
+                torch.save(model.state_dict(), f'{dirname}/model_{model.name}_{i}')
         
     def load(self, dirname):
-        print("Loading final weight! ")
+        print("Loading final weight!")
         if self.mode == 'xgb':
             print("loaded xgboost")
             self.xgb_classifier = pickle.load(open(f"{dirname}/model_xgboost.dat", "rb"))
         elif self.mode == 'stacked':
             self.stacked_fc.load_state_dict(torch.load(f'{dirname}/model_stacked_fc'))
         # self.densenet.load_state_dict(torch.load(f'{dirname}/model_{self.densenet.name}'))
-        for model in self.models:
+        for i, model in enumerate(self.models):
             if model:
-                model.load_state_dict(torch.load(f'{dirname}/model_{model.name}'))
+                model.load_state_dict(torch.load(f'{dirname}/model_{model.name}_{i}'))
  
     def load_finetuned(self):
         for model, sess_ in zip(self.models,self.session):

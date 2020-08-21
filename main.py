@@ -295,7 +295,7 @@ def main():
     parser.add_argument('--ensemble_mode', default='soft', type=str)
     parser.add_argument('--eta', default=0.1, type=float)
     parser.add_argument('--min_child_w', default=2, type=float)
-    parser.add_argument('--max_depth', default=4, type=int)
+    parser.add_argument('--max_depth', default=3, type=int)
     parser.add_argument('--gamma', default=0.2, type=int)
     parser.add_argument('--teacher_model', default='resnext101', type=str)
     
@@ -309,7 +309,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, undersample_ratio=[0.8, 0.8, 0.8, 0.8, 0.8], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, undersample_ratio=[0.9, 0.9, 0.9, 0.9, 0.9], data_cross=False, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
 
@@ -360,7 +360,7 @@ def main():
     # df = df.iloc[:3000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
-    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 1], sed=42)
+    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 1, 1, 1], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=transform.train_transform(), onehot=args.onehot, onehot2=args.onehot2)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
@@ -400,7 +400,10 @@ def main():
 
     elif args.mode == 'test':
         if isinstance(model, Ensemble_Model):
-            pass
+            if model.mode == "hard" or model.mode == 'xgb':
+                nsml.load(args.checkpoint, session=args.sess_name)
+            else:
+                pass
         else:
             nsml.load(args.checkpoint, session=args.sess_name)
             logger.info('[NSML] Model loaded from {}'.format(args.checkpoint))

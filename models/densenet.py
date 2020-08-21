@@ -154,7 +154,7 @@ def DenseNet121(pretrained=True, onehot=1, onehot2=0, **kwargs):
         model.load_state_dict(state_dict,strict=False)
 
     for i,(name, param) in enumerate(model.named_parameters()):
-        if 'classifier' not in name:
+        if 'fc' not in name:
             param.requires_grad = False
     print("DenseNet121 Loaded!")
 
