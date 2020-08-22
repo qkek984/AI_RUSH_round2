@@ -8,10 +8,11 @@ from category import *
 import numpy as np
 
 class TagImageDataset(Dataset):
-    def __init__(self, data_frame: pd.DataFrame, root_dir: str, onehot=1, onehot2=0 , transform=None):
+    def __init__(self, data_frame: pd.DataFrame, root_dir: str, onehot=1, onehot2=0 , transform=None, transform_2=None):
         self.data_frame = data_frame
         self.root_dir = root_dir
         self.transform = transform
+        self.transform_2 = transform_2
         self.onehot = onehot
         self.onehot2 = onehot2
     def __len__(self):
@@ -29,10 +30,12 @@ class TagImageDataset(Dataset):
         category = self.data_frame.iloc[idx]['category_1']
         category2 = self.data_frame.iloc[idx]['category_2']        
         if self.transform:
-            image = self.transform(image)
-        np_img = np.array(image) 
+            image_1 = self.transform(image)
+        if self.transform_2:
+            image_2 = self.transform_2(image)
+            sample['image_2'] = image_2
 
-        sample['image'] = image
+        sample['image'] = image_1
         tag_name = self.data_frame.iloc[idx]['answer']
         sample['label'] = tag_name
         sample['image_name'] = img_name
@@ -46,9 +49,11 @@ class TagImageDataset(Dataset):
 
 
 class TagImageInferenceDataset(Dataset):
-    def __init__(self, root_dir: str, onehot= 1, onehot2 =0 , transform=None):
+    def __init__(self, root_dir: str, onehot= 1, onehot2 =0 , transform=None, transform_2=None):
         self.root_dir = root_dir
         self.transform = transform
+        self.transform_2 = transform_2
+        
         self.onehot= onehot
         self.onehot2 = onehot2
         self.data_list = [img for img in os.listdir(self.root_dir) if not img.startswith('.')]
@@ -76,9 +81,11 @@ class TagImageInferenceDataset(Dataset):
         image = PIL.Image.open(img_path).convert('RGB')
         
         if self.transform:
-            image = self.transform(image)
-
-        sample['image'] = image
+            image_1 = self.transform(image)
+        if self.transform_2:
+            image_2 = self.transform_2(image)
+            sample['image_2'] = image_2
+        sample['image'] = image_1
         sample['image_name'] = img_name
         sample['cat2possible'] = torch.Tensor(CAT22ONEH[category][category2])
         sample['category_possible'] = torch.Tensor(CAT2POS[category])

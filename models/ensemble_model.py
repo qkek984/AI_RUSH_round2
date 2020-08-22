@@ -32,76 +32,82 @@ class Ensemble_Model(nn.Module):
         self.name = "Ensemble_model"
         self.models = []
         self.session = []
+        self.transform = []
         idx = 0        
         if args.densenet:
             args.densenet = args.densenet.split(' ')
             for i in range(len(args.densenet)//4):
                 densenet = densenet201(pretrained=False)
 
-                if int(args.densenet[1 + i*4]):
-                    densenet = Binary_Model(densenet, cat_embed=int(args.densenet[2 + i*4]), embed_dim=int(args.densenet[3 + i*4]))
-                elif int(args.densenet[2 + i*4]):
-                    densenet = Trainable_Embedding(densenet, embed_dim=int(args.densenet[3 + i*4]))
+                if int(args.densenet[1 + i*5]):
+                    densenet = Binary_Model(densenet, cat_embed=int(args.densenet[2 + i*5]), embed_dim=int(args.densenet[3 + i*5]))
+                elif int(args.densenet[2 + i*5]):
+                    densenet = Trainable_Embedding(densenet, embed_dim=int(args.densenet[3 + i*5]))
                 self.models.append(densenet)
-                self.session.append(args.densenet[0 + i*4])
+                self.session.append(args.densenet[0 + i*5])
+                self.transform.append(int(args.densenet[4 + i*5]))
 
         if args.nest200:
             args.nest200 = args.nest200.split(' ')
             for i in range(len(args.nest200) // 4):
                 nest = resnest200(pretrained=False)
 
-                if int(args.nest200[1 + i * 4]):
-                    nest = Binary_Model(nest, cat_embed=int(args.nest200[2 + i * 4]), embed_dim=int(args.nest200[3 + i * 4]))
-                elif int(args.nest200[2 + i * 4]):
-                    nest = Trainable_Embedding(nest, embed_dim=int(args.nest200[3 + i * 4]))
+                if int(args.efficientnet_b5[1+ i*5]):
+                    efficientnet = Binary_Model(efficientnet, cat_embed=int(args.efficientnet_b5[2 + i*5]), embed_dim=int(args.efficientnet_b5[3 + i*5]))
+                elif int(args.efficientnet_b5[2 + i*5]):
+                    efficientnet = Trainable_Embedding(efficientnet, embed_dim=int(args.efficientnet_b5[3 + i*5]))
 
-                self.models.append(nest)
-                self.session.append(args.nest200[0 + i * 4])
+                self.models.append(efficientnet) 
+                self.session.append(args.efficientnet_b5[0 + i*5])
+                self.transform.append(int(args.efficientnet_b5[4 + i*5]))
 
         if args.resnext:
             args.resnext = args.resnext.split(' ')
             for i in range(len(args.resnext) // 4):
                 resnet = resnext50_32x4d(pretrained=False)
 
-                if int(args.resnext[1 + i * 4]):
-                    resnet = Binary_Model(resnet, cat_embed=int(args.resnext[2 + i * 4]), embed_dim=int(args.resnext[3 + i * 4]))
-                elif int(args.resnext[2 + i * 4]):
-                    resnet = Trainable_Embedding(resnet, embed_dim=int(args.resnext[3 + i * 4]))
+                if int(args.resnext[1 + i*5]):
+                    resnet = Binary_Model(resnet, cat_embed=int(args.resnext[2 + i*5]), embed_dim=int(args.resnext[3 + i*5]))
+                elif int(args.resnext[2 + i*5]):
+                    resnet = Trainable_Embedding(resnet, embed_dim=int(args.resnext[3 + i*5]))
 
                 self.models.append(resnet)
-                self.session.append(args.resnext[0 + i * 4])
+                self.session.append(args.resnext[0 + i*5])
+                self.transform.append(int(args.resnext[4 + i*5]))
 
         if args.resnext101:
             args.resnext101 = args.resnext101.split(' ')
             for i in range(len(args.resnext101) // 4):
                 resnet101 = resnext101_32x8d(pretrained=False)
 
-                if int(args.resnext101[1 + i * 4]):
-                    resnet101 = Binary_Model(resnet, cat_embed=int(args.resnext101[2 + i * 4]), embed_dim=int(args.resnext101[3 + i * 4]))
-                elif int(args.resnext101[2 + i * 4]):
-                    resnet101 = Trainable_Embedding(resnet101, embed_dim=int(args.resnext101[3 + i * 4]))
+                if int(args.resnext101[1 + i*5]):
+                    resnet101 = Binary_Model(resnet, cat_embed=int(args.resnext101[2 + i*5]), embed_dim=int(args.resnext101[3 + i*5]))
+                elif int(args.resnext101[2 + i*5]):
+                    resnet101 = Trainable_Embedding(resnet101, embed_dim=int(args.resnext101[3 + i*5]))
 
                 self.models.append(resnet101)
-                self.session.append(args.resnext101[0 + i * 4])
+                self.session.append(args.resnext101[0 + i*5])
+                self.transform.append(int(args.resnext101[4 + i*5]))
+
 
         if args.resnext101_32x16d:
             args.resnext101_32x16d = args.resnext101_32x16d.split(' ')
             for i in range(len(args.resnext101_32x16d) // 4):
                 resnet101_32x16d = resnext101_32x16d(pretrained=False)
 
-                if int(args.resnext101_32x16d[1 + i * 4]):
-                    resnet101_32x16d = Binary_Model(resnet, cat_embed=int(args.resnext101_32x16d[2 + i * 4]),
-                                                    embed_dim=int(args.resnext101_32x16d[3 + i * 4]))
-                elif int(args.resnext101_32x16d[2 + i * 4]):
-                    resnet101_32x16d = Trainable_Embedding(resnet101_32x16d,
-                                                           embed_dim=int(args.resnext101_32x16d[3 + i * 4]))
+                if int(args.resnext101_32x16d[1 + i*5]):
+                    resnet101_32x16d = Binary_Model(resnet, cat_embed=int(args.resnext101_32x16d[2 + i*5]), embed_dim=int(args.resnext101_32x16d[3 + i*5]))
+                elif int(args.resnext101_32x16d[2 + i*5]):
+                    resnet101_32x16d = Trainable_Embedding(resnet101_32x16d, embed_dim=int(args.resnext101_32x16d[3 + i*5]))
 
                 self.models.append(resnet101_32x16d)
-                self.session.append(args.resnext101_32x16d[0 + i * 4])
+                self.session.append(args.resnext101_32x16d[0 + i*5])
+                self.transform.append(int(args.resnext101_32x16d[4 + i*5]))
 
         self.num_model = len(self.models)
         self.mode = mode
         self.weight = weight
+        print("Transforms !" , self.transform)
         if weight is not None:
             # self.weight = [ random.random() for _ in range(4)]
             print("Weight :" ,self.weight)
@@ -124,9 +130,9 @@ class Ensemble_Model(nn.Module):
     def __repr__(self):
         return "Ensemble model with " + self.densenet.name + ", " + self.resnet.name + ", " + self.vgg.name        
 
-    def forward(self, x, oneh=None, category=None):
+    def forward(self, x, x2, oneh=None, category=None):
         ys = []
-        for model in self.models:
+        for model, trans in zip(self.models, self.transform):
             if isinstance(model,Binary_Model):
                 y_binary = torch.zeros(x.shape[0], 5).cuda()
                 b_out, class_out, unclass_idx, class_idx = model(x.clone(),oneh,category)
@@ -134,11 +140,17 @@ class Ensemble_Model(nn.Module):
                 y_binary[:,:4] = class_out
                 ys.append(y_binary)
             elif isinstance(model,Trainable_Embedding):
-                out, pred = model(x.clone(),oneh,category)
+                if trans:
+                    out, pred = model(x.clone(),oneh,category)
+                else:
+                    out, pred = model(x2.clone(),oneh,category)
                 out = F.softmax(out,dim=-1)
                 ys.append(out)
             else:
-                out, pred = model(x.clone(),oneh)
+                if trans:
+                    out, pred = model(x.clone(),oneh)
+                else:
+                    out, pred = model(x2.clone(),oneh)
                 out = F.softmax(out,dim=-1)
                 # print("!!!!!!!!",model.name, torch.max(out), torch.min(out), torch.max(F.softmax(out,dim=-1)), torch.min(F.softmax(out,dim=-1)))
                 ys.append(out)
@@ -153,6 +165,7 @@ class Ensemble_Model(nn.Module):
             return y, torch.argmax(y, dim=-1)
 
         elif self.mode == "hard":
+            # ys = [ y_ * w_ for y_, w_ in zip(ys, [0.8, 1.2, 1, 1])]
             ys = [ y_ * w_ for y_, w_ in zip(ys, self.w)]
             y = sum(ys)
             return y, torch.argmax(y, dim=-1)

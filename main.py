@@ -88,7 +88,8 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
 
         logger.info(f"Time taken for epoch : {end-start}")
         if best_f1 < test_f1:
-            checkpoint = 'best'
+
+            checkpoint = 'fish_meets_water'
             logger.info(f'[{epoch}] Find the best model! Change the best model.')
             nsml.save(checkpoint)
             best_f1 = test_f1
@@ -313,7 +314,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, teacher_cat_embed=args.teacher_cat_embed, undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, teacher_cat_embed=args.teacher_cat_embed, undersample_ratio=[0.25, 0.25, 0.25, 0.25, 0.25], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -355,15 +356,15 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    #df = df.iloc[:3000]
+    # df = df.iloc[:3000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
     train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 1], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
-                               transform=transform.train_transform(), onehot=args.onehot, onehot2=args.onehot2)
+                               transform=transform.train_transform(),transform_2=transform.train_transform_2(), onehot=args.onehot, onehot2=args.onehot2)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',
-                              transform=transform.test_transform(), onehot=args.onehot,onehot2=args.onehot2)
-    #train_loader = DataLoader(dataset=trainset, sampler=ImbalancedDatasetSampler(train_df), batch_size=args.batch_size, num_workers=args.num_workers)
+                              transform=transform.test_transform(), transform_2=transform.train_transform_2(), onehot=args.onehot,onehot2=args.onehot2)
+
     train_loader = DataLoader(dataset=trainset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
     test_loader = DataLoader(dataset=testset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 
