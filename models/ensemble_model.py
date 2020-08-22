@@ -35,7 +35,7 @@ class Ensemble_Model(nn.Module):
         idx = 0        
         if args.densenet:
             args.densenet = args.densenet.split(' ')
-            for i in range(len(args.densenet)//4):
+            for i in range(len(args.densenet) // 5):
                 densenet = densenet201(pretrained=False)
 
                 if int(args.densenet[1 + i*5]):
@@ -48,7 +48,7 @@ class Ensemble_Model(nn.Module):
 
         if args.efficientnet_b5:            
             args.efficientnet_b5 = args.efficientnet_b5.split(' ')
-            for i in range(len(args.efficientnet_b5)//4):
+            for i in range(len(args.efficientnet_b5) // 5):
                 efficientnet = EfficientNet_B5(pretrained=False)
 
                 if int(args.efficientnet_b5[1+ i*5]):
@@ -62,7 +62,8 @@ class Ensemble_Model(nn.Module):
 
         if args.resnext:
             args.resnext = args.resnext.split(' ')
-            for i in range(len(args.resnext) // 4):
+            for i in range(len(args.resnext) // 5):
+
                 resnet = resnext50_32x4d(pretrained=False)
 
                 if int(args.resnext[1 + i*5]):
@@ -76,7 +77,7 @@ class Ensemble_Model(nn.Module):
 
         if args.resnext101:
             args.resnext101 = args.resnext101.split(' ')
-            for i in range(len(args.resnext101) // 4):
+            for i in range(len(args.resnext101) // 5):
                 resnet101 = resnext101_32x8d(pretrained=False)
 
                 if int(args.resnext101[1 + i*5]):
@@ -91,7 +92,7 @@ class Ensemble_Model(nn.Module):
 
         if args.resnext101_32x16d:
             args.resnext101_32x16d = args.resnext101_32x16d.split(' ')
-            for i in range(len(args.resnext101_32x16d) // 4):
+            for i in range(len(args.resnext101_32x16d) // 5):
                 resnet101_32x16d = resnext101_32x16d(pretrained=False)
 
                 if int(args.resnext101_32x16d[1 + i*5]):
@@ -143,14 +144,16 @@ class Ensemble_Model(nn.Module):
                     out, pred = model(x.clone(),oneh,category)
                 else:
                     out, pred = model(x2.clone(),oneh,category)
-                out = F.softmax(out,dim=-1)
+                if self.mode == 'soft':
+                    out = F.softmax(out,dim=-1)
                 ys.append(out)
             else:
                 if trans:
                     out, pred = model(x.clone(),oneh)
                 else:
                     out, pred = model(x2.clone(),oneh)
-                out = F.softmax(out,dim=-1)
+                if self.mode == 'soft':
+                    out = F.softmax(out,dim=-1)
                 # print("!!!!!!!!",model.name, torch.max(out), torch.min(out), torch.max(F.softmax(out,dim=-1)), torch.min(F.softmax(out,dim=-1)))
                 ys.append(out)
                 
