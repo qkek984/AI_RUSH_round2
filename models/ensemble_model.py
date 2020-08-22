@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 
-from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d, resnext101_32x32d
+from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
 from models.densenet import densenet201
-from models.nest import resnest269
+from models.nest import resnest200
+
 from models.binary_model import Binary_Model
 from models.trainable_embedding import Trainable_Embedding
 from utilities.nsml_utils import bind_model
@@ -44,18 +45,18 @@ class Ensemble_Model(nn.Module):
                 self.models.append(densenet)
                 self.session.append(args.densenet[0 + i*4])
 
-        if args.nest269:
-            args.nest269 = args.nest269.split(' ')
-            for i in range(len(args.nest269) // 4):
-                nest = resnest269(pretrained=False)
+        if args.nest200:
+            args.nest200 = args.nest200.split(' ')
+            for i in range(len(args.nest200) // 4):
+                nest = resnest200(pretrained=False)
 
-                if int(args.nest269[1 + i * 4]):
-                    nest = Binary_Model(nest, cat_embed=int(args.nest269[2 + i * 4]), embed_dim=int(args.nest269[3 + i * 4]))
-                elif int(args.nest269[2 + i * 4]):
-                    nest = Trainable_Embedding(nest, embed_dim=int(args.nest269[3 + i * 4]))
+                if int(args.nest200[1 + i * 4]):
+                    nest = Binary_Model(nest, cat_embed=int(args.nest200[2 + i * 4]), embed_dim=int(args.nest200[3 + i * 4]))
+                elif int(args.nest200[2 + i * 4]):
+                    nest = Trainable_Embedding(nest, embed_dim=int(args.nest200[3 + i * 4]))
 
                 self.models.append(nest)
-                self.session.append(args.nest269[0 + i * 4])
+                self.session.append(args.nest200[0 + i * 4])
 
         if args.resnext:
             args.resnext = args.resnext.split(' ')
@@ -98,19 +99,6 @@ class Ensemble_Model(nn.Module):
                 self.models.append(resnet101_32x16d)
                 self.session.append(args.resnext101_32x16d[0 + i * 4])
 
-        if args.resnext101_32x32d:
-            args.resnext101_32x32d = args.resnext101_32x32d.split(' ')
-            for i in range(len(args.resnext101_32x32d) // 4):
-                resnet101_32x32d = resnext101_32x32d(pretrained=False)
-
-                if int(args.resnext101_32x32d[1 + i * 4]):
-                    resnet101_32x32d = Binary_Model(resnet, cat_embed=int(args.resnext101_32x32d[2 + i * 4]), embed_dim=int(args.resnext101_32x32d[3 + i * 4]))
-                elif int(args.resnext101_32x16d[2 + i * 4]):
-                    resnet101_32x32d = Trainable_Embedding(resnet101_32x32d, embed_dim=int(args.resnext101_32x16d[3 + i * 4]))
-
-                self.models.append(resnet101_32x32d)
-                self.session.append(args.resnext101_32x16d[0 + i * 4])
-
         self.num_model = len(self.models)
         self.mode = mode
         self.weight = weight
@@ -146,7 +134,7 @@ class Ensemble_Model(nn.Module):
                 y_binary[:,:4] = class_out
                 ys.append(y_binary)
             elif isinstance(model,Trainable_Embedding):
-                out, pred = model(x.clone(),category,oneh)
+                out, pred = model(x.clone(),oneh,category)
                 out = F.softmax(out,dim=-1)
                 ys.append(out)
             else:
@@ -186,21 +174,21 @@ class Ensemble_Model(nn.Module):
         elif self.mode == 'stacked':
             torch.save(self.stacked_fc.state_dict(), f'{dirname}/model_stacked_fc')    
         # torch.save(self.densenet.state_dict(), f'{dirname}/model_{self.densenet.name}')
-        for model in self.models:
+        for i,model in enumerate(self.models):
             if model:
-                torch.save(model.state_dict(), f'{dirname}/model_{model.name}')
+                torch.save(model.state_dict(), f'{dirname}/model_{model.name}_{i}')
         
     def load(self, dirname):
-        print("Loading final weight! ")
+        print("Loading final weight!")
         if self.mode == 'xgb':
             print("loaded xgboost")
             self.xgb_classifier = pickle.load(open(f"{dirname}/model_xgboost.dat", "rb"))
         elif self.mode == 'stacked':
             self.stacked_fc.load_state_dict(torch.load(f'{dirname}/model_stacked_fc'))
         # self.densenet.load_state_dict(torch.load(f'{dirname}/model_{self.densenet.name}'))
-        for model in self.models:
+        for i, model in enumerate(self.models):
             if model:
-                model.load_state_dict(torch.load(f'{dirname}/model_{model.name}'))
+                model.load_state_dict(torch.load(f'{dirname}/model_{model.name}_{i}'))
  
     def load_finetuned(self):
         for model, sess_ in zip(self.models,self.session):

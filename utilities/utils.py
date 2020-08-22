@@ -12,7 +12,7 @@ from configuration.config import logger, Transforms
 from data_loader import TagImageInferenceDataset
 from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
-from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d, resnext101_32x32d
+from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
 from models.densenet import DenseNet121, densenet201
 from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
 from models.nest import resnest200, resnest269
@@ -101,7 +101,7 @@ def unclassified_predict(model, unclassified_loader, device, n_class=5):
             x = x.to(device)
 
 
-            if 'Ensemble' in model.name:
+            if 'Ensemble' in model.name or 'Trainable' in model.name:
                 out = model(x, category_oneh, category)
             else:
                 out = model(x, category_oneh)
@@ -238,18 +238,10 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int, on
         model = resnext101_32x8d(onehot=onehot,onehot2=onehot2)
     elif model_name == "resnext101_32x16d":
         model = resnext101_32x16d(onehot=onehot, onehot2=onehot2)
-    elif model_name == "resnext101_32x32d":
-        model = resnext101_32x32d(onehot=onehot, onehot2=onehot2)
     elif model_name == 'densenet':
         model = DenseNet121(onehot=onehot,onehot2=onehot2)
     elif model_name == 'densenet201':
         model = densenet201(onehot=onehot,onehot2=onehot2)
-    elif model_name == "efficientnet_b5":
-        model = EfficientNet_B5(onehot=onehot,onehot2=onehot2)
-    elif model_name == "efficientnet_b7":
-        model = EfficientNet_B7(onehot=onehot,onehot2=onehot2)
-    elif model_name == "efficientnet_b8":
-        model = EfficientNet_B8(onehot=onehot,onehot2=onehot2)
     elif model_name == "nest200":
         model = resnest200(onehot=onehot,onehot2=onehot2)
     elif model_name == "nest269":
@@ -265,10 +257,9 @@ def select_optimizer(param, opt_name: str, lr: float, weight_decay: float):
     elif opt_name == 'SGDP':
         optimizer = SGDP(param, lr=lr, momentum=0.9, weight_decay=weight_decay, nesterov=True)
     elif opt_name == 'Adam':
-        return torch.optim.Adam(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
+        optimizer = torch.optim.Adam(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, amsgrad=False)
     elif opt_name == 'AdamP':
         optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay, nesterov=True)
-        #optimizer = AdamP(param, lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=weight_decay, nesterov=True)
     else:
         raise NotImplementedError('The optimizer should be in [SGD]')
     return optimizer

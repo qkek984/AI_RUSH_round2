@@ -16,19 +16,9 @@ model_urls = {
     'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
     'resnext50_32x4d': 'https://download.pytorch.org/models/resnext50_32x4d-7cdf4587.pth',
     'resnext101_32x8d': 'https://download.pytorch.org/models/resnext101_32x8d-8ba56ff5.pth',
-    'resnext101_32x16d': 'https://download.pytorch.org/models/ig_resnext101_32x16-c6f796b0.pth',
-    'resnext101_32x32d': 'https://download.pytorch.org/models/ig_resnext101_32x32-e4b90b00.pth'
+    'resnext101_32x16d': 'https://download.pytorch.org/models/ig_resnext101_32x16-c6f796b0.pth'
 
     }
-'''#weight
-    'resnext50_32x4d': 'https://download.pytorch.org/models/resnext50_32x4d-7cdf4587.pth',
-    'resnext101_32x8d': 'https://download.pytorch.org/models/resnext101_32x8d-8ba56ff5.pth',
-    'resnext101_32x16d': 'https://download.pytorch.org/models/ig_resnext101_32x16-c6f796b0.pth'
----------------------------
-    'resnext50_32x4d': 'https://dl.fbaipublicfiles.com/semiweaksupervision/model_files/semi_weakly_supervised_resnext50_32x4-72679e44.pth',
-    'resnext101_32x8d': 'https://dl.fbaipublicfiles.com/semiweaksupervision/model_files/semi_weakly_supervised_resnext101_32x8-b4712904.pth',
-    'resnext101_32x16d': 'https://dl.fbaipublicfiles.com/semiweaksupervision/model_files/semi_weakly_supervised_resnext101_32x16-f3559a9c.pth'
-'''
 
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
@@ -340,17 +330,3 @@ def resnext101_32x16d(pretrained=True, progress=True, onehot=1, onehot2=0, **kwa
 
     return _resnet('resnext101_32x16d', Bottleneck, [3, 4, 23, 3],
                    pretrained, progress, onehot=onehot, onehot2=onehot2, name="resnext101_16d", **kwargs)
-
-
-def resnext101_32x32d(pretrained=True, progress=True, onehot=1, onehot2=0, **kwargs):
-    """Constructs a ResNeXt-101 32x32d model.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-        progress (bool): If True, displays a progress bar of the download to stderr
-    """
-    kwargs['groups'] = 32
-    kwargs['width_per_group'] = 32
-    print("ResNext101_32x32d Loaded!")
-
-    return _resnet('resnext101_32x32d', Bottleneck, [3, 4, 23, 3],
-                   pretrained, progress, onehot=onehot, onehot2=onehot2, name="resnext101_32d", **kwargs)

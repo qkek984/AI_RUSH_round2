@@ -293,13 +293,14 @@ def main():
     parser.add_argument('--resnext', default=None, type=str)
     parser.add_argument('--resnext101', default=None, type=str)
     parser.add_argument('--resnext101_32x16d', default=None, type=str)
-    parser.add_argument('--resnext101_32x32d', default=None, type=str)
-    parser.add_argument('--nest269', default=None, type=str)
+    parser.add_argument('--nest200', default=None, type=str)
     parser.add_argument('--ensemble_mode', default='soft', type=str)
     parser.add_argument('--eta', default=0.1, type=float)
     parser.add_argument('--min_child_w', default=2, type=float)
-    parser.add_argument('--max_depth', default=4, type=int)
+    parser.add_argument('--max_depth', default=3, type=int)
     parser.add_argument('--gamma', default=0.2, type=int)
+    parser.add_argument('--teacher_cat_embed', default=1, type=int)
+        
 
     
 
@@ -312,7 +313,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, teacher_cat_embed=args.teacher_cat_embed, undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -345,8 +346,8 @@ def main():
     if args.pause:
         nsml.paused(scope=locals())
     if args.num_epoch == 0:
-        nsml.load("best", session="t0019/rush2-3/218")
-        nsml.save('This_is_me')
+        nsml.load("best", session="t0019/rush2-2/1102")
+        nsml.save('fish_meets_water')
         return
 
     # Set the dataset
@@ -397,7 +398,10 @@ def main():
 
     elif args.mode == 'test':
         if isinstance(model, Ensemble_Model):
-            pass
+            if model.mode == "hard" or model.mode == 'xgb':
+                nsml.load(args.checkpoint, session=args.sess_name)
+            else:
+                pass
         else:
             nsml.load(args.checkpoint, session=args.sess_name)
             logger.info('[NSML] Model loaded from {}'.format(args.checkpoint))

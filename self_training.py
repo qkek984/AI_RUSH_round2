@@ -9,6 +9,7 @@ import pandas as pd
 
 import utilities.nsml_utils as nu
 from configuration.config import *
+from models.trainable_embedding import Trainable_Embedding
 from models.ensemble_model import Ensemble_Model
 from data_loader import TagImageDataset
 from utilities.utils import select_model, unclassified_predict
@@ -123,7 +124,7 @@ def relabeled_df(df, predictedData, undersample_ratio= [1, 1, 1, 1, 1], data_cro
     return reclassified_df
 
 
-def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, onehot, onehot2, args):
+def df_teacher(teacher_sess_name, teacher_model, teacher_cat_embed, undersample_ratio, data_cross, onehot, onehot2, args):
     # setting #######################
     batch_size =256
     num_workers = 16
@@ -132,11 +133,7 @@ def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, 
     transform = Transforms()
     
     onehot2= 0
-    
-    if teacher_model == 'efficientnet_b7' or teacher_model == 'efficientnet_b8':
-        transform.set_resolution(600,600)
-    elif teacher_model == 'efficientnet_b5':
-        transform.set_resolution(456,456)
+
     #################################
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -147,6 +144,8 @@ def df_teacher(teacher_sess_name, teacher_model, undersample_ratio, data_cross, 
         model = Ensemble_Model(args)
     else:
         model = select_model(teacher_model, pretrain=False, n_class=5, onehot=onehot, onehot2=onehot2)
+        if teacher_cat_embed:
+            model = Trainable_Embedding(model)
         load_weight(model, 'model.pth')
         nu.bind_model(model)
         nsml.load(checkpoint, session=sess_name)

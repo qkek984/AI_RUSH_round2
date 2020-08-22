@@ -43,7 +43,6 @@ class Transforms():
             self.trainCompose += [
                 SquarePad(),
                 transforms.Resize(self.resolution),
-                #transforms.CenterCrop(self.cropSize),
                 transforms.RandomHorizontalFlip(0.5),
                 ImageNetPolicy(),
                 transforms.ToTensor(),
@@ -58,7 +57,6 @@ class Transforms():
             self.testCompose += [
                 SquarePad(),
                 transforms.Resize(self.resolution),
-                #transforms.CenterCrop(self.cropSize),
                 transforms.ToTensor(),
                 transforms.Normalize(self.rgb_mean, self.rgb_std)
             ]

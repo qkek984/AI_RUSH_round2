@@ -2,14 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0ca8c313-1b59-476e-bed1-968ec128362b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/t0019_rush2-2_298.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configuration/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/ensemble_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/ensemble_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/nest.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/nest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/resnet.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/resnet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/utils/nest_resnet.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/utils/nest_resnet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/trainable_embedding.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/trainable_embedding.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/self_training.py" beforeDir="false" afterPath="$PROJECT_DIR$/self_training.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/ensemble_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/ensemble_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/trainable_embed_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/trainable_embed_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,7 +43,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../backup/ai_rush_round2(백업0818)" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../music" />
     <property name="settings.editor.selected.configurable" value="terminal" />
   </component>
   <component name="RecentsManager">
@@ -96,7 +102,8 @@
       <workItem from="1597927405673" duration="6805000" />
       <workItem from="1597964619916" duration="11810000" />
       <workItem from="1597996086021" duration="461000" />
-      <workItem from="1598005257391" duration="5249000" />
+      <workItem from="1598005257391" duration="10551000" />
+      <workItem from="1598052671076" duration="10097000" />
     </task>
     <servers />
   </component>
@@ -104,12 +111,12 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="171" y="125" key="FileChooserDialogImpl" timestamp="1597970986610">
+    <state x="171" y="125" key="FileChooserDialogImpl" timestamp="1598055536095">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="171" y="125" key="FileChooserDialogImpl/0.0.1536.824/-1680.29.1680.1010@0.0.1536.824" timestamp="1597970986610" />
     <state x="-2275" y="4" key="FileChooserDialogImpl/0.0.1536.824/-2560.-208.2560.1400@-2560.-208.2560.1400" timestamp="1597301331694" />
-    <state x="171" y="125" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1597836244531" />
+    <state x="171" y="125" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1598055536095" />
     <state width="2561" height="276" key="GridCell.Tab.0.bottom" timestamp="1597301404811">
       <screen x="-2560" y="-208" width="2560" height="1400" />
     </state>
@@ -130,11 +137,11 @@
       <screen x="-2560" y="-208" width="2560" height="1400" />
     </state>
     <state x="-1757" y="196" key="SettingsEditor/0.0.1536.824/-2560.-208.2560.1400@-2560.-208.2560.1400" timestamp="1597301337884" />
-    <state x="568" y="233" key="com.intellij.ide.util.TipDialog" timestamp="1598005288302">
+    <state x="568" y="233" key="com.intellij.ide.util.TipDialog" timestamp="1598052735637">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="568" y="233" key="com.intellij.ide.util.TipDialog/0.0.1536.824/-1680.29.1680.1010@0.0.1536.824" timestamp="1597996087786" />
-    <state x="568" y="233" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1598005288302" />
+    <state x="568" y="233" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1598052735637" />
     <state x="-1617" y="107" width="672" height="678" key="search.everywhere.popup" timestamp="1597290922095">
       <screen x="-2560" y="-208" width="2560" height="1400" />
     </state>
