@@ -56,21 +56,27 @@ def resnest101(pretrained=False, root='~/.encoding/models', **kwargs):
             resnest_model_urls['resnest101'], progress=True, check_hash=True))
     return model
 
-def resnest200(pretrained=False, root='~/.encoding/models', **kwargs):
+def resnest200(pretrained=True, root='~/.encoding/models', onehot=1, onehot2=0, **kwargs):
     model = ResNet(Bottleneck, [3, 24, 36, 3],
                    radix=2, groups=1, bottleneck_width=64,
                    deep_stem=True, stem_width=64, avg_down=True,
-                   avd=True, avd_first=False, **kwargs)
+                   avd=True, avd_first=False,
+                   onehot=onehot, onehot2=onehot2, name="nest200", **kwargs)
     if pretrained:
-        model.load_state_dict(torch.hub.load_state_dict_from_url(
-            resnest_model_urls['resnest200'], progress=True, check_hash=True))
+        state_dict = torch.hub.load_state_dict_from_url(resnest_model_urls['resnest200'], progress=True, check_hash=True)
+        state_dict = OrderedDict([(param, state_dict[param]) for param in state_dict if 'fc' not in param])
+        model.load_state_dict(state_dict, strict=False)
+        for i, (name, param) in enumerate(model.named_parameters()):
+            if 'fc' not in name:
+                param.requires_grad = False
     return model
 
 def resnest269(pretrained=True, root='~/.encoding/models', onehot=1, onehot2=0, **kwargs):
     model = ResNet(Bottleneck, [3, 30, 48, 8],
                    radix=2, groups=1, bottleneck_width=64,
                    deep_stem=True, stem_width=64, avg_down=True,
-                   avd=True, avd_first=False, **kwargs)
+                   avd=True, avd_first=False,
+                   onehot=onehot, onehot2=onehot2, name="nest269", **kwargs)
     if pretrained:
         state_dict = torch.hub.load_state_dict_from_url(resnest_model_urls['resnest269'], progress=True, check_hash=True)
         state_dict = OrderedDict([(param, state_dict[param]) for param in state_dict if 'fc' not in param])

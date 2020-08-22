@@ -2,8 +2,9 @@ import torch
 import torch.nn as nn
 
 from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
-from models.densenet import DenseNet121, densenet201
-from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
+from models.densenet import densenet201
+from models.nest import resnest200
+
 from models.binary_model import Binary_Model
 from models.trainable_embedding import Trainable_Embedding
 from utilities.nsml_utils import bind_model

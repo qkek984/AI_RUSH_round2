@@ -19,6 +19,7 @@ class SquarePad():
 
 class Transforms():
     def __init__(self):
+
         self.rgb_mean_2 = [0.485, 0.456, 0.406]
         self.rgb_std_2 = [0.229, 0.224, 0.225]
         self.rgb_mean = [0.5489, 0.5092, 0.4724]
@@ -52,7 +53,6 @@ class Transforms():
             self.trainCompose += [
                 SquarePad(),
                 transforms.Resize(self.resolution),
-                #transforms.ColorJitter(hue=.1, saturation=.1),
                 transforms.RandomHorizontalFlip(0.5),
                 ImageNetPolicy(),
                 transforms.ToTensor(),
