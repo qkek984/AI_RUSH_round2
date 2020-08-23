@@ -267,7 +267,7 @@ def main():
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
     parser.add_argument('--num_epoch', default=5, type=int, help='The number of epochs')
     parser.add_argument('--num_unfroze_epoch', default=5, type=int, help='The number of unfroze epochs')
-    parser.add_argument('--model_name', default='resnext', type=str, help='[resnext101, resnext101_32x16d, nest269, densenet201]')#nest264-batch 32
+    parser.add_argument('--model_name', default='resnext', type=str, help='[resnext101, resnext101_32x16d, nest200, densenet201]')#nest264-batch 32
     parser.add_argument('--optimizer', default='Adam', type=str)
     parser.add_argument('--unfroze_optimizer', default='Adam', type=str)
     parser.add_argument('--lr', default=1e-2, type=float)
