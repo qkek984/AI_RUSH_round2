@@ -14,8 +14,7 @@ from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
 from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
 from models.densenet import DenseNet121, densenet201
-from models.utils.load_efficientnet import EfficientNet_B7, EfficientNet_B8, EfficientNet_B5
-from models.nest import resnest200, resnest269
+from models.nest import resnest200
 from custom_loss import LabelSmoothingLoss
 
 import os
@@ -244,10 +243,8 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int, on
         model = densenet201(onehot=onehot,onehot2=onehot2)
     elif model_name == "nest200":
         model = resnest200(onehot=onehot,onehot2=onehot2)
-    elif model_name == "nest269":
-        model = resnest269(onehot=onehot,onehot2=onehot2)
     else:
-        raise NotImplementedError('Please select in [resnet50, densenet, efficientnet_b7, efficientnet_b8]')
+        raise NotImplementedError('Please select in [resnext101, resnext101_32x16d, nest200, densenet201]')
     return model
 
 

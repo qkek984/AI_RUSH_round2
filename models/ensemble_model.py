@@ -4,7 +4,6 @@ import torch.nn as nn
 from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
 from models.densenet import densenet201
 from models.nest import resnest200
-
 from models.binary_model import Binary_Model
 from models.trainable_embedding import Trainable_Embedding
 from utilities.nsml_utils import bind_model
@@ -47,19 +46,19 @@ class Ensemble_Model(nn.Module):
                 self.session.append(args.densenet[0 + i*5])
                 self.transform.append(int(args.densenet[4 + i*5]))
 
-        if args.efficientnet_b5:            
-            args.efficientnet_b5 = args.efficientnet_b5.split(' ')
-            for i in range(len(args.efficientnet_b5) // 5):
-                efficientnet = EfficientNet_B5(pretrained=False)
+        if args.nest200:
+            args.nest200 = args.nest200.split(' ')
+            for i in range(len(args.nest200) // 4):
+                nest = resnest200(pretrained=False)
 
-                if int(args.efficientnet_b5[1+ i*5]):
-                    efficientnet = Binary_Model(efficientnet, cat_embed=int(args.efficientnet_b5[2 + i*5]), embed_dim=int(args.efficientnet_b5[3 + i*5]))
-                elif int(args.efficientnet_b5[2 + i*5]):
-                    efficientnet = Trainable_Embedding(efficientnet, embed_dim=int(args.efficientnet_b5[3 + i*5]))
+                if int(args.nest200[1 + i * 5]):
+                    nest = Binary_Model(nest, cat_embed=int(args.nest200[2 + i * 5]), embed_dim=int(args.nest200[3 + i * 5]))
+                elif int(args.nest200[2 + i * 5]):
+                    nest = Trainable_Embedding(nest, embed_dim=int(args.nest200[3 + i * 5]))
 
-                self.models.append(efficientnet) 
-                self.session.append(args.efficientnet_b5[0 + i*5])
-                self.transform.append(int(args.efficientnet_b5[4 + i*5]))
+                self.models.append(nest)
+                self.session.append(args.nest200[0 + i * 5])
+                self.transform.append(int(args.nest200[4 + i * 5]))
 
         if args.resnext:
             args.resnext = args.resnext.split(' ')
