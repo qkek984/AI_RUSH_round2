@@ -87,6 +87,9 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
         nsml.report(False, step=epoch, **report_dict)
 
         logger.info(f"Time taken for epoch : {end-start}")
+        checkpoint = f'teamcv_{epoch}'
+        nsml.save(checkpoint)
+
         if best_f1 < test_f1:
 
             checkpoint = 'fish_meets_water'
@@ -283,7 +286,7 @@ def main():
     parser.add_argument('--smooth', default=False, type=bool)
     parser.add_argument('--smooth_w', default=0.3, type=float)
     parser.add_argument('--smooth_att', default=1.5, type=float)
-    parser.add_argument('--cat_embed', default=1, type=int)
+    parser.add_argument('--cat_embed', default=0, type=int)
     parser.add_argument('--embed_dim', default=18, type=int)
     parser.add_argument('--onehot', default=1, type=int)
     parser.add_argument('--onehot2', default=0 , type=int)

@@ -47,20 +47,6 @@ class Ensemble_Model(nn.Module):
                 self.session.append(args.densenet[0 + i*5])
                 self.transform.append(int(args.densenet[4 + i*5]))
 
-        if args.efficientnet_b5:            
-            args.efficientnet_b5 = args.efficientnet_b5.split(' ')
-            for i in range(len(args.efficientnet_b5) // 5):
-                efficientnet = EfficientNet_B5(pretrained=False)
-
-                if int(args.efficientnet_b5[1+ i*5]):
-                    efficientnet = Binary_Model(efficientnet, cat_embed=int(args.efficientnet_b5[2 + i*5]), embed_dim=int(args.efficientnet_b5[3 + i*5]))
-                elif int(args.efficientnet_b5[2 + i*5]):
-                    efficientnet = Trainable_Embedding(efficientnet, embed_dim=int(args.efficientnet_b5[3 + i*5]))
-
-                self.models.append(efficientnet) 
-                self.session.append(args.efficientnet_b5[0 + i*5])
-                self.transform.append(int(args.efficientnet_b5[4 + i*5]))
-
         if args.resnext:
             args.resnext = args.resnext.split(' ')
             for i in range(len(args.resnext) // 5):
@@ -145,16 +131,16 @@ class Ensemble_Model(nn.Module):
                     out, pred = model(x.clone(),oneh,category)
                 else:
                     out, pred = model(x2.clone(),oneh,category)
-                if self.mode == 'soft':
-                    out = F.softmax(out,dim=-1)
+                # if self.mode == 'soft':
+                out = F.softmax(out,dim=-1)
                 ys.append(out)
             else:
                 if trans:
                     out, pred = model(x.clone(),oneh)
                 else:
                     out, pred = model(x2.clone(),oneh)
-                if self.mode == 'soft':
-                    out = F.softmax(out,dim=-1)
+                # if self.mode == 'soft':
+                out = F.softmax(out,dim=-1)
                 # print("!!!!!!!!",model.name, torch.max(out), torch.min(out), torch.max(F.softmax(out,dim=-1)), torch.min(F.softmax(out,dim=-1)))
                 ys.append(out)
                 
