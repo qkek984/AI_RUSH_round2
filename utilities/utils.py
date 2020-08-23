@@ -88,10 +88,14 @@ def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs
 def unclassified_predict(model, unclassified_loader, device, n_class=5):
     predictedData = [[] for i in range(n_class)]
     lenul = len(unclassified_loader)
+    x2 = None
     with torch.no_grad():
         for i, data in enumerate(unclassified_loader):
             img_name = data['image_name']
             x = data['image']
+            if "Ensemble" in model.name:
+                x2 = data['image_2']
+                x2 = x2.to(device)
             category_oneh = data['category_onehot']
             category = data['category']
 
@@ -99,8 +103,9 @@ def unclassified_predict(model, unclassified_loader, device, n_class=5):
             category_oneh = category_oneh.to(device)
             x = x.to(device)
 
-
-            if 'Ensemble' in model.name or 'Trainable' in model.name:
+            if 'Ensemble' in model.name:
+                out = model(x, x2, category_oneh, category)
+            elif 'Trainable' in model.name:
                 out = model(x, category_oneh, category)
             else:
                 out = model(x, category_oneh)

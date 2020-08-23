@@ -144,16 +144,16 @@ class Ensemble_Model(nn.Module):
                     out, pred = model(x.clone(),oneh,category)
                 else:
                     out, pred = model(x2.clone(),oneh,category)
-                if self.mode == 'soft':
-                    out = F.softmax(out,dim=-1)
+                # if self.mode == 'soft':
+                out = F.softmax(out,dim=-1)
                 ys.append(out)
             else:
                 if trans:
                     out, pred = model(x.clone(),oneh)
                 else:
                     out, pred = model(x2.clone(),oneh)
-                if self.mode == 'soft':
-                    out = F.softmax(out,dim=-1)
+                # if self.mode == 'soft':
+                out = F.softmax(out,dim=-1)
                 # print("!!!!!!!!",model.name, torch.max(out), torch.min(out), torch.max(F.softmax(out,dim=-1)), torch.min(F.softmax(out,dim=-1)))
                 ys.append(out)
                 
