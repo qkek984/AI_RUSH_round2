@@ -24,7 +24,7 @@ def ensemble_training(model, train_loader, optimizer, criterion, device, epoch, 
     for i, data in enumerate(train_loader):
         start = time.time()
         x = data['image']
-        x2 = data['image_2']
+        # x2 = data['image_2']
         xlabel = data['label']
         category_pos = data['category_possible']
         category_oneh = data['category_onehot']
@@ -34,14 +34,14 @@ def ensemble_training(model, train_loader, optimizer, criterion, device, epoch, 
         cat2possible = cat2possible.to(device)
         category = category.to(device)
         x = x.to(device)
-        x2 = x2.to(device)
+        # x2 = x2.to(device)
         xlabel = xlabel.to(device)
         category_pos = category_pos.to(device)
         category_oneh = category_oneh.to(device)
 
         optimizer.zero_grad()  # step과 zero_grad는 쌍을 이루는 것이라고 생각하면 됨
 
-        out = model(x, x2,category_oneh, category)
+        out = model(x, category_oneh, category)
         logit, pred = out
         num_data += xlabel.size(0)
 
@@ -119,9 +119,9 @@ def ensemble_evaluate(model, test_loader, device, criterion):
             category_oneh = data['category_onehot']
             category = data['category']
             cat2possible = data['cat2possible']
-            x2 = data['image_2']
+            # x2 = data['image_2']
 
-            x2 = x2.to(device)
+            # x2 = x2.to(device)
             cat2possible = cat2possible.to(device)
             category = category.to(device)
             category_pos = category_pos.to(device)
@@ -129,7 +129,7 @@ def ensemble_evaluate(model, test_loader, device, criterion):
             x = x.to(device)
             xlabel = xlabel.to(device)
 
-            out = model(x, x2, category_oneh, category)
+            out = model(x, category_oneh, category)
             num_data += xlabel.size(0)
 
             logit, pred = out
@@ -211,7 +211,7 @@ def ensemble_inference(model, test_path: str) -> pd.DataFrame:
     with torch.no_grad():
         for i, data in enumerate(test_loader):
             x = data['image']
-            x2 = data['image_2']
+            # x2 = data['image_2']
 
             category_pos = data['category_possible']
             category_oneh = data['category_onehot']
@@ -220,12 +220,12 @@ def ensemble_inference(model, test_path: str) -> pd.DataFrame:
 
             cat2possible = cat2possible.to(device)
             x = x.to(device)
-            x2 = x2.to(device)
+            # x2 = x2.to(device)
             category_pos = category_pos.to(device)
             category_oneh = category_oneh.to(device)
             category = category.to(device)
 
-            logit, pred = model(x, x2, category_oneh, category)
+            logit, pred = model(x, category_oneh, category)
             filename_list += data['image_name']
 
             if model.mode == "xgb":

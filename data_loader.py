@@ -31,9 +31,9 @@ class TagImageDataset(Dataset):
         category2 = self.data_frame.iloc[idx]['category_2']        
         if self.transform:
             image_1 = self.transform(image)
-        if self.transform_2:
-            image_2 = self.transform_2(image)
-            sample['image_2'] = image_2
+        # if self.transform_2:
+        #     image_2 = self.transform_2(image)
+        #     sample['image_2'] = image_2
 
         sample['image'] = image_1
         tag_name = self.data_frame.iloc[idx]['answer']
@@ -82,9 +82,9 @@ class TagImageInferenceDataset(Dataset):
         
         if self.transform:
             image_1 = self.transform(image)
-        if self.transform_2:
-            image_2 = self.transform_2(image)
-            sample['image_2'] = image_2
+        # if self.transform_2:
+        #     image_2 = self.transform_2(image)
+        #     sample['image_2'] = image_2
         sample['image'] = image_1
         sample['image_name'] = img_name
         sample['cat2possible'] = torch.Tensor(CAT22ONEH[category][category2])

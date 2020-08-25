@@ -37,6 +37,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
     best_f1 = 0.0
     alpha= 0.5
     logger.info(f"Trainable Parameters : {[ name for name,param in model.named_parameters() if param.requires_grad]}")
+    logger.info(f"All trainable Parameters : {[[ name for name,param in m.named_parameters() if param.requires_grad] for m in model.models]}")
 
     for epoch in range(args.num_epoch):
         model.train()
@@ -317,7 +318,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, teacher_cat_embed=args.teacher_cat_embed, undersample_ratio=[0.4, 0.4, 0.4, 0.4, 0.4], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, teacher_cat_embed=args.teacher_cat_embed, undersample_ratio=[0.9, 0.9, 0.9, 0.9, 0.9], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -362,7 +363,7 @@ def main():
     df = df.iloc[:3000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
-    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 7, 1, 1], sed=42)
+    train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 2, 1, 1], sed=42)
     trainset = TagImageDataset(data_frame=train_df, root_dir=f'{DATASET_PATH}/train/train_data',
                                transform=transform.train_transform(),transform_2=transform.train_transform_2(), onehot=args.onehot, onehot2=args.onehot2)
     testset = TagImageDataset(data_frame=val_df, root_dir=f'{DATASET_PATH}/train/train_data',

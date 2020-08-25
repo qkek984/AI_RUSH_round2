@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
-from models.densenet import densenet201
+from models.densenet import densenet201, DenseNet121
 from models.nest import resnest200
 from models.binary_model import Binary_Model
 from models.trainable_embedding import Trainable_Embedding
@@ -37,7 +37,7 @@ class Ensemble_Model(nn.Module):
             args.densenet = args.densenet.split(' ')
             for i in range(len(args.densenet) // 5):
                 densenet = densenet201(pretrained=False)
-
+                # densenet = DenseNet121(pretrained=False)
                 if int(args.densenet[1 + i*5]):
                     densenet = Binary_Model(densenet, cat_embed=int(args.densenet[2 + i*5]), embed_dim=int(args.densenet[3 + i*5]))
                 elif int(args.densenet[2 + i*5]):
@@ -74,7 +74,6 @@ class Ensemble_Model(nn.Module):
                 self.models.append(resnet)
                 self.session.append(args.resnext[0 + i*5])
                 self.transform.append(int(args.resnext[4 + i*5]))
-
         if args.resnext101:
             args.resnext101 = args.resnext101.split(' ')
             for i in range(len(args.resnext101) // 5):
@@ -116,7 +115,7 @@ class Ensemble_Model(nn.Module):
         self.w = nn.Parameter(torch.tensor( [ 1 / self.num_model ] * self.num_model).cuda(), requires_grad=True)
 
         if mode == 'stacked':
-            self.stacked_fc = nn.Linear(5 * self.num_model, 4)
+            self.stacked_fc = nn.Linear(5 * self.num_model, 5)
         elif mode == 'xgb':
             self.xgb_classifier = xgb.XGBClassifier(objective="multi:softprob", 
                                                     learning_rate=eta, 
@@ -130,7 +129,7 @@ class Ensemble_Model(nn.Module):
     def __repr__(self):
         return "Ensemble model with " + self.densenet.name + ", " + self.resnet.name + ", " + self.vgg.name        
 
-    def forward(self, x, x2, oneh=None, category=None):
+    def forward(self, x, oneh=None, category=None):
         ys = []
         for model, trans in zip(self.models, self.transform):
             if isinstance(model,Binary_Model):
@@ -142,18 +141,18 @@ class Ensemble_Model(nn.Module):
             elif isinstance(model,Trainable_Embedding):
                 if trans:
                     out, pred = model(x.clone(),oneh,category)
-                else:
-                    out, pred = model(x2.clone(),oneh,category)
+                # else:
+                #     out, pred = model(x2.clone(),oneh,category)
                 # if self.mode == 'soft':
-                out = F.softmax(out,dim=-1)
+                # out = F.softmax(out,dim=-1)
                 ys.append(out)
             else:
                 if trans:
                     out, pred = model(x.clone(),oneh)
-                else:
-                    out, pred = model(x2.clone(),oneh)
+                # else:
+                #     out, pred = model(x2.clone(),oneh)
                 # if self.mode == 'soft':
-                out = F.softmax(out,dim=-1)
+                # out = F.softmax(out,dim=-1)
                 # print("!!!!!!!!",model.name, torch.max(out), torch.min(out), torch.max(F.softmax(out,dim=-1)), torch.min(F.softmax(out,dim=-1)))
                 ys.append(out)
                 
@@ -174,8 +173,8 @@ class Ensemble_Model(nn.Module):
 
         elif self.mode == 'stacked':
             ypred = torch.cat(ys, axis=1)
-            ypred = self.stacked_fc(ypred)            
-            return ypred, torch.argmax(y, dim=-1)
+            ypred = self.stacked_fc(ypred)           
+            return ypred, torch.argmax(ypred, dim=-1)
 
         elif self.mode == "xgb":
             ypred = torch.cat(ys, axis=1)
@@ -209,9 +208,15 @@ class Ensemble_Model(nn.Module):
         for model, sess_ in zip(self.models,self.session):
             print(sess_)
             if model:
-                bind_model(model)
-                nsml.load(checkpoint='best', session=sess_)
-                model = model.cuda()
+                try:
+                    bind_model(model)
+                    nsml.load(checkpoint='best', session=sess_)
+                    model = model.cuda()
+                except:
+                    print("Replace densenet")
+                    bind_model(DenseNet121(pretrained=False))                    
+                    nsml.load(checkpoint='best', session=sess_)
+                    model = model.cuda()
 
         if self.mode == 'xgb':
             for model in self.models:
@@ -221,7 +226,8 @@ class Ensemble_Model(nn.Module):
         else:
             for model in self.models:
                 for name, param in model.named_parameters():
-                    if 'fc' in name:
+                    if 'fc' in name and self.mode == 'soft':
+                        # print(model.name, name)
                         param.requires_grad = True
                     else:
                         param.requires_grad = False
