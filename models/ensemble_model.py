@@ -4,6 +4,8 @@ import torch.nn as nn
 from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
 from models.densenet import densenet201
 from models.nest import resnest200
+from models.xception import xception
+from models.utils.load_efficientnet import EfficientNet_B5,EfficientNet_B6
 from models.binary_model import Binary_Model
 from models.trainable_embedding import Trainable_Embedding
 from utilities.nsml_utils import bind_model
@@ -89,7 +91,6 @@ class Ensemble_Model(nn.Module):
                 self.session.append(args.resnext101[0 + i*5])
                 self.transform.append(int(args.resnext101[4 + i*5]))
 
-
         if args.resnext101_32x16d:
             args.resnext101_32x16d = args.resnext101_32x16d.split(' ')
             for i in range(len(args.resnext101_32x16d) // 5):
@@ -103,6 +104,48 @@ class Ensemble_Model(nn.Module):
                 self.models.append(resnet101_32x16d)
                 self.session.append(args.resnext101_32x16d[0 + i*5])
                 self.transform.append(int(args.resnext101_32x16d[4 + i*5]))
+
+        if args.efficient_b5:
+            args.efficient_b5 = args.efficient_b5.split(' ')
+            for i in range(len(args.efficient_b5) // 5):
+                effi = EfficientNet_B5(pretrained=False)
+
+                if int(args.efficient_b5[1 + i * 5]):
+                    effi = Binary_Model(resnet, cat_embed=int(args.efficient_b5[2 + i * 5]), embed_dim=int(args.efficient_b5[3 + i * 5]))
+                elif int(args.efficient_b5[2 + i * 5]):
+                    effi = Trainable_Embedding(effi, embed_dim=int(args.efficient_b5[3 + i * 5]))
+
+                self.models.append(effi)
+                self.session.append(args.efficient_b5[0 + i * 5])
+                self.transform.append(int(args.efficient_b5[4 + i * 5]))
+
+        if args.efficient_b6:
+            args.efficient_b6 = args.efficient_b6.split(' ')
+            for i in range(len(args.efficient_b6) // 5):
+                effi = EfficientNet_B6(pretrained=False)
+
+                if int(args.efficient_b6[1 + i * 5]):
+                    effi = Binary_Model(resnet, cat_embed=int(args.efficient_b6[2 + i * 5]), embed_dim=int(args.efficient_b6[3 + i * 5]))
+                elif int(args.efficient_b6[2 + i * 5]):
+                    effi = Trainable_Embedding(effi, embed_dim=int(args.efficient_b6[3 + i * 5]))
+
+                self.models.append(effi)
+                self.session.append(args.efficient_b6[0 + i * 5])
+                self.transform.append(int(args.efficient_b6[4 + i * 5]))
+
+        if args.xception:
+            args.xception = args.xception.split(' ')
+            for i in range(len(args.xception) // 5):
+                xcep = xception(pretrained=False)
+
+                if int(args.xception[1 + i*5]):
+                    xcep = Binary_Model(resnet, cat_embed=int(args.xception[2 + i*5]), embed_dim=int(args.xception[3 + i*5]))
+                elif int(args.xception[2 + i*5]):
+                    xcep = Trainable_Embedding(xcep, embed_dim=int(args.xception[3 + i*5]))
+
+                self.models.append(xcep)
+                self.session.append(args.xception[0 + i*5])
+                self.transform.append(int(args.xception[4 + i*5]))
 
         self.num_model = len(self.models)
         self.mode = mode

@@ -186,7 +186,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
                 epoch=epoch + args.num_epoch, lr=unfroze_optimizer.param_groups[0]['lr']))
 
 def unfreeze(model):
-    unf_idx = len(list(model.named_parameters()))-20
+    unf_idx = len(list(model.named_parameters()))-30
     for i, (name, params) in enumerate(model.named_parameters()):
         if i >= unf_idx:
             params.requires_grad = True
@@ -298,6 +298,9 @@ def main():
     parser.add_argument('--resnext101', default=None, type=str)
     parser.add_argument('--resnext101_32x16d', default=None, type=str)
     parser.add_argument('--nest200', default=None, type=str)
+    parser.add_argument('--xception', default=None, type=str)
+    parser.add_argument('--efficient_b5', default=None, type=str)
+    parser.add_argument('--efficient_b6', default=None, type=str)
     parser.add_argument('--ensemble_mode', default='soft', type=str)
     parser.add_argument('--eta', default=0.1, type=float)
     parser.add_argument('--min_child_w', default=2, type=float)
@@ -317,7 +320,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, teacher_cat_embed=args.teacher_cat_embed, undersample_ratio=[0.4, 0.4, 0.4, 0.4, 0.4], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, teacher_cat_embed=args.teacher_cat_embed, undersample_ratio=[0.99, 0.99, 0.99, 0.99, 0.99], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -350,8 +353,9 @@ def main():
     if args.pause:
         nsml.paused(scope=locals())
     if args.num_epoch == 0:
-        nsml.load("best", session="t0019/rush2-2/1102")
-        nsml.save('fish_meets_water')
+        nsml.load("best", session="t0019/rush2-2/1256")
+        #nsml.save('fish_meets_water')
+        nsml.save('best')
         return
 
     # Set the dataset

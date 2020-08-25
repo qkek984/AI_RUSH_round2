@@ -305,7 +305,7 @@ def resnet101(pretrained=False, progress=True, onehot=1,onehot2=0, **kwargs):
     return _resnet('resnet101', Bottleneck, [3, 4, 23, 3], pretrained, progress,
                    onehot=onehot, onehot2=onehot2, **kwargs)
 
-def resnext101_32x8d(pretrained=False, progress=True, onehot=1, onehot2=0, **kwargs):
+def resnext101_32x8d(pretrained=True, progress=True, onehot=1, onehot2=0, **kwargs):
     """Constructs a ResNeXt-101 32x8d model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet

@@ -161,7 +161,7 @@ def DenseNet121(pretrained=True, onehot=1, onehot2=0, **kwargs):
     return model
 
 
-def densenet169(pretrained=False, **kwargs):
+def densenet169(pretrained=True, **kwargs):
     r"""Densenet-169 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
     Args:
@@ -217,7 +217,7 @@ def densenet201(pretrained=True, onehot=1, onehot2=0, **kwargs):
     return model
 
 
-def densenet161(pretrained=False, **kwargs):
+def densenet161(pretrained=True, **kwargs):
     r"""Densenet-161 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
     Args:
