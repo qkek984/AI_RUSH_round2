@@ -2,18 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0ca8c313-1b59-476e-bed1-968ec128362b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/models/xception.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configuration/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/densenet.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/densenet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/ensemble_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/ensemble_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/nest.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/nest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/resnet.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/resnet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/utils/efficientnet_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/utils/efficientnet_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/utils/load_efficientnet.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/utils/load_efficientnet.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/self_training.py" beforeDir="false" afterPath="$PROJECT_DIR$/self_training.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,7 +97,7 @@
       <workItem from="1598308648521" duration="6069000" />
       <workItem from="1598339688556" duration="5984000" />
       <workItem from="1598351920540" duration="1727000" />
-      <workItem from="1598355718222" duration="1771000" />
+      <workItem from="1598355718222" duration="2049000" />
     </task>
     <servers />
   </component>
