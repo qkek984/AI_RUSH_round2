@@ -1,43 +1,16 @@
 # Tagging Classification
 
-Repo for training a baseline model for the AI Rush tagging classification challenge. The model is just a simple 
-ResNet50 model. We have additional image information which is its category. The categories are separated as 
-four parts; primary category(대카테고리), secondary category(중카테고리), third category(소카테고리), and last category(세카테고리). 
-Hence, you can use both images and their categories for improving the performance.
-
-## Important notes
-1. The function that's bind to NSML infer needs to output a dataframe with the two columns `image_name` and `y_pred`,
-where `image_name` is the name of the file that's being predicted and `y_pred` is an integer value of the predicted class.
-
-2. Train dataset is only annotated by users. It means that it can be mislabeled. You should build a model which is the 
-robust in noisy training set. 
-
-## Run experiment
-
-To run the baseline model training, stand in the `airush2020/tagging` folder and run 
-```
-nsml run -d {DATASET_NAME} -e main.py -g 1 --cpus 4 --memory 16G --shm-size 16G -a "--pretrain --num_epoch 0"
-```
-You can change the arguments such as learning rate, optimizer, the number of cpus, size of memory, etc.
-
-
-## Metric
-Using a geometric mean over all tagging classes.
-```
-score = (f1_score_착용샷 * f1_score_설치후배치컷 * f1_발색샷 * f1_요리완성 * f1_미분류) ** (1 / 5)
-```
-## Submission 
-You can submit your model as follows. 
-``` 
-nsml submit {SESSION_NAME} {CHECKPOINT}
-```
-When submitting baseline model, it takes about 145.05 seconds and the score is about 0.46. 
+Repo for training a model for the AI Rush tagging classification challenge. The dataset has additional image information which is its category. 
+The categories are separated as four parts; primary category(대카테고리), secondary category(중카테고리), third category(소카테고리), and last category(세카테고리). 
 
 ## Data
 ### Description
 There are five different classes; 착용샷, 설치 후 배치컷, 요리완성, 발색샷, and 미분류. 
 The mapping between class names and the integer values used in the labels file is 
 `착용샷: 0, 설치 후 배치컷: 1, 발색샷: 2, 요리완성: 3, 미분류: 4`.
+
+Note that there is an unknown amount of noise in the label.
+
 #### 착용샷
 착용샷 is the review image that people are wearing something such as clothes, pants, accessories, and etc. 
 ![착용샷](images/suit.JPEG)
@@ -60,6 +33,46 @@ kind of images after installation.
 미분류 is the image that is not included in those 4 kinds of classes as shown in the above. 
 
 ![미분류](images/unknown.JPEG)
+
+## Our Model
+
+Our model makes use of several techniques in order to make our model robust to noise in label.
+
+![Label Smoothing](images/1.PNG)
+
+![Self Training](images/2.PNG)
+
+![Enesembling](images/3.PNG)
+
+
+Additionally we make use of additional modules which aim to make use of metadata (i.e. category)
+
+![Etc](images/4.PNG)
+
+Category embedding is a replacement of making use of category as onehot encoding form. This is done by making each category into a trainable vector (Dimension 18 in our case).
+
+## Metric
+Using a geometric mean over all tagging classes.
+```
+score = (f1_score_착용샷 * f1_score_설치후배치컷 * f1_발색샷 * f1_요리완성 * f1_미분류) ** (1 / 5)
+```
+
+## Result
+
+## Run experiment
+
+To run the baseline model training, run 
+```
+nsml run -d {DATASET_NAME} -e main.py -g 1 --cpus 4 --memory 16G --shm-size 16G -a "--pretrain --num_epoch 0"
+```
+You can change the arguments such as learning rate, optimizer, the number of cpus, size of memory, etc.
+
+## Submission 
+You can submit your model as follows. 
+``` 
+nsml submit {SESSION_NAME} {CHECKPOINT}
+```
+When submitting baseline model, it takes about 145.05 seconds and the score is about 0.46. 
 
 ### Format
 See AI Rush dataset documentation.
