@@ -59,6 +59,10 @@ score = (f1_score_착용샷 * f1_score_설치후배치컷 * f1_발색샷 * f1_�
 
 ## Result
 
+Baseline model (pretrained ResNet50) is 0.549
+
+Our final geometric mean of F1 is 0.880
+
 ## Run experiment
 
 To run the baseline model training, run 
