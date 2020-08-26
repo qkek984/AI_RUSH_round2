@@ -24,7 +24,6 @@ def ensemble_training(model, train_loader, optimizer, criterion, device, epoch, 
     for i, data in enumerate(train_loader):
         start = time.time()
         x = data['image']
-        # x2 = data['image_2']
         xlabel = data['label']
         category_pos = data['category_possible']
         category_oneh = data['category_onehot']
@@ -34,7 +33,6 @@ def ensemble_training(model, train_loader, optimizer, criterion, device, epoch, 
         cat2possible = cat2possible.to(device)
         category = category.to(device)
         x = x.to(device)
-        # x2 = x2.to(device)
         xlabel = xlabel.to(device)
         category_pos = category_pos.to(device)
         category_oneh = category_oneh.to(device)
@@ -47,7 +45,6 @@ def ensemble_training(model, train_loader, optimizer, criterion, device, epoch, 
 
         if model.mode == "xgb":
             ytrues.append(xlabel)
-            #TODO: try logit*cat2possible
             ypreds.append(logit)
         else:            
             if isinstance(criterion, torch.nn.CrossEntropyLoss):
@@ -100,6 +97,7 @@ def ensemble_evaluate(model, test_loader, device, criterion):
     correct = 0.0
     category_correct = 0.0
     cat2correct = 0.0 
+    cat3correct = 0.0
     num_data = 0.0
     total_loss = 0.0
 
@@ -107,7 +105,7 @@ def ensemble_evaluate(model, test_loader, device, criterion):
     prediction = []
     cat_prediction = []
     cat2_prediction = []
-
+    cat3_prediction = []
     ytrues = []
     ypreds = []
 
@@ -119,9 +117,7 @@ def ensemble_evaluate(model, test_loader, device, criterion):
             category_oneh = data['category_onehot']
             category = data['category']
             cat2possible = data['cat2possible']
-            # x2 = data['image_2']
 
-            # x2 = x2.to(device)
             cat2possible = cat2possible.to(device)
             category = category.to(device)
             category_pos = category_pos.to(device)
@@ -135,7 +131,6 @@ def ensemble_evaluate(model, test_loader, device, criterion):
             logit, pred = out
             if model.mode == "xgb":
                 ytrues.append(xlabel)
-                #TODO: try logit*cat2possible
                 ypreds.append(logit)
             else:            
                 correct += torch.sum(pred == xlabel).item()
@@ -177,12 +172,6 @@ def ensemble_evaluate(model, test_loader, device, criterion):
     logger.info(f'\n{confusion}')
     logger.info(f'\n{confusion_norm}')
 
-    # logger.info(f'\nConfusion without CAT22POSSIBLE')
-    # confusion_2 = confusion_matrix(label,prediction)
-    # confusion_norm_2 = confusion_matrix(label,prediction, normalize='true')
-    # logger.info(f'\n{confusion_2}')
-    # logger.info(f'\n{confusion_norm_2}')
-    
     f1_array = f1_score(label, cat2_prediction, average=None)
     
     logger.info(f"f1 score : {f1_array}")
@@ -217,7 +206,6 @@ def ensemble_inference(model, test_path: str) -> pd.DataFrame:
             category_oneh = data['category_onehot']
             category = data['category']
             cat2possible = data['cat2possible']
-
             cat2possible = cat2possible.to(device)
             x = x.to(device)
             # x2 = x2.to(device)
@@ -229,21 +217,17 @@ def ensemble_inference(model, test_path: str) -> pd.DataFrame:
             filename_list += data['image_name']
 
             if model.mode == "xgb":
-                #TODO: try logit*cat2possible
-                # ypreds.append(logit)
                 logit = logit.detach().cpu().numpy()
                 y_category_pred += list(model.xgb_classifier.predict(logit))
             else:            
                 cat2pred = torch.argmax(logit *cat2possible, dim=-1) # 
                 y_category_pred += cat2pred.type(torch.IntTensor).detach().cpu().tolist()
-
                 y_pred += pred.type(torch.IntTensor).detach().cpu().tolist()
 
         # if model.mode == "xgb":
         #     ypreds = torch.cat(ypreds, axis=0)
         #     ypreds = ypreds.detach().cpu().numpy()
         #     y_category_pred = model.xgb_classifier.predict(ypreds)
-
 
     # ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_pred})
     ret = pd.DataFrame({'image_name': filename_list, 'y_pred': y_category_pred})

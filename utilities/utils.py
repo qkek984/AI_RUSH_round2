@@ -7,16 +7,17 @@ from scipy.stats import gmean
 from sklearn.metrics import f1_score, classification_report, confusion_matrix
 from torch import optim
 from torch.utils.data import DataLoader
-
+from models.utils.load_efficientnet import EfficientNet_B2,EfficientNet_B5,EfficientNet_B6
 from configuration.config import logger, Transforms
 from data_loader import TagImageInferenceDataset
 from models.teacher_model import Resnet50_FC2
 from models.baseline_resnet import Resnet50_FC2
 from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
 from models.densenet import DenseNet121, densenet201
-from models.nest import resnest200
+from models.nest import resnest200, resnest101
 from custom_loss import LabelSmoothingLoss
 
+from models.xception import xception
 import os
 
 def train(model, train_loader, optimizer, criterion, device, epoch, total_epochs):
@@ -248,6 +249,16 @@ def select_model(model_name: str, pretrain: bool, n_class: int, onehot : int, on
         model = densenet201(onehot=onehot,onehot2=onehot2)
     elif model_name == "nest200":
         model = resnest200(onehot=onehot,onehot2=onehot2)
+    elif model_name == "nest101":
+        model = resnest101(onehot=onehot,onehot2=onehot2)
+    elif model_name == "efficient_b2":
+        model = EfficientNet_B2(onehot=onehot,onehot2=onehot2)
+    elif model_name == "efficient_b5":
+        model = EfficientNet_B5(onehot=onehot, onehot2=onehot2)
+    elif model_name == "efficient_b6":
+        model = EfficientNet_B6(onehot=onehot, onehot2=onehot2)
+    elif model_name == "xception":
+        model = xception(onehot=onehot,onehot2=onehot2)
     else:
         raise NotImplementedError('Please select in [resnext101, resnext101_32x16d, nest200, densenet201]')
     return model

@@ -4,6 +4,8 @@ import torch.nn as nn
 from models.resnet import ResNet50, resnext50_32x4d, resnet101, resnext101_32x8d, resnext101_32x16d
 from models.densenet import densenet201, DenseNet121
 from models.nest import resnest200
+from models.xception import xception
+from models.utils.load_efficientnet import EfficientNet_B5,EfficientNet_B6, EfficientNet_B2
 from models.binary_model import Binary_Model
 from models.trainable_embedding import Trainable_Embedding
 from utilities.nsml_utils import bind_model
@@ -48,7 +50,7 @@ class Ensemble_Model(nn.Module):
 
         if args.nest200:
             args.nest200 = args.nest200.split(' ')
-            for i in range(len(args.nest200) // 4):
+            for i in range(len(args.nest200) // 5):
                 nest = resnest200(pretrained=False)
 
                 if int(args.nest200[1 + i * 5]):
@@ -74,6 +76,7 @@ class Ensemble_Model(nn.Module):
                 self.models.append(resnet)
                 self.session.append(args.resnext[0 + i*5])
                 self.transform.append(int(args.resnext[4 + i*5]))
+
         if args.resnext101:
             args.resnext101 = args.resnext101.split(' ')
             for i in range(len(args.resnext101) // 5):
@@ -87,7 +90,6 @@ class Ensemble_Model(nn.Module):
                 self.models.append(resnet101)
                 self.session.append(args.resnext101[0 + i*5])
                 self.transform.append(int(args.resnext101[4 + i*5]))
-
 
         if args.resnext101_32x16d:
             args.resnext101_32x16d = args.resnext101_32x16d.split(' ')
@@ -103,12 +105,68 @@ class Ensemble_Model(nn.Module):
                 self.session.append(args.resnext101_32x16d[0 + i*5])
                 self.transform.append(int(args.resnext101_32x16d[4 + i*5]))
 
+        if args.efficient_b2:
+            args.efficient_b2 = args.efficient_b2.split(' ')
+            for i in range(len(args.efficient_b2) // 5):
+                effi = EfficientNet_B2(pretrained=False)
+
+                if int(args.efficient_b2[1 + i * 5]):
+                    effi = Binary_Model(resnet, cat_embed=int(args.efficient_b2[2 + i * 5]), embed_dim=int(args.efficient_b2[3 + i * 5]))
+                elif int(args.efficient_b2[2 + i * 5]):
+                    effi = Trainable_Embedding(effi, embed_dim=int(args.efficient_b2[3 + i * 5]))
+
+                self.models.append(effi)
+                self.session.append(args.efficient_b2[0 + i * 5])
+                self.transform.append(int(args.efficient_b2[4 + i * 5]))
+
+
+        if args.efficient_b5:
+            args.efficient_b5 = args.efficient_b5.split(' ')
+            for i in range(len(args.efficient_b5) // 5):
+                effi = EfficientNet_B5(pretrained=False)
+
+                if int(args.efficient_b5[1 + i * 5]):
+                    effi = Binary_Model(resnet, cat_embed=int(args.efficient_b5[2 + i * 5]), embed_dim=int(args.efficient_b5[3 + i * 5]))
+                elif int(args.efficient_b5[2 + i * 5]):
+                    effi = Trainable_Embedding(effi, embed_dim=int(args.efficient_b5[3 + i * 5]))
+
+                self.models.append(effi)
+                self.session.append(args.efficient_b5[0 + i * 5])
+                self.transform.append(int(args.efficient_b5[4 + i * 5]))
+
+        if args.efficient_b6:
+            args.efficient_b6 = args.efficient_b6.split(' ')
+            for i in range(len(args.efficient_b6) // 5):
+                effi = EfficientNet_B6(pretrained=False)
+
+                if int(args.efficient_b6[1 + i * 5]):
+                    effi = Binary_Model(resnet, cat_embed=int(args.efficient_b6[2 + i * 5]), embed_dim=int(args.efficient_b6[3 + i * 5]))
+                elif int(args.efficient_b6[2 + i * 5]):
+                    effi = Trainable_Embedding(effi, embed_dim=int(args.efficient_b6[3 + i * 5]))
+
+                self.models.append(effi)
+                self.session.append(args.efficient_b6[0 + i * 5])
+                self.transform.append(int(args.efficient_b6[4 + i * 5]))
+
+        if args.xception:
+            args.xception = args.xception.split(' ')
+            for i in range(len(args.xception) // 5):
+                xcep = xception(pretrained=False)
+
+                if int(args.xception[1 + i*5]):
+                    xcep = Binary_Model(resnet, cat_embed=int(args.xception[2 + i*5]), embed_dim=int(args.xception[3 + i*5]))
+                elif int(args.xception[2 + i*5]):
+                    xcep = Trainable_Embedding(xcep, embed_dim=int(args.xception[3 + i*5]))
+
+                self.models.append(xcep)
+                self.session.append(args.xception[0 + i*5])
+                self.transform.append(int(args.xception[4 + i*5]))
+
         self.num_model = len(self.models)
         self.mode = mode
         self.weight = weight
         print("Transforms !" , self.transform)
         if weight is not None:
-            # self.weight = [ random.random() for _ in range(4)]
             print("Weight :" ,self.weight)
             print([int(w/ sum(self.weight) * 100) for w in self.weight])
                 
@@ -116,6 +174,7 @@ class Ensemble_Model(nn.Module):
 
         if mode == 'stacked':
             self.stacked_fc = nn.Linear(5 * self.num_model, 5)
+
         elif mode == 'xgb':
             self.xgb_classifier = xgb.XGBClassifier(objective="multi:softprob", 
                                                     learning_rate=eta, 
@@ -143,7 +202,6 @@ class Ensemble_Model(nn.Module):
                     out, pred = model(x.clone(),oneh,category)
                 # else:
                 #     out, pred = model(x2.clone(),oneh,category)
-                # if self.mode == 'soft':
                 # out = F.softmax(out,dim=-1)
                 ys.append(out)
             else:
@@ -151,22 +209,15 @@ class Ensemble_Model(nn.Module):
                     out, pred = model(x.clone(),oneh)
                 # else:
                 #     out, pred = model(x2.clone(),oneh)
-                # if self.mode == 'soft':
                 # out = F.softmax(out,dim=-1)
-                # print("!!!!!!!!",model.name, torch.max(out), torch.min(out), torch.max(F.softmax(out,dim=-1)), torch.min(F.softmax(out,dim=-1)))
                 ys.append(out)
                 
             
         if self.mode == 'soft':
-            # _, y1 = torch.max(y1,axis=1)
-            # _, y2 = torch.max(y3,axis=1)
-            # _, y3 = torch.max(y3,axis=1)
-            # print(torch.cat([y1.unsqueeze(1),y2.unsqueeze(1),y3.unsqueeze(1)], axis=1))
             y = sum(ys)
             return y, torch.argmax(y, dim=-1)
 
         elif self.mode == "hard":
-            # ys = [ y_ * w_ for y_, w_ in zip(ys, [0.8, 1.2, 1, 1])]
             ys = [ y_ * w_ for y_, w_ in zip(ys, self.w)]
             y = sum(ys)
             return y, torch.argmax(y, dim=-1)
@@ -174,6 +225,7 @@ class Ensemble_Model(nn.Module):
         elif self.mode == 'stacked':
             ypred = torch.cat(ys, axis=1)
             ypred = self.stacked_fc(ypred)           
+
             return ypred, torch.argmax(ypred, dim=-1)
 
         elif self.mode == "xgb":
@@ -187,7 +239,6 @@ class Ensemble_Model(nn.Module):
             pickle.dump(self.xgb_classifier, open(f"{dirname}/model_xgboost.dat", "wb"))
         elif self.mode == 'stacked':
             torch.save(self.stacked_fc.state_dict(), f'{dirname}/model_stacked_fc')    
-        # torch.save(self.densenet.state_dict(), f'{dirname}/model_{self.densenet.name}')
         for i,model in enumerate(self.models):
             if model:
                 torch.save(model.state_dict(), f'{dirname}/model_{model.name}_{i}')
@@ -199,7 +250,6 @@ class Ensemble_Model(nn.Module):
             self.xgb_classifier = pickle.load(open(f"{dirname}/model_xgboost.dat", "rb"))
         elif self.mode == 'stacked':
             self.stacked_fc.load_state_dict(torch.load(f'{dirname}/model_stacked_fc'))
-        # self.densenet.load_state_dict(torch.load(f'{dirname}/model_{self.densenet.name}'))
         for i, model in enumerate(self.models):
             if model:
                 model.load_state_dict(torch.load(f'{dirname}/model_{model.name}_{i}'))
@@ -208,15 +258,9 @@ class Ensemble_Model(nn.Module):
         for model, sess_ in zip(self.models,self.session):
             print(sess_)
             if model:
-                try:
-                    bind_model(model)
-                    nsml.load(checkpoint='best', session=sess_)
-                    model = model.cuda()
-                except:
-                    print("Replace densenet")
-                    bind_model(DenseNet121(pretrained=False))                    
-                    nsml.load(checkpoint='best', session=sess_)
-                    model = model.cuda()
+                bind_model(model)
+                nsml.load(checkpoint='best', session=sess_)
+                model = model.cuda()
 
         if self.mode == 'xgb':
             for model in self.models:
@@ -227,7 +271,6 @@ class Ensemble_Model(nn.Module):
             for model in self.models:
                 for name, param in model.named_parameters():
                     if 'fc' in name and self.mode == 'soft':
-                        # print(model.name, name)
                         param.requires_grad = True
                     else:
                         param.requires_grad = False

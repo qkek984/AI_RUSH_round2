@@ -187,7 +187,7 @@ def train_process(args, model, train_loader, test_loader, optimizer, unfroze_opt
                 epoch=epoch + args.num_epoch, lr=unfroze_optimizer.param_groups[0]['lr']))
 
 def unfreeze(model):
-    unf_idx = len(list(model.named_parameters()))-20
+    unf_idx = len(list(model.named_parameters()))-30
     for i, (name, params) in enumerate(model.named_parameters()):
         if i >= unf_idx:
             params.requires_grad = True
@@ -204,7 +204,7 @@ def load_weight(model, weight_file):
         print('weight file {} is not exist.'.format(weight_file))
         print('=> random initialized model will be used.')
 
-def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1, 1, 1, 1, 1], cls_sample=0.05):
+def train_val_df(df, val_ratio = 0.05, n_class = 5, sed=None, oversample_ratio=[1, 1, 1, 1, 1], cls_sample=0.05):
     columns = [col for col in df]
     trainData = [[] for i in range(n_class)]
     valData = [[] for i in range(n_class)]
@@ -243,8 +243,7 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
             trainData[i] += random.sample(trainData[i], extra) 
         else:
             trainData[i] = random.sample(trainData[i], int(len(trainData[i])* oversample_ratio[i]))
-            # valData[i] = random.sample(valData[i], int(len(valData[i]) * oversample_ratio[i]))
-
+ 
     trainSet = []
     valSet = []
     for i in range(n_class):
@@ -262,7 +261,7 @@ def train_val_df(df, val_ratio = 0.2, n_class = 5, sed=None, oversample_ratio=[1
 def main():
     # Argument Settings
     parser = argparse.ArgumentParser(description='Image Tagging Classification from Naver Shopping Reviews')
-    parser.add_argument('--sess_name', default='', type=str, help='Session name that is loaded')
+    parser.add_argument('--sess_name', default=None, type=str, help='Session name that is loaded')
     parser.add_argument('--checkpoint', default='best', type=str, help='Checkpoint')
     parser.add_argument('--batch_size', default=128, type=int, help='batch size')
     parser.add_argument('--num_workers', default=16, type=int, help='The number of workers')
@@ -285,8 +284,8 @@ def main():
     parser.add_argument('--self_training', default=False, type=str, help='t0019/rush2-2/660')
     parser.add_argument('--teacher_model', default='resnext101', type=str)
     parser.add_argument('--smooth', default=False, type=bool)
-    parser.add_argument('--smooth_w', default=0.3, type=float)
-    parser.add_argument('--smooth_att', default=1.5, type=float)
+    parser.add_argument('--smooth_w', default=0.1, type=float)
+    parser.add_argument('--smooth_att', default=2.5, type=float)
     parser.add_argument('--cat_embed', default=0, type=int)
     parser.add_argument('--embed_dim', default=18, type=int)
     parser.add_argument('--onehot', default=1, type=int)
@@ -299,6 +298,10 @@ def main():
     parser.add_argument('--resnext101', default=None, type=str)
     parser.add_argument('--resnext101_32x16d', default=None, type=str)
     parser.add_argument('--nest200', default=None, type=str)
+    parser.add_argument('--xception', default=None, type=str)
+    parser.add_argument('--efficient_b2', default=None, type=str)
+    parser.add_argument('--efficient_b5', default=None, type=str)
+    parser.add_argument('--efficient_b6', default=None, type=str)
     parser.add_argument('--ensemble_mode', default='soft', type=str)
     parser.add_argument('--eta', default=0.1, type=float)
     parser.add_argument('--min_child_w', default=2, type=float)
@@ -318,7 +321,7 @@ def main():
     # df setting by self-training
     if args.self_training and args.pause == 0:
         logger.info(f'self-training teacher sees : {args.self_training}')
-        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, teacher_cat_embed=args.teacher_cat_embed, undersample_ratio=[0.9, 0.9, 0.9, 0.9, 0.9], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
+        df = df_teacher(teacher_sess_name=args.self_training, teacher_model=args.teacher_model, teacher_cat_embed=args.teacher_cat_embed, undersample_ratio=[0.95, 0.95, 0.95, 0.95, 0.95], data_cross=True, onehot=args.onehot, onehot2=args.onehot2, args=args)
         logger.info('df by teacher')
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -327,8 +330,7 @@ def main():
     logger.info('Build Model')
     model = select_model(args.model_name, pretrain=args.pretrain, n_class=5, onehot=args.onehot, onehot2=args.onehot2)
     total_param = sum([p.numel() for p in model.parameters()])
-    #load_weight(model, args.weight_file)
-
+ 
     if args.binary:
         logger.info("\n#############\nBinary appended to model\n#############")
         if args.cat_embed:
@@ -348,11 +350,16 @@ def main():
         nsml_utils.bind_model(model)
     logger.info(f'Model size: {total_param} tensors , Learning rate ={args.lr}')
     model = model.to(device)
+
+    if args.sess_name:
+        nsml.load(args.checkpoint, session=args.sess_name)
+        print(f"Loaded {args.checkpoint} from sess {args.sess_name}")
+
     if args.pause:
         nsml.paused(scope=locals())
     if args.num_epoch == 0:
-        nsml.load("best", session="t0019/rush2-2/1102")
-        nsml.save('fish_meets_water')
+        nsml.load("best", session="t0019/rush2-2/1256")
+        nsml.save('best')
         return
 
     # Set the dataset
@@ -360,7 +367,6 @@ def main():
     if args.self_training == False:
         df = pd.read_csv(f'{DATASET_PATH}/train/train_label')
         logger.info('normal df')
-    df = df.iloc[:3000]
     
     logger.info(f"Transformation on train dataset\n{transform.train_transform()}")
     train_df, val_df, class_samples = train_val_df(df, oversample_ratio=[1, 1, 2, 1, 1], sed=42)
@@ -403,8 +409,9 @@ def main():
 
     elif args.mode == 'test':
         if isinstance(model, Ensemble_Model):
-            if model.mode == "hard" or model.mode == 'xgb':
+            if model.mode is not 'soft':
                 nsml.load(args.checkpoint, session=args.sess_name)
+                print(f"Loaded {args.checkpoint} from sess {args.sess_name}")
             else:
                 pass
         else:
