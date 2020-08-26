@@ -9,7 +9,8 @@ There are five different classes; 착용샷, 설치 후 배치컷, 요리완성,
 The mapping between class names and the integer values used in the labels file is 
 `착용샷: 0, 설치 후 배치컷: 1, 발색샷: 2, 요리완성: 3, 미분류: 4`.
 
-Note that there is an unknown amount of noise in the label.
+The dataset is highly imbalanced with the composition being [0.19, 0.14, 0.008, 0.06, 0.59]
+Furthermore there is an unknown amount of noise in the label.
 
 #### 착용샷
 착용샷 is the review image that people are wearing something such as clothes, pants, accessories, and etc.
@@ -48,7 +49,7 @@ Our model makes use of several techniques in order to make our model robust to n
 
 ![Self Training](images/2.PNG)
 
-![Enesembling](images/3.PNG)
+![Ensembling](images/3.PNG)
 
 
 Additionally we make use of additional modules which aim to make use of metadata (i.e. category)
@@ -84,8 +85,10 @@ nsml submit {SESSION_NAME} {CHECKPOINT}
 ```
 When submitting baseline model, it takes about 145.05 seconds and the score is about 0.46. 
 
-### Format
-See AI Rush dataset documentation.
+### Reference
 
-```
+Label Smoothing: https://towardsdatascience.com/label-smoothing-making-model-robust-to-incorrect-labels-2fae037ffbd0
+
+Self-training: https://hoya012.github.io/blog/Self-training-with-Noisy-Student-improves-ImageNet-classification-Review/
+
 
