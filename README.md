@@ -12,27 +12,33 @@ The mapping between class names and the integer values used in the labels file i
 Note that there is an unknown amount of noise in the label.
 
 #### 착용샷
-착용샷 is the review image that people are wearing something such as clothes, pants, accessories, and etc. 
-![착용샷](images/suit.JPEG)
+착용샷 is the review image that people are wearing something such as clothes, pants, accessories, and etc.
+
+<img src="https://github.com/chanhopark00/ai_rush_round2/blob/master/images/suit.JPEG" width="450">
+
 
 #### 설치 후 배치컷
-설치 후 배치컷 is that the product is located after installation. The furniture is the one of the examples to get those 
-kind of images after installation. 
+설치 후 배치컷 is that the product is located after installation. The furniture is the one of the examples to get those kind of images after installation. 
 
-![설치후배치컷](images/installation.JPEG)
+<img src="https://github.com/chanhopark00/ai_rush_round2/blob/master/images/installation.JPEG" width="450">
+
+
 #### 요리완성
 요리완성 is the food image that is completely finished for cooking. 
 
-![요리완성](images/food.JPEG)
+<img src="https://github.com/chanhopark00/ai_rush_round2/blob/master/images/food.JPEG" width="450">
 
 #### 발색샷
 발색샷 is the image that indicates the color by product. For example, lip stick is the one of the representative examples.
-![발색샷](images/color.JPEG)
+
+<img src="https://github.com/chanhopark00/ai_rush_round2/blob/master/images/color.JPEG" width="450">
+
 
 #### 미분류
 미분류 is the image that is not included in those 4 kinds of classes as shown in the above. 
 
-![미분류](images/unknown.JPEG)
+<img src="https://github.com/chanhopark00/ai_rush_round2/blob/master/images/unknown.JPEG" width="200">
+
 
 ## Our Model
 
